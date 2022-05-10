@@ -2,13 +2,11 @@ import React from "react";
 import { Card } from 'antd';
 
 
-function Cell () {
+function Cell (props) {
 
     return(
-    <div className="cell">
-        {/* <Card title="Card title" bordered={false} style={{ width: 300 }}>
-            <p>Card content</p>
-        </Card> */}
+    <div className="cell" style={{background:props.coloring}}>
+        <p>{props.content}</p>
     </div>
     );
 }

@@ -2,6 +2,7 @@ import React, {useState, useEffect } from "react";
 import Cell from "./Cell";
 import {Card, Space, Col, Row, Button} from "antd";
 import "antd/dist/antd.css";
+import { logDOM } from "@testing-library/react";
 
 
 function Board () {
@@ -20,7 +21,11 @@ function Board () {
       {rows.map((row, rowindex) => (
         <Row>
           {columns.map((column, columnindex) => (
-        <Col><Cell></Cell></Col>
+            columnindex === 0 && rowindex === 0 ? <Col><Cell coloring="orange"></Cell></Col> :
+            columnindex === 0 && rowindex === 1 ? <Col><Cell coloring="purple"></Cell></Col> :
+            columnindex === 0 && rowindex === 2 ? <Col><Cell coloring="green"></Cell></Col> :
+            columnindex === 0 && rowindex === 3 ? <Col><Cell coloring="black"></Cell></Col> :
+            <Col><Cell></Cell></Col>
       ))}
         </Row>
       ))}
