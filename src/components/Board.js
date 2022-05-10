@@ -9,23 +9,34 @@ function Board () {
 
     const [orangeCells, setOrangecells] = useState([]);
 
+    useEffect(() => {
+      createBoard();
+    },[]);
+
     const createBoard = () =>{
-        setOrangecells([1,2,3,4])
+        const orangeCell = <Col><Cell coloring="orange"></Cell></Col>
+        const purpleCell = <Col><Cell coloring="purple"></Cell></Col>
+        const greenCell = <Col><Cell coloring="green"></Cell></Col>
+        const blackCell = <Col><Cell coloring="black"></Cell></Col>
+        let orangeCells = [];
+        orangeCells.push(orangeCell)
+        for (let i = 0; i < 10; i++) {
+          orangeCells.push(<Col><Cell></Cell></Col>);
+        }
+        setOrangecells(orangeCells)
         }
     
     const rows = [1,2,3,4];
-    const columns = [1,2, 3, 4, 5, 6, 7, 8, 9, 10];
+    // const orangeCell = <Col><Cell coloring="orange"></Cell></Col>
+    // const columns = [orangeCell,2, 3, 4, 5, 6, 7, 8, 9, 10];
+    
 
     return(
     <div className="Board">
       {rows.map((row, rowindex) => (
         <Row>
-          {columns.map((column, columnindex) => (
-            columnindex === 0 && rowindex === 0 ? <Col><Cell coloring="orange"></Cell></Col> :
-            columnindex === 0 && rowindex === 1 ? <Col><Cell coloring="purple"></Cell></Col> :
-            columnindex === 0 && rowindex === 2 ? <Col><Cell coloring="green"></Cell></Col> :
-            columnindex === 0 && rowindex === 3 ? <Col><Cell coloring="black"></Cell></Col> :
-            <Col><Cell></Cell></Col>
+          {orangeCells.map((column, columnindex) => (
+            column     
       ))}
         </Row>
       ))}
