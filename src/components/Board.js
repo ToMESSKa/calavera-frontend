@@ -14,11 +14,8 @@ function Board () {
     return(
     <div className="Board">
       <header className="Board-header">
-          <button onClick={(event) => {
-              createBoard(event);
-            }}>CLICK HERE</button>
           <Row>
-          {orangeCells.map((orangeCell, i) => <Col><Cell></Cell></Col>)}
+          <Col><Cell></Cell></Col>
           </Row>
       </header>
     </div>
