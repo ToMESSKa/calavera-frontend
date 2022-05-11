@@ -7,7 +7,11 @@ import { logDOM } from "@testing-library/react";
 
 function Board () {
 
-    const [orangeCells, setOrangecells] = useState([]);
+    const [orangeCells, setOrangeCells] = useState([]);
+    const [purpleCells, setPurpleCells] = useState([]);
+    const [greenCells, setGreenCells] = useState([]);
+    const [blackCells, setBlackCells] = useState([]);
+    const [board, setBoard] = useState([])
 
     useEffect(() => {
       createBoard();
@@ -18,28 +22,27 @@ function Board () {
         const purpleCell = <Col><Cell coloring="purple"></Cell></Col>
         const greenCell = <Col><Cell coloring="green"></Cell></Col>
         const blackCell = <Col><Cell coloring="black"></Cell></Col>
-        let orangeCells = [];
-        orangeCells.push(orangeCell)
-        for (let i = 0; i < 10; i++) {
-          orangeCells.push(<Col><Cell></Cell></Col>);
+        setBoard([createColor(orangeCell),createColor(purpleCell),createColor(greenCell),createColor(blackCell)])
         }
-        setOrangecells(orangeCells)
-        }
-    
-    const rows = [1,2,3,4];
-    // const orangeCell = <Col><Cell coloring="orange"></Cell></Col>
-    // const columns = [orangeCell,2, 3, 4, 5, 6, 7, 8, 9, 10];
-    
 
+      const createColor = (coloredCell) =>{
+        let Cells = [];
+        Cells.push(coloredCell)
+        for (let i = 0; i < 14; i++) {
+          Cells.push(<Col><Cell></Cell></Col>);
+        }
+        return Cells;
+        }
+    
     return(
     <div className="Board">
-      {rows.map((row, rowindex) => (
-        <Row>
-          {orangeCells.map((column, columnindex) => (
-            column     
-      ))}
-        </Row>
-      ))}
+          {board.map((color) => (
+            <Row>
+            {color.map((cell)  => (
+              cell
+            )) }
+            </Row> 
+        ))}
     </div>
     );
 }
