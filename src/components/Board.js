@@ -12,6 +12,7 @@ function Board () {
     const [greenCells, setGreenCells] = useState([]);
     const [blackCells, setBlackCells] = useState([]);
     const [board, setBoard] = useState([])
+    const [header, setHeader] = useState([])
 
     useEffect(() => {
       createBoard();
@@ -23,7 +24,8 @@ function Board () {
         const greenCell = <Col><Cell coloring="green"></Cell></Col>
         const blackCell = <Col><Cell coloring="black"></Cell></Col>
         setBoard([createColor(orangeCell),createColor(purpleCell),createColor(greenCell),createColor(blackCell)])
-        }
+        setHeader(createHeader)
+      }
 
       const createColor = (coloredCell) =>{
         let Cells = [];
@@ -33,9 +35,26 @@ function Board () {
         }
         return Cells;
         }
+
+      const createHeader = () =>{
+        let header = [];
+        let headerPoints  = [4,5,6,8,10,4,0,-3]
+        for (let i = 0; i < 8; i++) {
+          header.push(<Col>
+          {i > 4 ? <Cell coloring="grey" content={headerPoints[i]}></Cell> :
+           <Cell coloring="yellow" content={headerPoints[i]}></Cell>}
+          </Col>);
+        }
+        return header;
+        }
     
     return(
     <div className="Board">
+      <Row justify="end">
+          {header.map((cell) => (
+            cell
+          ))}
+      </Row>
           {board.map((color) => (
             <Row>
             {color.map((cell)  => (

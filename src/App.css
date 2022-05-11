@@ -42,5 +42,15 @@
   background: #ececec;
   width: 10px;
   height: 10px;
-  margin: 5px
+  margin: 5px;
+  justify-content: center;
+}
+.content{
+  color: black;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%) 
 }

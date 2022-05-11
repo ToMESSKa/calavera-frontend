@@ -6,7 +6,7 @@ function Cell (props) {
 
     return(
     <div className="cell" style={{background:props.coloring}}>
-        <p>{props.content}</p>
+        <p className="content">{props.content}</p>
     </div>
     );
 }
