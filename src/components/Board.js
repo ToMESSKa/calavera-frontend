@@ -31,7 +31,10 @@ function Board () {
         let Cells = [];
         Cells.push(coloredCell)
         for (let i = 0; i < 14; i++) {
-          Cells.push(<Col><Cell></Cell></Col>);
+          Cells.push(<Col>
+          {i < 6 || i > 10 ? <Cell coloring="#a8a3a3"></Cell> : <Cell coloring="#e6d262"></Cell>}
+          </Col>
+          );
         }
         return Cells;
         }
