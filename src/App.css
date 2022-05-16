@@ -54,3 +54,23 @@
   margin-right: -50%;
   transform: translate(-50%, -50%) 
 }
+
+.threerosecell{
+  width: 200px;
+  height: 100px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  justify-content: center;
+}
+
+.tworosecell{
+  width: 130px;
+  height: 100px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  justify-content: center;
+}

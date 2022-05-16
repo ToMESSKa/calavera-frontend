@@ -5,7 +5,7 @@ import { Card } from 'antd';
 function Cell (props) {
 
     return(
-    <div className="cell" style={{background:props.coloring}}>
+    <div className={props.celltype} style={{background:props.coloring}}>
         <p className="content">{props.content}</p>
     </div>
     );

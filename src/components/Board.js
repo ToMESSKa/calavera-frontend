@@ -12,49 +12,66 @@ function Board () {
     const [greenCells, setGreenCells] = useState([]);
     const [blackCells, setBlackCells] = useState([]);
     const [board, setBoard] = useState([])
-    const [header, setHeader] = useState([])
+    const [pointsHeader, setPointsHeader] = useState([])
+    const [roseHeader, setRoseHeader] = useState([])
 
     useEffect(() => {
       createBoard();
     },[]);
 
     const createBoard = () =>{
-        const orangeCell = <Col><Cell coloring="orange"></Cell></Col>
-        const purpleCell = <Col><Cell coloring="purple"></Cell></Col>
-        const greenCell = <Col><Cell coloring="green"></Cell></Col>
-        const blackCell = <Col><Cell coloring="black"></Cell></Col>
-        setBoard([createColor(orangeCell),createColor(purpleCell),createColor(greenCell),createColor(blackCell)])
-        setHeader(createHeader)
+        const orangeCell = <Col><Cell celltype="cell" coloring="orange"></Cell></Col>
+        const purpleCell = <Col><Cell celltype="cell" coloring="purple"></Cell></Col>
+        const greenCell = <Col><Cell celltype="cell" coloring="green"></Cell></Col>
+        const blackCell = <Col><Cell celltype="cell" coloring="black"></Cell></Col>
+        setBoard([createRows(orangeCell),createRows(purpleCell),createRows(greenCell),createRows(blackCell)])
+        setPointsHeader(createPointsHeader)
+        setRoseHeader(createRoseHeader)
       }
 
-      const createColor = (coloredCell) =>{
+      const createRows = (coloredCell) =>{
         let Cells = [];
         Cells.push(coloredCell)
         for (let i = 0; i < 14; i++) {
           Cells.push(<Col>
-          {i < 6 || i > 10 ? <Cell coloring="#a8a3a3"></Cell> : <Cell coloring="#e6d262"></Cell>}
+          {i < 6 || i > 10 ? <Cell celltype="cell" coloring="#a8a3a3"></Cell> : <Cell celltype="cell" coloring="#e6d262"></Cell>}
           </Col>
           );
         }
         return Cells;
         }
 
-      const createHeader = () =>{
-        let header = [];
-        let headerPoints  = [4,5,6,8,10,4,0,-3]
-        for (let i = 0; i < 8; i++) {
-          header.push(<Col>
-          {i > 4 ? <Cell coloring="grey" content={headerPoints[i]}></Cell> :
-           <Cell coloring="yellow" content={headerPoints[i]}></Cell>}
-          </Col>);
-        }
-        return header;
-        }
+    const createPointsHeader = () =>{
+      let pointsHeader = [];
+      let headerPoints  = [4,5,6,8,10,4,0,-3]
+      for (let i = 0; i < 8; i++) {
+        pointsHeader.push(<Col>
+        {i > 4 ? <Cell celltype="cell" coloring="grey" content={headerPoints[i]}></Cell> :
+          <Cell celltype="cell" coloring="yellow" content={headerPoints[i]}></Cell>}
+        </Col>);
+      }
+      return pointsHeader;
+      }
+
+    const createRoseHeader = () =>{
+      let roseHeader = [];
+      for (let i = 0; i < 10; i++) {
+      roseHeader.push(i === 7 ? <Cell celltype="threerosecell" coloring="yellow"></Cell>:
+      i === 8 ? <Cell celltype="tworosecell" coloring="yellow"></Cell>:
+      <Cell celltype="cell" coloring="transparent"></Cell>
+      )}
+      return roseHeader;
+      }
     
     return(
     <div className="Board">
+      <Row>
+          {roseHeader.map((cell) => (
+            cell
+          ))}
+      </Row>
       <Row justify="end">
-          {header.map((cell) => (
+          {pointsHeader.map((cell) => (
             cell
           ))}
       </Row>
