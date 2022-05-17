@@ -1,5 +1,6 @@
 import React from "react";
 import { Card } from 'antd';
+import "antd/dist/antd.css";
 
 
 function Cell (props) {
