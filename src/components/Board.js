@@ -2,7 +2,7 @@ import React, {useState, useEffect } from "react";
 import Cell from "./Cell";
 import {Card, Space, Col, Row, Button} from "antd";
 import "antd/dist/antd.css";
-
+import axios from "axios";
 
 function Board () {
 
@@ -17,6 +17,8 @@ function Board () {
     useEffect(() => {
       createBoard();
     },[]);
+
+    
 
     const createBoard = () =>{
         const orangeCell = <Col><Cell celltype="cell" coloring="orange"></Cell></Col>
