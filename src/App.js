@@ -7,9 +7,6 @@ import Dice from 'react-dice-roll';
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
 
-
-
-
 const savePlayer = () =>{
   const player = { id: "1234", playerName: "player"};
   axios
