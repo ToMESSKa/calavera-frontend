@@ -1,11 +1,13 @@
 import './App.css';
 import Board from './components/Board';
+import Game from './components/StartGame';
 import "antd/dist/antd.css";
 import {Card, Space, Col, Row, Button} from "antd";
 import axios from "axios";
 import Dice from 'react-dice-roll';
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
+import StartGame from './components/StartGame';
 
 const savePlayer = () =>{
   const player = { id: "1234", playerName: "player"};
@@ -47,14 +49,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <button onClick={() => {
-          sendMessage();
-      }}>CLICK</button>
-      <Dice size="50" onRoll={(value) => console.log(value)} />
-      {/* <Row>
-        <Col className="leftColumn" span={12}><Board></Board></Col>
-        <Col className="rightColumn" span={12}><Board></Board></Col>
-      </Row> */}
+      <StartGame></StartGame>
       </header>
     </div>
   );
