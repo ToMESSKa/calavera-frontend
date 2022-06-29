@@ -19,6 +19,6 @@ function StartGame (props) {
         <button>Join exsisting game</button>
         {newGame ? <Board></Board> : <button>Login</button>}
     </div>
-    );
+
 }
 export default StartGame;
