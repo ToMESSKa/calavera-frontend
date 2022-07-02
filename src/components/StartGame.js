@@ -1,9 +1,10 @@
 import { Button, Card } from 'antd';
 import "antd/dist/antd.css";
 import Board from "./Board";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import PlayField from './PlayField';
 import axios from "axios";
+import GameIDForm from './GameIDForm';
 
 
 function StartGame (props) {
@@ -11,22 +12,43 @@ function StartGame (props) {
     const [newGame, setNewGame] = useState(false);
     const [gameID, setGameID] = useState(false);
 
+    const ref = useRef(null);
 
-    const startNewGame = () =>{
+
+    const startNewGame = () => {
         setNewGame(true)
-        let newPlayer = {playerName: "Tamás" };
-        axios.post("http://localhost:8080/start", newPlayer)
+        let firtsPlayer = {playerName: "Tamás" };
+        axios.post("http://localhost:8080/start", firtsPlayer)
         .then((response) => {
             console.log(response.data.gameId);
             setGameID(response.data.gameId)
         })      
     }
 
+    const connectToGame = (e) =>{
+        let gameID = parseInt(e.target.previousSibling.value)
+        setGameID(gameID)
+        let secondPlayer = {playerName: "Dávid"}
+        let game = {player: secondPlayer, gameId: gameID}
+        axios.post("http://localhost:8080/connect", game)
+        .then((response) => {
+            console.log(response);
+        })      
+    }
+
+    const getGameID = (e) =>{
+        const el2 = ref.current;
+        console.log(el2);
+        let gameID = e.target.previousSibling.value
+        console.log(gameID)
+        setGameID(gameID)
+    } 
+
     return(
     <div >
         {newGame ? <div>{false}</div>: <button onClick={startNewGame}>Start new game</button>}
-        {newGame ? <div>{false}</div>: <button onClick={startNewGame}>Join existing game</button>}
-        {newGame ? <PlayField gameID={gameID}></PlayField> : <div>{false}</div>}
+        {newGame ? <div>{false}</div>: <GameIDForm connectToGame={connectToGame}></GameIDForm>}
+        {newGame ? <PlayField gameID={gameID} ></PlayField> : <div>{false}</div>}
     </div>
     )
 }
