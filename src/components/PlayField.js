@@ -48,7 +48,7 @@ function PlayField (props) {
     return(
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
-      <button onClick={sendMessage}>Click here</button>
+      {/* <button onClick={sendMessage}>Click here</button> */}
       <button onClick={markCells}>Choose a color</button>
       <Row>
         <Col><BoardRow markedCells={markedCells}></BoardRow></Col>
