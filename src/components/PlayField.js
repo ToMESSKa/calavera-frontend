@@ -12,6 +12,7 @@ function PlayField (props) {
   const [testContent, setTestContent] = useState(0);
   const [markedCells, setMarkedCells] = useState(["","","","","","","","","","","","",""])
   const [playercells, setPlayercells] = useState([])
+  const [stomp, setStomp] = useState([])
 
   useEffect(() => {
     }, [testContent]);
@@ -31,7 +32,7 @@ function PlayField (props) {
   // Subscribe to "/topic/wstest". Whenever a message arrives add the text in a list-item element in the unordered list.
   client.subscribe("/topic/wstest", payload => {
       console.log(JSON.parse(payload.body))
-      setTestContent("2")
+      setStomp("OK")
     });
   });
 
@@ -39,6 +40,7 @@ function PlayField (props) {
   const sendMessage = () =>{
     let message = "OK"
     client.send('/app/gameplay', {}, JSON.stringify({message: message}));
+
   }
 
   const markCells = () =>{
@@ -48,7 +50,8 @@ function PlayField (props) {
     return(
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
-      {/* <button onClick={sendMessage}>Click here</button> */}
+      <div>STOMP: {stomp}</div>
+      <button onClick={sendMessage}>Click here</button>
       <button onClick={markCells}>Choose a color</button>
       <Row>
         <Col className="rightBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
