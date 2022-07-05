@@ -6,6 +6,7 @@ import Board from "./gameelements/Board";
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
 import BoardRow from "./gameelements/BoardRow";
+import DiceField from "./gameelements/DiceField";
 
 function PlayField (props) {
 
@@ -49,14 +50,26 @@ function PlayField (props) {
 
     return(
     <div className="play-field">
+      {/* <Row>
+        
+        <Col className="leftDiceField"><DiceField></DiceField></Col>
+      </Row> */}
       <div>Game ID: {props.gameID}</div>
       <div>STOMP: {stomp}</div>
       <button onClick={sendMessage}>Click here</button>
       <button onClick={markCells}>Choose a color</button>
       <Row>
+          <Col span={12}><DiceField></DiceField></Col>
+          <Col span={12}><DiceField></DiceField></Col>
+      </Row>
+      <Row>
+          <Col className="rightBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
+          <Col className="rightBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
+      </Row>
+      {/* <Row>
         <Col className="rightBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
         <Col className="leftBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
-      </Row>
+      </Row> */}
     </div>
     );
 }

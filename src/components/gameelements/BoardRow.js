@@ -6,14 +6,16 @@ function BoardRow (props) {
 
     return(
         <div className="board-row">
+        <Col>
             <Row>
                 <Col><Cell celltype="basiccell" coloring={props.color}></Cell></Col>
-                {props.markedCells.map((i) => (
+                {props.markedCells.map((markedCell, i) => (
                 <Col>
-                {i < 5 || i > 9 ? <Cell celltype="basiccell" content={i} coloring="#a8a3a3"></Cell> : <Cell celltype="basiccell" content={i} coloring="#e6d262"></Cell>}
+                {i < 5 || i > 9 ? <Cell celltype="basiccell" content={markedCell} coloring="#a8a3a3"></Cell> : <Cell celltype="basiccell" content={markedCell} coloring="#e6d262"></Cell>}
                 </Col>
             ))}
             </Row>
+        </Col>
         </div>
         );
     }
