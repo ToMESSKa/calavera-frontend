@@ -1,6 +1,6 @@
 import { Button, Card } from 'antd';
 import "antd/dist/antd.css";
-import Board from "./Board";
+import Board from "./gameelements/Board";
 import React, { useState, useRef } from "react";
 import PlayField from './PlayField';
 import axios from "axios";

@@ -1,5 +1,5 @@
 import './App.css';
-import Board from './components/Board';
+import Board from './components/gameelements/Board';
 import Game from './components/StartGame';
 import "antd/dist/antd.css";
 import {Card, Space, Col, Row, Button} from "antd";

@@ -1,11 +1,11 @@
 import React, {useState, useEffect } from "react";
-import Cell from "./Cell";
+import Cell from "./gameelements/Cell";
 import {Col, Row} from "antd";
 import "antd/dist/antd.css";
-import Board from "./Board";
+import Board from "./gameelements/Board";
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
-import BoardRow from "./BoardRow";
+import BoardRow from "./gameelements/BoardRow";
 
 function PlayField (props) {
 
@@ -51,9 +51,8 @@ function PlayField (props) {
       {/* <button onClick={sendMessage}>Click here</button> */}
       <button onClick={markCells}>Choose a color</button>
       <Row>
-        <Col><BoardRow markedCells={markedCells}></BoardRow></Col>
-        {/* <Col className="leftColumn" span={12}><Board></Board></Col> */}
-        <Col className="rightColumn"span={12}><Board testContent={testContent}></Board></Col>
+        <Col className="rightBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
+        <Col className="leftBoard" span={12}><Board testContent={testContent} markedCells={markedCells}></Board></Col>
       </Row>
     </div>
     );
