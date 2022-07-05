@@ -6,8 +6,6 @@ import { getElementError } from "@testing-library/react";
 
 function GameIDForm (props) {
 
-    
-
     return(
     <div>
         <input ref={props.ref} type="text"></input>

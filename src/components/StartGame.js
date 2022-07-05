@@ -12,8 +12,6 @@ function StartGame (props) {
     const [newGame, setNewGame] = useState(false);
     const [gameID, setGameID] = useState(false);
 
-    const ref = useRef(null);
-
 
     const startNewGame = () => {
         setNewGame(true)
@@ -21,7 +19,7 @@ function StartGame (props) {
         axios.post("http://localhost:8080/start", firtsPlayer)
         .then((response) => {
             console.log(response.data.gameId);
-            setGameID(response.data.gameId)
+            setGameID(response.data.gameId);
         })      
     }
 
@@ -32,17 +30,11 @@ function StartGame (props) {
         let game = {player: secondPlayer, gameId: gameID}
         axios.post("http://localhost:8080/connect", game)
         .then((response) => {
-            console.log(response);
+            setNewGame(true)
+            setGameID(response.data.gameId)
         })      
     }
 
-    const getGameID = (e) =>{
-        const el2 = ref.current;
-        console.log(el2);
-        let gameID = e.target.previousSibling.value
-        console.log(gameID)
-        setGameID(gameID)
-    } 
 
     return(
     <div >

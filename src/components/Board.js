@@ -3,8 +3,10 @@ import Cell from "./Cell";
 import {Card, Space, Col, Row, Button} from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
+import { responsiveMap } from "antd/lib/_util/responsiveObserve";
 
-function Board () {
+
+function Board (props) {
 
     const [orangeCells, setOrangeCells] = useState([]);
     const [purpleCells, setPurpleCells] = useState([]);
@@ -13,15 +15,15 @@ function Board () {
     const [playercells, setPlayercells] = useState([])
     const [pointsHeader, setPointsHeader] = useState([])
     const [roseHeader, setRoseHeader] = useState([])
+    const [testContent, setTestContent] = useState(0);
 
     useEffect(() => {
       createBoard();
-    },[]);
+    },[testContent]);
 
-    
 
     const createBoard = () =>{
-        const orangeCell = <Col><Cell celltype="cell" coloring="orange"></Cell></Col>
+        const orangeCell = <Col><Cell content={testContent} celltype="cell" coloring="orange"></Cell></Col>
         const purpleCell = <Col><Cell celltype="cell" coloring="purple"></Cell></Col>
         const greenCell = <Col><Cell celltype="cell" coloring="green"></Cell></Col>
         const blackCell = <Col><Cell celltype="cell" coloring="black"></Cell></Col>
@@ -65,8 +67,11 @@ function Board () {
       return roseHeader;
       }
     
+    
+    
     return(
     <div className="board">
+      <div>Test: {props.testContent}</div>
       <Row>
           {roseHeader.map((cell) => (
             cell
