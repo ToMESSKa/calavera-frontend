@@ -10,10 +10,10 @@ function RoseHeader () {
         <div >
         <Row>
             {roseHeader.map((rose, i) => (
-            <Col>
-                {i === 6 ? <Cell celltype="tworosecell" coloring="yellow"></Cell>:
-                i === 7 ? <Cell celltype="threerosecell" coloring="yellow"></Cell>:
-                <Cell celltype="basiccell" coloring="transparent"></Cell>}
+            <Col key={i}>
+                {i === 6 ? <Cell key={i} celltype="tworosecell" coloring="yellow"></Cell>:
+                i === 7 ? <Cell key={i} celltype="threerosecell" coloring="yellow"></Cell>:
+                <Cell key={i} celltype="basiccell" coloring="transparent"></Cell>}
             </Col>
           ))}
         </Row>

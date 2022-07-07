@@ -8,10 +8,11 @@ import turquoise from '../../static/turquoise.jpg';
 import orange from '../../static/orange.jpg';
 import skull from '../../static/skull.jpg';
 import rose from '../../static/rose.jpg';
+import ReactDOM from 'react-dom'
 
 function DiceField (props) {
 
-    const myDice = useRef(null)
+    const myDice = useRef()
 
     const faces = [
         purple,
@@ -22,38 +23,26 @@ function DiceField (props) {
         turquoise
       ];
 
+        const rollAllDices = (e) => {;
+            let dices = myDice.current.children;
+            for (let dice of dices) {
+                dice.click();
+            }
+        }
 
-      let element = useRef(null);
-      const mouseClickEvents = ['mousedown', 'click', 'mouseup'];
-
-        function simulateMouseClick(e){
-            console.log(e.target.previousSibling)
-            e.target.previousSibling.click()
-
-//             mouseClickEvents.forEach(mouseEventType =>
-//                 e.target.previousSibling.dispatchEvent(
-//             new MouseEvent(mouseEventType, {
-//           view: window,
-//           bubbles: true,
-//           cancelable: true,
-//           buttons: 1
-//       })
-//     )
-//   );
-}
-
+        const findAllDice = () => {
+            console.log(props.children)
+        
+        }
 
     return(
         <div className="dice-field">
-            
-        <Row gutter={10}>
-            
-            <Dice faces={faces} ref={myDice} size={50}></Dice>
-            <button onClick={simulateMouseClick}>Clikc</button>
-            <Col><Dice faces={faces} size={50}></Dice></Col>
-            <Col><Dice faces={faces} size={50}></Dice></Col>
-            <Col><Dice faces={faces} size={50}></Dice></Col>
-            <Col><Dice faces={faces} size={50}></Dice></Col>
+            <button onClick={rollAllDices}>Roll</button>
+        <Row ref={myDice}  gutter={10}>
+            <Dice onRoll={(value) => console.log(value)} faces={faces} size={50}></Dice>
+            <Dice faces={faces} size={50}></Dice>
+            <Dice faces={faces} size={50}></Dice>
+            <Dice faces={faces} size={50}></Dice>
         </Row>
         </div>
         );

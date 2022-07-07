@@ -10,10 +10,10 @@ function PointsHeader () {
         <div >
         <Row>
             {headerPoints.map((point, i) => (
-            <Col>
-                {i > 5 && i < 11 ? <Cell celltype="basiccell" coloring="yellow" content={point}></Cell>:
-                i > 10 && i < 14 ? <Cell celltype="basiccell" coloring="grey" content={point}></Cell>:
-                <Cell celltype="basiccell" coloring="transparent"></Cell>}
+            <Col key={i}>
+                {i > 5 && i < 11 ? <Cell key={i} celltype="basiccell" coloring="yellow" content={point}></Cell>:
+                i > 10 && i < 14 ? <Cell key={i} celltype="basiccell" coloring="grey" content={point}></Cell>:
+                <Cell key={i} celltype="basiccell" coloring="transparent"></Cell>}
             </Col>
           ))}
         </Row>

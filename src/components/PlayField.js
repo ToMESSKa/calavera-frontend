@@ -7,6 +7,7 @@ import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
 import BoardRow from "./gameelements/BoardRow";
 import DiceField from "./gameelements/DiceField";
+import Dice from "react-dice-roll";
 
 function PlayField (props) {
 
@@ -59,7 +60,7 @@ function PlayField (props) {
       <button onClick={sendMessage}>Click here</button>
       <button onClick={markCells}>Choose a color</button>
       <Row>
-          <Col span={12}><DiceField></DiceField></Col>
+          <Col span={12}><DiceField><Dice></Dice></DiceField></Col>
           <Col span={12}><DiceField></DiceField></Col>
       </Row>
       <Row>

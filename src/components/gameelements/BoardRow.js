@@ -10,8 +10,8 @@ function BoardRow (props) {
             <Row>
                 <Col><Cell celltype="basiccell" coloring={props.color}></Cell></Col>
                 {props.markedCells.map((markedCell, i) => (
-                <Col>
-                {i < 5 || i > 9 ? <Cell celltype="basiccell" content={markedCell} coloring="#a8a3a3"></Cell> : <Cell celltype="basiccell" content={markedCell} coloring="#e6d262"></Cell>}
+                <Col key={i}>
+                {i < 5 || i > 9 ? <Cell key={i} celltype="basiccell" content={markedCell} coloring="#a8a3a3"></Cell> : <Cell key={i} celltype="basiccell" content={markedCell} coloring="#e6d262"></Cell>}
                 </Col>
             ))}
             </Row>
