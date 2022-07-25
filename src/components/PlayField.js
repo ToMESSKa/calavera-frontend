@@ -8,6 +8,7 @@ import Stomp from 'stompjs'
 import BoardRow from "./gameelements/BoardRow";
 import DiceField from "./gameelements/DiceField";
 import Dice from "react-dice-roll";
+import axios from "axios";
 
 function PlayField (props) {
 
@@ -36,17 +37,27 @@ function PlayField (props) {
       console.log(JSON.parse(payload.body))
       setStomp("OK")
     });
+
+  client.subscribe("/topic/dicerollresult", payload => {
+    console.log("FUCK")
+      // console.log("DICEROLL " + JSON.parse(payload.body))
+    });
   });
 
   // Take the value in the ‘message-input’ text field and send it to the server with empty headers.
   const sendMessage = () =>{
     let message = "OK"
     client.send('/app/gameplay', {}, JSON.stringify({message: message}));
-
+    sendDiceRolls() 
   }
 
   const markCells = () =>{
     setMarkedCells(["X","","","","","","","","","","","",""])
+  }
+
+  const sendDiceRolls = (e) =>{
+    let diceRoll = {diceRolls: {dice1: "2", dice2: "2"}}
+    client.send('/app/rolldice', {}, JSON.stringify(diceRoll));
   }
 
     return(

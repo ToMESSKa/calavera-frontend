@@ -35,6 +35,8 @@ function StartGame (props) {
         })      
     }
 
+    
+
 
     return(
     <div >
