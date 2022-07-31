@@ -30,11 +30,6 @@ function DiceField (props) {
             }
         }
 
-        const findAllDice = () => {
-            console.log(props.children)
-        
-        }
-
     return(
         <div className="dice-field">
             <button onClick={rollAllDices}>Roll</button>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from "react";
+import React, {useState, useEffect, useRef } from "react";
 import Cell from "./gameelements/Cell";
 import {Col, Row} from "antd";
 import "antd/dist/antd.css";
@@ -16,6 +16,8 @@ function PlayField (props) {
   const [markedCells, setMarkedCells] = useState(["","","","","","","","","","","","",""])
   const [playercells, setPlayercells] = useState([])
   const [stomp, setStomp] = useState([])
+
+  const myForm = useRef();
 
   useEffect(() => {
     }, [testContent]);
@@ -37,10 +39,11 @@ function PlayField (props) {
       console.log(JSON.parse(payload.body))
       setStomp("OK")
     });
-
   client.subscribe("/topic/dicerollresult", payload => {
-    console.log("FUCK")
-      // console.log("DICEROLL " + JSON.parse(payload.body))
+      console.log(JSON.parse(payload.body));
+      if (props.actualPlayer === "second"){
+        setStomp("HELL YES")
+      }
     });
   });
 
@@ -60,6 +63,10 @@ function PlayField (props) {
     client.send('/app/rolldice', {}, JSON.stringify(diceRoll));
   }
 
+  const checkActualPlayer = (e) =>{
+    console.log(props.actualPlayer)
+  }
+
     return(
     <div className="play-field">
       {/* <Row>
@@ -67,11 +74,13 @@ function PlayField (props) {
         <Col className="leftDiceField"><DiceField></DiceField></Col>
       </Row> */}
       <div>Game ID: {props.gameID}</div>
+      {/* <input ref={myForm}  type="text" name="name" /> */}
       <div>STOMP: {stomp}</div>
       <button onClick={sendMessage}>Click here</button>
       <button onClick={markCells}>Choose a color</button>
+      <button onClick={checkActualPlayer}>Choose a color</button>
       <Row>
-          <Col span={12}><DiceField><Dice></Dice></DiceField></Col>
+          <Col span={12}><DiceField></DiceField></Col>
           <Col span={12}><DiceField></DiceField></Col>
       </Row>
       <Row>

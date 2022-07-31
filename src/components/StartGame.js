@@ -11,6 +11,8 @@ function StartGame (props) {
 
     const [newGame, setNewGame] = useState(false);
     const [gameID, setGameID] = useState(false);
+    const [firtsPlayer, setFirstPlayer] = useState(false);
+    const [actualPlayer, setActualPlayer] = useState(false);
 
 
     const startNewGame = () => {
@@ -20,6 +22,7 @@ function StartGame (props) {
         .then((response) => {
             console.log(response.data.gameId);
             setGameID(response.data.gameId);
+            setActualPlayer("first")
         })      
     }
 
@@ -32,6 +35,7 @@ function StartGame (props) {
         .then((response) => {
             setNewGame(true)
             setGameID(response.data.gameId)
+            setActualPlayer("second")
         })      
     }
 
@@ -42,7 +46,7 @@ function StartGame (props) {
     <div >
         {newGame ? <div>{false}</div>: <button onClick={startNewGame}>Start new game</button>}
         {newGame ? <div>{false}</div>: <GameIDForm connectToGame={connectToGame}></GameIDForm>}
-        {newGame ? <PlayField gameID={gameID} ></PlayField> : <div>{false}</div>}
+        {newGame ? <PlayField gameID={gameID} actualPlayer={actualPlayer}></PlayField> : <div>{false}</div>}
     </div>
     )
 }
