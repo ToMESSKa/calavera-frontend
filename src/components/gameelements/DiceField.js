@@ -9,10 +9,25 @@ import orange from '../../static/orange.jpg';
 import skull from '../../static/skull.jpg';
 import rose from '../../static/rose.jpg';
 import ReactDOM from 'react-dom'
+import * as SockJS from 'sockjs-client';
+import Stomp from 'stompjs'
 
 function DiceField (props) {
 
     const myDice = useRef()
+
+    let sock = new SockJS("http://localhost:8080/stomp");
+
+  let client = Stomp.over(sock);
+
+  client.connect({}, frame => {
+  client.subscribe("/topic/dicerollresult", payload => {
+      if (props.actualPlayer === "second"){
+        console.log(JSON.parse(payload.body));
+        rollAllDicesForTheOtherPlayer();
+      }
+    });
+  });
 
     const faces = [
         purple,
@@ -24,6 +39,15 @@ function DiceField (props) {
       ];
 
         const rollAllDices = (e) => {;
+            let dices = myDice.current.children;
+            for (let dice of dices) {
+                dice.click();
+            }
+            let diceRoll = {diceRolls: {dice1: "2", dice2: "2"}}
+            client.send('/app/rolldice', {}, JSON.stringify(diceRoll));
+        }
+
+        const rollAllDicesForTheOtherPlayer = (e) => {;
             let dices = myDice.current.children;
             for (let dice of dices) {
                 dice.click();

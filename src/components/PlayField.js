@@ -36,14 +36,7 @@ function PlayField (props) {
   client.connect({}, frame => {
   // Subscribe to "/topic/wstest". Whenever a message arrives add the text in a list-item element in the unordered list.
   client.subscribe("/topic/wstest", payload => {
-      console.log(JSON.parse(payload.body))
       setStomp("OK")
-    });
-  client.subscribe("/topic/dicerollresult", payload => {
-      console.log(JSON.parse(payload.body));
-      if (props.actualPlayer === "second"){
-        setStomp("HELL YES")
-      }
     });
   });
 
@@ -51,16 +44,10 @@ function PlayField (props) {
   const sendMessage = () =>{
     let message = "OK"
     client.send('/app/gameplay', {}, JSON.stringify({message: message}));
-    sendDiceRolls() 
   }
 
   const markCells = () =>{
     setMarkedCells(["X","","","","","","","","","","","",""])
-  }
-
-  const sendDiceRolls = (e) =>{
-    let diceRoll = {diceRolls: {dice1: "2", dice2: "2"}}
-    client.send('/app/rolldice', {}, JSON.stringify(diceRoll));
   }
 
   const checkActualPlayer = (e) =>{
@@ -78,9 +65,9 @@ function PlayField (props) {
       <div>STOMP: {stomp}</div>
       <button onClick={sendMessage}>Click here</button>
       <button onClick={markCells}>Choose a color</button>
-      <button onClick={checkActualPlayer}>Choose a color</button>
+      <button onClick={checkActualPlayer}>Who I am?</button>
       <Row>
-          <Col span={12}><DiceField></DiceField></Col>
+          <Col span={12}><DiceField actualPlayer={props.actualPlayer}></DiceField></Col>
           <Col span={12}><DiceField></DiceField></Col>
       </Row>
       <Row>
