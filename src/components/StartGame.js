@@ -1,4 +1,4 @@
-import { Button, Card } from 'antd';
+import { Button, Card, Col, Row } from 'antd';
 import "antd/dist/antd.css";
 import Board from "./gameelements/Board";
 import React, { useState, useRef } from "react";
@@ -26,7 +26,7 @@ function StartGame (props) {
         })      
     }
 
-    const connectToGame = (e) =>{
+    const joinGame = (e) =>{
         let gameID = parseInt(e.target.previousSibling.value)
         setGameID(gameID)
         let secondPlayer = {playerName: "Dávid"}
@@ -39,13 +39,14 @@ function StartGame (props) {
         })      
     }
 
-    
-
-
     return(
     <div >
-        {newGame ? <div>{false}</div>: <button onClick={startNewGame}>Start new game</button>}
-        {newGame ? <div>{false}</div>: <GameIDForm connectToGame={connectToGame}></GameIDForm>}
+        {newGame ? <div>{false}</div>: 
+        <Row justify="space-around" align="middle">
+        <Col span={8}><button onClick={startNewGame}>Start new game</button></Col>
+        OR
+        <Col span={8}><GameIDForm connectToGame={joinGame}></GameIDForm></Col>
+        </Row>}
         {newGame ? <PlayField gameID={gameID} actualPlayer={actualPlayer}></PlayField> : <div>{false}</div>}
     </div>
     )
