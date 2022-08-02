@@ -11,6 +11,7 @@ import SignIn from './SignIn';
 function StartGame (props) {
 
     const [newGame, setNewGame] = useState(false);
+    const [gameNotFound, setGameNotFound] = useState(false);
     const [gameID, setGameID] = useState(false);
     const [firtsPlayer, setFirstPlayer] = useState(false);
     const [actualPlayer, setActualPlayer] = useState(false);
@@ -18,8 +19,8 @@ function StartGame (props) {
 
     const startNewGame = () => {
         setNewGame(true)
-        let firtsPlayer = {playerName: "Tamás" };
-        axios.post("http://localhost:8080/start", firtsPlayer)
+        let firtsPlayer = {playerName: "Player1"};
+        axios.post("http://localhost:8080/startnewgame", firtsPlayer)
         .then((response) => {
             console.log(response.data.gameId);
             setGameID(response.data.gameId);
@@ -28,16 +29,25 @@ function StartGame (props) {
     }
 
     const joinGame = (e) =>{
-        let gameID = parseInt(e.target.previousSibling.value)
+        let gameID = parseInt(e.current.value)
         setGameID(gameID)
         let secondPlayer = {playerName: "Dávid"}
         let game = {player: secondPlayer, gameId: gameID}
-        axios.post("http://localhost:8080/connect", game)
+        console.log("hu")
+        axios.post("http://localhost:8080/joinnewgame", game)
         .then((response) => {
+            console.log(response.data)
+            if (response.data.gameStatus === "NOT_FOUND"){
+                console.log("NOT_FOUND")
+                setGameNotFound(true)
+            }else{
             setNewGame(true)
+            setGameNotFound(false)
             setGameID(response.data.gameId)
             setActualPlayer("second")
-        })      
+            }
+        }
+        )      
     }
 
     return(
@@ -47,7 +57,7 @@ function StartGame (props) {
         <Row justify="space-around" align="middle">
         <Col span={8}><button onClick={startNewGame}>Start new game</button></Col>
         OR
-        <Col span={8}><GameIDForm connectToGame={joinGame}></GameIDForm></Col>
+        <Col span={8}><GameIDForm connectToGame={joinGame} gameNotFound={gameNotFound}></GameIDForm></Col>
         </Row>
         <SignIn></SignIn>
         </div>

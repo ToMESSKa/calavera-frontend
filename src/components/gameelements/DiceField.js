@@ -1,6 +1,6 @@
 import Cell from "./Cell";
 import {Col, Row} from "antd";
-import {React, useRef} from "react";
+import {React, useRef, useState} from "react";
 import Dice from "react-dice-roll";
 import purple from '../../static/purple.jpg';
 import black from '../../static/black.jpg';
@@ -15,19 +15,21 @@ import Stomp from 'stompjs'
 function DiceField (props) {
 
     const myDice = useRef()
+    const firstDice = useRef()
+    const [diceRolls, setDiceRolls] = useState([])
 
     let sock = new SockJS("http://localhost:8080/stomp");
 
-  let client = Stomp.over(sock);
+    let client = Stomp.over(sock);
 
-  client.connect({}, frame => {
-  client.subscribe("/topic/dicerollresult", payload => {
-      if (props.actualPlayer === "second"){
-        console.log(JSON.parse(payload.body));
-        rollAllDicesForTheOtherPlayer();
-      }
+    client.connect({}, frame => {
+    client.subscribe("/topic/dicerollresult", payload => {
+        if (props.actualPlayer === "second"){
+            console.log(JSON.parse(payload.body));
+            rollAllDicesForTheOtherPlayer();
+        }
+        });
     });
-  });
 
     const faces = [
         purple,
@@ -37,6 +39,7 @@ function DiceField (props) {
         skull,
         turquoise
       ];
+    
 
         const rollAllDices = (e) => {;
             let dices = myDice.current.children;
@@ -54,14 +57,20 @@ function DiceField (props) {
             }
         }
 
+        const getDiceValue = (value, dice) => {;
+            console.log(value)
+            console.log(dice)
+        }
+
     return(
         <div className="dice-field">
             <button onClick={rollAllDices}>Roll</button>
         <Row ref={myDice}  gutter={10}>
-            <Dice onRoll={(value) => console.log(value)} faces={faces} size={50}></Dice>
-            <Dice faces={faces} size={50}></Dice>
-            <Dice faces={faces} size={50}></Dice>
-            <Dice faces={faces} size={50}></Dice>
+            <Dice onRoll={(value) => getDiceValue(value, "first")} faces={faces} size={50}></Dice>
+            <Dice onRoll={(value) => getDiceValue(value, "first")} faces={faces} size={50}></Dice>
+            <Dice onRoll={(value) => getDiceValue(value, "first")} faces={faces} size={50}></Dice>
+            <Dice onRoll={(value) => getDiceValue(value, "first")} faces={faces} size={50}></Dice>
+            <Dice onRoll={(value) => getDiceValue(value, "first")} faces={faces} size={50}></Dice>
         </Row>
         </div>
         );
