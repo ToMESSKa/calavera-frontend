@@ -5,6 +5,7 @@ import React, { useState, useRef } from "react";
 import PlayField from './PlayField';
 import axios from "axios";
 import GameIDForm from './GameIDForm';
+import SignIn from './SignIn';
 
 
 function StartGame (props) {
@@ -41,12 +42,16 @@ function StartGame (props) {
 
     return(
     <div >
-        {newGame ? <div>{false}</div>: 
+        {newGame ? <div>{false}</div>:
+        <div>
         <Row justify="space-around" align="middle">
         <Col span={8}><button onClick={startNewGame}>Start new game</button></Col>
         OR
         <Col span={8}><GameIDForm connectToGame={joinGame}></GameIDForm></Col>
-        </Row>}
+        </Row>
+        <SignIn></SignIn>
+        </div>
+        }
         {newGame ? <PlayField gameID={gameID} actualPlayer={actualPlayer}></PlayField> : <div>{false}</div>}
     </div>
     )

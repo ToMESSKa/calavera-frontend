@@ -79,3 +79,10 @@
 .join-game-input{
   width: 50%;
 }
+
+.sign-in{
+  padding: 80px 60px;
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+}
