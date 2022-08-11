@@ -15,15 +15,17 @@ import Stomp from 'stompjs'
 function DiceField (props) {
 
     const myDice = useRef()
-    const defaultDiceRolls = [
-    {diceNumber : "dice1", value: 1},
-    {diceNumber : "dice2", value: 1},
-    {diceNumber : "dice3", value: 1},
-    {diceNumber : "dice4", value: 1},
-    {diceNumber : "dice5", value: 1},
-    {diceNumber : "dice6", value: 1}
 
-];
+    const defaultDiceRolls = 
+    {diceRolls:[
+        {diceNumber:"dice1", diceValue:1},
+        {diceNumber:"dice2", diceValue:1},
+        {diceNumber:"dice3", diceValue:1},
+        {diceNumber:"dice4", diceValue:1}, 
+        {diceNumber:"dice5", diceValue:1},
+        {diceNumber:"dice6", diceValue:1}
+    ]}
+
 
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
 
@@ -56,6 +58,8 @@ function DiceField (props) {
             for (let dice of dices) {
                 dice.click();
             }
+            
+            // let roll = {diceRolls:[{diceNumber:"dice1", diceValue:1}, {diceNumber:"dice2", diceValue:1}]}
             console.log(diceRolls)
             client.send('/app/rolldice', {}, JSON.stringify(diceRolls));
         }
@@ -73,13 +77,15 @@ function DiceField (props) {
         //     console.log(diceRolls)
         // }
 
-        const getDiceValue = (diceValue, number) => {;
-            for (let dice of diceRolls){
-                if (dice.diceNumber === number) {
-                  dice.value = diceValue
+        const getDiceValue = (value, number) => {
+            console.log(diceRolls)
+            for (let dice of diceRolls.diceRolls){
+                if (dice.diceNumber === number){
+                    dice.diceValue = value
+                    }
                 }
+                
             }
-        }
       
 
     return(
