@@ -15,6 +15,9 @@ import Stomp from 'stompjs'
 function DiceField (props) {
 
     const myDice = useRef()
+    const dice1 = useRef()
+
+   
 
     const defaultDiceRolls = 
     {diceRolls:[
@@ -28,6 +31,7 @@ function DiceField (props) {
 
 
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
+    const [cheatValue, setCheatValue] = useState(0);
 
 
     let sock = new SockJS("http://localhost:8080/stomp");
@@ -35,9 +39,10 @@ function DiceField (props) {
     let client = Stomp.over(sock);
 
     client.connect({}, frame => {
-    client.subscribe("/topic/dicerollresult", payload => {
+    client.subscribe("/topic/getdicerollresult", payload => {
         if (props.actualPlayer === "second"){
             console.log(JSON.parse(payload.body));
+            setCheatValue(1)
             rollAllDicesForTheOtherPlayer();
         }
         });
@@ -53,51 +58,54 @@ function DiceField (props) {
       ];
     
 
+        const sendDiceResults = (e) => {;
+            rollAllDices();
+            console.log(diceRolls)
+            client.send('/app/rolldice', {}, JSON.stringify(diceRolls));
+        }
+
         const rollAllDices = (e) => {;
             let dices = myDice.current.children;
             for (let dice of dices) {
                 dice.click();
             }
-            
-            // let roll = {diceRolls:[{diceNumber:"dice1", diceValue:1}, {diceNumber:"dice2", diceValue:1}]}
-            console.log(diceRolls)
-            client.send('/app/rolldice', {}, JSON.stringify(diceRolls));
         }
 
         const rollAllDicesForTheOtherPlayer = (e) => {;
+            setAllDices()
             let dices = myDice.current.children;
             for (let dice of dices) {
                 dice.click();
             }
-
+            console.log("cheatvalue " + cheatValue)
+            
         }
 
-        // const getDiceValue = (value, dice) => {;
-        //     setDiceRolls(diceRolls => [...diceRolls, value])
-        //     console.log(diceRolls)
-        // }
+        const setAllDices = (e) => {;
+            setCheatValue(1)
+        }
+
+        
 
         const getDiceValue = (value, number) => {
-            console.log(diceRolls)
             for (let dice of diceRolls.diceRolls){
                 if (dice.diceNumber === number){
                     dice.diceValue = value
                     }
                 }
-                
             }
       
 
     return(
         <div className="dice-field">
-            <button onClick={rollAllDices}>Roll</button>
+            <button onClick={sendDiceResults}>Roll</button>
         <Row ref={myDice}  gutter={10}>
-            <Dice onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={50}></Dice>
-            <Dice onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={50}></Dice>
-            <Dice onRoll={(value) => getDiceValue(value, "dice3")} faces={faces} size={50}></Dice>
-            <Dice onRoll={(value) => getDiceValue(value, "dice4")} faces={faces} size={50}></Dice>
-            <Dice onRoll={(value) => getDiceValue(value, "dice5")} faces={faces} size={50}></Dice>
-            <Dice onRoll={(value) => getDiceValue(value, "dice6")} faces={faces} size={50}></Dice>
+            <Dice cheatValue={cheatValue} onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={50}></Dice>
+            <Dice cheatValue={0} onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={50}></Dice>
+            <Dice cheatValue={0} onRoll={(value) => getDiceValue(value, "dice3")} faces={faces} size={50}></Dice>
+            <Dice cheatValue={0} onRoll={(value) => getDiceValue(value, "dice4")} faces={faces} size={50}></Dice>
+            <Dice cheatValue={0} onRoll={(value) => getDiceValue(value, "dice5")} faces={faces} size={50}></Dice>
+            <Dice cheatValue={0} onRoll={(value) => getDiceValue(value, "dice6")} faces={faces} size={50}></Dice>
         </Row>
         </div>
         );
