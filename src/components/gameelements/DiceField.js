@@ -1,6 +1,6 @@
 import Cell from "./Cell";
 import {Col, Row} from "antd";
-import {React, useRef, useState} from "react";
+import {React, useRef, useState, useEffect} from "react";
 import Dice from "react-dice-roll";
 import purple from '../../static/purple.jpg';
 import black from '../../static/black.jpg';
@@ -14,11 +14,6 @@ import Stomp from 'stompjs'
 
 function DiceField (props) {
 
-    const myDice = useRef()
-    const dice1 = useRef()
-
-   
-
     const defaultDiceRolls = 
     {diceRolls:[
         {diceNumber:"dice1", diceValue:1},
@@ -30,24 +25,32 @@ function DiceField (props) {
     ]}
 
 
+    const myDice = useRef();
+    const [cheatValue, setCheatValue] = useState();
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
-    const [cheatValue, setCheatValue] = useState(0);
-
+    
 
     let sock = new SockJS("http://localhost:8080/stomp");
 
     let client = Stomp.over(sock);
+    let counter = 0;
+
+    useEffect(() => {
+        rollAllDicesForTheOtherPlayer();
+      }, [cheatValue]);
+
 
     client.connect({}, frame => {
     client.subscribe("/topic/getdicerollresult", payload => {
         if (props.actualPlayer === "second"){
             console.log(JSON.parse(payload.body));
             setCheatValue(1)
-            rollAllDicesForTheOtherPlayer();
+            console.log(JSON.parse(payload.body).diceRolls[0].diceValue)
         }
-        });
+        })
     });
 
+    
     const faces = [
         purple,
         black,
@@ -58,33 +61,24 @@ function DiceField (props) {
       ];
     
 
-        const sendDiceResults = (e) => {;
-            rollAllDices();
-            console.log(diceRolls)
-            client.send('/app/rolldice', {}, JSON.stringify(diceRolls));
-        }
+        const sendDiceResults = (e) => {
+            client.send('/app/rolldice', {}, JSON.stringify(diceRolls))
+        };
 
-        const rollAllDices = (e) => {;
+        const rollAllDices = (e) => {
             let dices = myDice.current.children;
             for (let dice of dices) {
                 dice.click();
             }
-        }
-
-        const rollAllDicesForTheOtherPlayer = (e) => {;
-            setAllDices()
-            let dices = myDice.current.children;
-            for (let dice of dices) {
-                dice.click();
-            }
-            console.log("cheatvalue " + cheatValue)
             
         }
 
-        const setAllDices = (e) => {;
-            setCheatValue(1)
+        const rollAllDicesForTheOtherPlayer = (e) => {
+            let dices = myDice.current.children;
+            for (let dice of dices) {
+                dice.click();
+            }
         }
-
         
 
         const getDiceValue = (value, number) => {
@@ -93,12 +87,16 @@ function DiceField (props) {
                     dice.diceValue = value
                     }
                 }
+            counter = counter + 1;
+            if (counter === 6){
+                sendDiceResults()
             }
+        }
       
 
     return(
         <div className="dice-field">
-            <button onClick={sendDiceResults}>Roll</button>
+            <button onClick={rollAllDices}>Roll</button>
         <Row ref={myDice}  gutter={10}>
             <Dice cheatValue={cheatValue} onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={50}></Dice>
             <Dice cheatValue={0} onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={50}></Dice>
