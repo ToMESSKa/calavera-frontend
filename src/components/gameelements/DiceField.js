@@ -11,6 +11,7 @@ import rose from '../../static/rose.jpg';
 import ReactDOM from 'react-dom'
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
+import Column from "antd/lib/table/Column";
 
 function DiceField (props) {
 
@@ -24,11 +25,14 @@ function DiceField (props) {
         {diceNumber:"dice6", diceValue:1}
     ]}
 
+    // const groupedDiceRolls = 
+    // {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
+
 
     const myDice = useRef();
-    // const [myDice, setMyDice] = useState([]);
     const [cheatValues, setCheatValues] = useState([]);
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
+    const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
 
     useEffect(() => {
         rollAllDicesForTheOtherPlayer();
@@ -69,6 +73,7 @@ function DiceField (props) {
             for (let dice of dices) {
                 dice.click();
             }   
+           
         }   
 
         const rollAllDicesForTheOtherPlayer = (e) => {
@@ -91,6 +96,8 @@ function DiceField (props) {
                 sendDiceResults()
                 counter = 0;
             }
+            setDiceRolls(diceRolls)
+            groupDiceRolls()
             }
         }
 
@@ -103,20 +110,66 @@ function DiceField (props) {
                 rolls[4].diceValue,
                 rolls[5].diceValue
             ];
+       
             setCheatValues(values)
+            
         }
+
+        const groupDiceRolls = () => {
+            let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
+            for (let dice of diceRolls.diceRolls){
+                if (dice.diceValue === 1){
+                    groupedDiceRolls.purple.push(dice)
+                }else if(dice.diceValue === 2){
+                    groupedDiceRolls.black.push(dice)
+                }else if(dice.diceValue === 3){
+                        groupedDiceRolls.orange.push(dice)
+                }else if(dice.diceValue === 4){
+                    groupedDiceRolls.rose.push(dice)
+                }else if(dice.diceValue === 5){
+                    groupedDiceRolls.skull.push(dice)
+                }else if(dice.diceValue === 6){
+                        groupedDiceRolls.turquoise.push(dice)
+                }
+            }
+            let arr =[]
+            for (const [key, value] of Object.entries(groupedDiceRolls)) {
+                if (value.length !== 0){
+                    arr.push(value)
+                }
+              }
+            console.log(arr);
+            setGroupedDiceRolls(arr)
+        }   
       
 
     return(
         <div className="dice-field">
-            <button onClick={rollAllDices}>Roll</button>
-        <Row ref={myDice}  gutter={10}>
+            <div className="dice-gouping-field">
+            <Row>
+                <Col>
+                {(groupedDiceRolls).map((group) => (
+                    <Row>
+                    {group.map((dice => 
+                    <Dice defaultValue={dice.diceValue} faces={faces} size={50}></Dice>
+                        )) 
+                    }
+                    </Row>
+                ))
+                }
+                </Col>
+            </Row>
+            </div>
+        <Row ref={myDice}  gutter={1}>
             <Dice cheatValue={cheatValues[0]} onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={50}></Dice>
             <Dice cheatValue={cheatValues[1]} onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={50}></Dice>
             <Dice cheatValue={cheatValues[2]} onRoll={(value) => getDiceValue(value, "dice3")} faces={faces} size={50}></Dice>
             <Dice cheatValue={cheatValues[3]} onRoll={(value) => getDiceValue(value, "dice4")} faces={faces} size={50}></Dice>
             <Dice cheatValue={cheatValues[4]} onRoll={(value) => getDiceValue(value, "dice5")} faces={faces} size={50}></Dice>
             <Dice cheatValue={cheatValues[5]} onRoll={(value) => getDiceValue(value, "dice6")} faces={faces} size={50}></Dice>
+        </Row>
+        <Row>
+        <button onClick={rollAllDices}>Roll</button>
         </Row>
         </div>
         );

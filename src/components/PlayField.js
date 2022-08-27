@@ -63,9 +63,6 @@ function PlayField (props) {
       <div>Game ID: {props.gameID}</div>
       {/* <input ref={myForm}  type="text" name="name" /> */}
       <div>STOMP: {stomp}</div>
-      <button onClick={sendMessage}>Click here</button>
-      <button onClick={markCells}>Choose a color</button>
-      <button onClick={checkActualPlayer}>Who I am?</button>
       <Row>
           <Col span={12}><DiceField actualPlayer={props.actualPlayer}></DiceField></Col>
           <Col span={12}><DiceField></DiceField></Col>
