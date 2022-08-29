@@ -12,6 +12,9 @@ import ReactDOM from 'react-dom'
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
 import Column from "antd/lib/table/Column";
+import DiceGroupingField from "./DiceGroupingField";
+import RerollSelectionField from "./RerollSelectionField";
+import DiceRollingField from "./DiceRollingField";
 
 function DiceField (props) {
 
@@ -147,39 +150,22 @@ function DiceField (props) {
         <div className="dice-field">
              <Row>
                 <Col>
-            <div className="dice-grouping-field">
-                <Col>
-                {(groupedDiceRolls).map((group, index) => (
-                    <Row key={Math.random() * Math.random()}>
-                    {group.map((dice => 
-                    <Dice defaultValue={dice.diceValue} faces={faces} size={40} key={Math.random() * Math.random()}></Dice>
-                        )) 
-                    }
-                    </Row>
-                ))
-                }
+                    <DiceGroupingField groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
                 </Col>
-            </div>
-            </Col>
-            <Col>
-            <div className="reroll-selection-field">
-            </div>
-            </Col>
-            </Row>    
-        <div className="dice-rolling-field"> 
-        {dicesVisible ? <Row ref={myDice}  gutter={1}>
-            <Dice cheatValue={cheatValues[0]} onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={40}></Dice>
-            <Dice cheatValue={cheatValues[1]} onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={40}></Dice>
-            <Dice cheatValue={cheatValues[2]} onRoll={(value) => getDiceValue(value, "dice3")} faces={faces} size={40}></Dice>
-            <Dice cheatValue={cheatValues[3]} onRoll={(value) => getDiceValue(value, "dice4")} faces={faces} size={40}></Dice>
-            <Dice cheatValue={cheatValues[4]} onRoll={(value) => getDiceValue(value, "dice5")} faces={faces} size={40}></Dice>
-            <Dice cheatValue={cheatValues[5]} onRoll={(value) => getDiceValue(value, "dice6")} faces={faces} size={40}></Dice>
-        </Row> : <div>{false}</div>}
-        </div>
-        {dicesVisible ? 
-        <button onClick={rollAllDices}>Roll</button>
-        : <div>{false}</div>}
-        </div>
+                <Col>
+                    <RerollSelectionField></RerollSelectionField>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <DiceRollingField dicesVisible={dicesVisible} myDice={myDice} cheatValues={cheatValues} getDiceValue={getDiceValue} faces={faces}></DiceRollingField>
+                </Col>
+            </Row> 
+            <Row>
+                {dicesVisible ? <button onClick={rollAllDices}>Roll</button> : <div>{false}</div>}
+            </Row>  
+        </div> 
+        
         );
     }
 
