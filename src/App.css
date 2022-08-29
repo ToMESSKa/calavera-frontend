@@ -86,3 +86,19 @@
   bottom: 0;
   width: 50%;
 }
+
+.dice-grouping-field{
+  display: flex;
+  background-color: DodgerBlue;
+  width: 240px;
+  height: 240px;
+
+}
+
+.reroll-selection-field{
+  display: flex;
+  background-color: grey;
+  width: 240px;
+  height: 240px;
+
+}

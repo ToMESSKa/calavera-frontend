@@ -33,6 +33,7 @@ function DiceField (props) {
     const [cheatValues, setCheatValues] = useState([]);
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
     const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
+    const [dicesVisible, setDicesVisible] = useState(true);
 
     useEffect(() => {
         rollAllDicesForTheOtherPlayer();
@@ -66,13 +67,14 @@ function DiceField (props) {
 
         const sendDiceResults = (e) => {
             client.send('/app/rolldice', {}, JSON.stringify(diceRolls))
+            groupDiceRolls()
         };
 
         const rollAllDices = (e) => {
             let dices = myDice.current.children;
             for (let dice of dices) {
                 dice.click();
-            }   
+            }
            
         }   
 
@@ -97,7 +99,6 @@ function DiceField (props) {
                 counter = 0;
             }
             setDiceRolls(diceRolls)
-            groupDiceRolls()
             }
         }
 
@@ -110,7 +111,6 @@ function DiceField (props) {
                 rolls[4].diceValue,
                 rolls[5].diceValue
             ];
-       
             setCheatValues(values)
             
         }
@@ -138,39 +138,47 @@ function DiceField (props) {
                     arr.push(value)
                 }
               }
-            console.log(arr);
             setGroupedDiceRolls(arr)
+            setDicesVisible(false)
         }   
       
 
     return(
         <div className="dice-field">
-            <div className="dice-gouping-field">
-            <Row>
+             <Row>
                 <Col>
-                {(groupedDiceRolls).map((group) => (
-                    <Row>
+            <div className="dice-grouping-field">
+                <Col>
+                {(groupedDiceRolls).map((group, index) => (
+                    <Row key={Math.random() * Math.random()}>
                     {group.map((dice => 
-                    <Dice defaultValue={dice.diceValue} faces={faces} size={50}></Dice>
+                    <Dice defaultValue={dice.diceValue} faces={faces} size={40} key={Math.random() * Math.random()}></Dice>
                         )) 
                     }
                     </Row>
                 ))
                 }
                 </Col>
-            </Row>
             </div>
-        <Row ref={myDice}  gutter={1}>
-            <Dice cheatValue={cheatValues[0]} onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={50}></Dice>
-            <Dice cheatValue={cheatValues[1]} onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={50}></Dice>
-            <Dice cheatValue={cheatValues[2]} onRoll={(value) => getDiceValue(value, "dice3")} faces={faces} size={50}></Dice>
-            <Dice cheatValue={cheatValues[3]} onRoll={(value) => getDiceValue(value, "dice4")} faces={faces} size={50}></Dice>
-            <Dice cheatValue={cheatValues[4]} onRoll={(value) => getDiceValue(value, "dice5")} faces={faces} size={50}></Dice>
-            <Dice cheatValue={cheatValues[5]} onRoll={(value) => getDiceValue(value, "dice6")} faces={faces} size={50}></Dice>
-        </Row>
-        <Row>
+            </Col>
+            <Col>
+            <div className="reroll-selection-field">
+            </div>
+            </Col>
+            </Row>    
+        <div className="dice-rolling-field"> 
+        {dicesVisible ? <Row ref={myDice}  gutter={1}>
+            <Dice cheatValue={cheatValues[0]} onRoll={(value) => getDiceValue(value, "dice1")} faces={faces} size={40}></Dice>
+            <Dice cheatValue={cheatValues[1]} onRoll={(value) => getDiceValue(value, "dice2")} faces={faces} size={40}></Dice>
+            <Dice cheatValue={cheatValues[2]} onRoll={(value) => getDiceValue(value, "dice3")} faces={faces} size={40}></Dice>
+            <Dice cheatValue={cheatValues[3]} onRoll={(value) => getDiceValue(value, "dice4")} faces={faces} size={40}></Dice>
+            <Dice cheatValue={cheatValues[4]} onRoll={(value) => getDiceValue(value, "dice5")} faces={faces} size={40}></Dice>
+            <Dice cheatValue={cheatValues[5]} onRoll={(value) => getDiceValue(value, "dice6")} faces={faces} size={40}></Dice>
+        </Row> : <div>{false}</div>}
+        </div>
+        {dicesVisible ? 
         <button onClick={rollAllDices}>Roll</button>
-        </Row>
+        : <div>{false}</div>}
         </div>
         );
     }
