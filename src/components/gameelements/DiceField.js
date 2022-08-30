@@ -37,6 +37,7 @@ function DiceField (props) {
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
     const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
     const [dicesVisible, setDicesVisible] = useState(true);
+    const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
 
     useEffect(() => {
         rollAllDicesForTheOtherPlayer();
@@ -118,6 +119,23 @@ function DiceField (props) {
             
         }
 
+        const selectForReroll = (value) => {
+            let isFound = false;
+            let groupedDiceRollsCopy = [...groupedDiceRolls];
+            for (let group of groupedDiceRollsCopy){
+                if (!isFound){
+                for(let dice of group){
+                    if (dice.diceValue === 1){
+                        group.pop()
+                        isFound = true;
+                        break; 
+                        }
+                    }
+                }break;
+            }
+            setGroupedDiceRolls(prev => groupedDiceRollsCopy)
+    }
+
         const groupDiceRolls = () => {
             let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
             for (let dice of diceRolls.diceRolls){
@@ -150,7 +168,7 @@ function DiceField (props) {
         <div className="dice-field">
              <Row>
                 <Col>
-                    <DiceGroupingField groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
+                    <DiceGroupingField selectForReroll={selectForReroll} groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
                 </Col>
                 <Col>
                     <RerollSelectionField></RerollSelectionField>
