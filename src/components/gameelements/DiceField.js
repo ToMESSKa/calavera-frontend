@@ -121,17 +121,20 @@ function DiceField (props) {
 
         const selectForReroll = (value) => {
             let isFound = false;
+            console.log(value)
             let groupedDiceRollsCopy = [...groupedDiceRolls];
+            if (!isFound){
             for (let group of groupedDiceRollsCopy){
-                if (!isFound){
                 for(let dice of group){
-                    if (dice.diceValue === 1){
+                    if (dice.diceValue === value){
+                        console.log("hey")
                         group.pop()
                         isFound = true;
-                        break; 
+                        selectedDiceForReroll.push(dice)
+                        setSelectedDiceForReroll(selectedDiceForReroll)
                         }
                     }
-                }break;
+                }
             }
             setGroupedDiceRolls(prev => groupedDiceRollsCopy)
     }
@@ -171,7 +174,7 @@ function DiceField (props) {
                     <DiceGroupingField selectForReroll={selectForReroll} groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
                 </Col>
                 <Col>
-                    <RerollSelectionField></RerollSelectionField>
+                    <RerollSelectionField selectedDiceForReroll={selectedDiceForReroll} faces={faces}></RerollSelectionField>
                 </Col>
             </Row>
             <Row>
