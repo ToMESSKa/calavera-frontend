@@ -42,6 +42,7 @@ function DiceField (props) {
     useEffect(() => {
         rollAllDicesForTheOtherPlayer();
       },[cheatValues]);
+
     
 
     let sock = new SockJS("http://localhost:8080/stomp");
@@ -53,7 +54,9 @@ function DiceField (props) {
     client.connect({}, frame => {
     client.subscribe("/topic/getdicerollresult", payload => {
         if (props.actualPlayer === "second"){
-            setRollsForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
+            groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
+            // setDiceRolls(JSON.parse(payload.body).diceRolls);
+            // groupDiceRolls()
         }
         })
     });
@@ -71,7 +74,7 @@ function DiceField (props) {
 
         const sendDiceResults = (e) => {
             client.send('/app/rolldice', {}, JSON.stringify(diceRolls))
-            groupDiceRolls()
+            groupDiceRolls(diceRolls.diceRolls)
         };
 
         const rollAllDices = (e) => {
@@ -116,32 +119,64 @@ function DiceField (props) {
                 rolls[5].diceValue
             ];
             setCheatValues(values)
+        }
+
+        const groupForTheOtherPlayer = (rolls) => {
+            if (props.actualPlayer === "second"){
+                console.log(rolls)
+                groupDiceRolls(rolls)
+            }
             
         }
 
         const selectForReroll = (value) => {
             let isFound = false;
-            console.log(value)
-            let groupedDiceRollsCopy = [...groupedDiceRolls];
-            if (!isFound){
-            for (let group of groupedDiceRollsCopy){
+            for (let group of groupedDiceRolls){
                 for(let dice of group){
                     if (dice.diceValue === value){
-                        console.log("hey")
                         group.pop()
-                        isFound = true;
                         selectedDiceForReroll.push(dice)
-                        setSelectedDiceForReroll(selectedDiceForReroll)
+                        setSelectedDiceForReroll([...selectedDiceForReroll])
+                        isFound = true;
+                        break;
                         }
-                    }
+                }
+                if (isFound){
+                    break;
                 }
             }
-            setGroupedDiceRolls(prev => groupedDiceRollsCopy)
+            setGroupedDiceRolls([...groupedDiceRolls])
+        }
+
+    const cancelForReroll = (value) => {
+        let isFound = false;
+        for (let group of groupedDiceRolls){
+            for(let dice of group){
+                if (dice.diceValue === value){
+                    group.push(dice)
+                    isFound = true;
+                    break;
+                    }
+            }
+            if (isFound){
+                break;
+            }
+        }
+        if (!isFound){
+            groupedDiceRolls.push([{diceNumber: "example", diceValue: value}])
+        }
+        for (let dice of selectedDiceForReroll){
+            if (dice.diceValue === value){
+                selectedDiceForReroll.splice(selectedDiceForReroll.indexOf(dice), 1)
+            }
+        }
+        setSelectedDiceForReroll([...selectedDiceForReroll])
+        setGroupedDiceRolls([...groupedDiceRolls])
     }
 
-        const groupDiceRolls = () => {
+        const groupDiceRolls = (rolls) => {
             let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
-            for (let dice of diceRolls.diceRolls){
+            for (let dice of rolls){
                 if (dice.diceValue === 1){
                     groupedDiceRolls.purple.push(dice)
                 }else if(dice.diceValue === 2){
@@ -165,6 +200,33 @@ function DiceField (props) {
             setGroupedDiceRolls(arr)
             setDicesVisible(false)
         }   
+
+        // const groupDiceRolls2 = () => {
+        //     let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
+        //     for (let dice of diceRolls.diceRolls){
+        //         if (dice.diceValue === 1){
+        //             groupedDiceRolls.purple.push(dice)
+        //         }else if(dice.diceValue === 2){
+        //             groupedDiceRolls.black.push(dice)
+        //         }else if(dice.diceValue === 3){
+        //                 groupedDiceRolls.orange.push(dice)
+        //         }else if(dice.diceValue === 4){
+        //             groupedDiceRolls.rose.push(dice)
+        //         }else if(dice.diceValue === 5){
+        //             groupedDiceRolls.skull.push(dice)
+        //         }else if(dice.diceValue === 6){
+        //                 groupedDiceRolls.turquoise.push(dice)
+        //         }
+        //     }
+        //     let arr =[]
+        //     for (const [key, value] of Object.entries(groupedDiceRolls)) {
+        //         if (value.length !== 0){
+        //             arr.push(value)
+        //         }
+        //       }
+        //     setGroupedDiceRolls(arr)
+        //     setDicesVisible(false)
+        // }   
       
 
     return(
@@ -174,7 +236,7 @@ function DiceField (props) {
                     <DiceGroupingField selectForReroll={selectForReroll} groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
                 </Col>
                 <Col>
-                    <RerollSelectionField selectedDiceForReroll={selectedDiceForReroll} faces={faces}></RerollSelectionField>
+                    <RerollSelectionField selectedDiceForReroll={selectedDiceForReroll} cancelForReroll={cancelForReroll} faces={faces}></RerollSelectionField>
                 </Col>
             </Row>
             <Row>
