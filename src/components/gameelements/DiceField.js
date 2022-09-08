@@ -49,13 +49,17 @@ function DiceField (props) {
 
     let client = Stomp.over(sock);
     let counter = 0;
+    let counterForOtherPlayer = 0;
 
 
     client.connect({}, frame => {
     client.subscribe("/topic/getdicerollresult", payload => {
         if (props.actualPlayer === "second"){
-            groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
+            // groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
             // setDiceRolls(JSON.parse(payload.body).diceRolls);
+            setRollsForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
+            setTimeout(function() {groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)}, 1000);
+            // groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
             // groupDiceRolls()
         }
         })
@@ -90,7 +94,7 @@ function DiceField (props) {
                 for (let dice of dices) {
                     dice.click();
                 }
-            } 
+        }
         
 
         const getDiceValue = (value, number) => {
@@ -119,6 +123,7 @@ function DiceField (props) {
                 rolls[5].diceValue
             ];
             setCheatValues(values)
+            setDiceRolls(rolls)
         }
 
         const groupForTheOtherPlayer = (rolls) => {
@@ -126,6 +131,7 @@ function DiceField (props) {
                 console.log(rolls)
                 groupDiceRolls(rolls)
             }
+            console.log("other")
             
         }
 
@@ -201,33 +207,7 @@ function DiceField (props) {
             setDicesVisible(false)
         }   
 
-        // const groupDiceRolls2 = () => {
-        //     let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
-        //     for (let dice of diceRolls.diceRolls){
-        //         if (dice.diceValue === 1){
-        //             groupedDiceRolls.purple.push(dice)
-        //         }else if(dice.diceValue === 2){
-        //             groupedDiceRolls.black.push(dice)
-        //         }else if(dice.diceValue === 3){
-        //                 groupedDiceRolls.orange.push(dice)
-        //         }else if(dice.diceValue === 4){
-        //             groupedDiceRolls.rose.push(dice)
-        //         }else if(dice.diceValue === 5){
-        //             groupedDiceRolls.skull.push(dice)
-        //         }else if(dice.diceValue === 6){
-        //                 groupedDiceRolls.turquoise.push(dice)
-        //         }
-        //     }
-        //     let arr =[]
-        //     for (const [key, value] of Object.entries(groupedDiceRolls)) {
-        //         if (value.length !== 0){
-        //             arr.push(value)
-        //         }
-        //       }
-        //     setGroupedDiceRolls(arr)
-        //     setDicesVisible(false)
-        // }   
-      
+
 
     return(
         <div className="dice-field">
