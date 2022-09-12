@@ -92,13 +92,23 @@
   background-color: DodgerBlue;
   width: 240px;
   height: 240px;
-
+  flex-direction: column;
 }
 
 .reroll-selection-field{
-  display: flex;
   background-color: grey;
   width: 240px;
   height: 240px;
+  display: flex;
+}
 
+.reroll-button{
+  align-self: flex-end;
+  justify-self: center;
+}
+
+.dice-rolling-field{
+  align-self: flex-end;
+  justify-self: center;
+  background-color: DodgerBlue;
 }

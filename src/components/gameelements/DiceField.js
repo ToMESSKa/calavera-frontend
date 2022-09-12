@@ -38,6 +38,7 @@ function DiceField (props) {
     const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
     const [dicesVisible, setDicesVisible] = useState(true);
     const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
+    const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
 
     useEffect(() => {
         rollAllDicesForTheOtherPlayer();
@@ -137,6 +138,7 @@ function DiceField (props) {
 
         const selectForReroll = (value) => {
             let isFound = false;
+            if (value !== 5){
             for (let group of groupedDiceRolls){
                 for(let dice of group){
                     if (dice.diceValue === value){
@@ -152,20 +154,26 @@ function DiceField (props) {
                 }
             }
             setGroupedDiceRolls([...groupedDiceRolls])
-        }
+            console.log(selectedDiceForReroll)
+            if (selectedDiceForReroll !== []){
+                setRerollButtonVisible(true)
+                console.log("true")
+            } 
+            }
+    }
 
     const cancelForReroll = (value) => {
         let isFound = false;
         for (let group of groupedDiceRolls){
+            if (isFound){
+                break;
+            }
             for(let dice of group){
                 if (dice.diceValue === value){
                     group.push(dice)
                     isFound = true;
                     break;
                     }
-            }
-            if (isFound){
-                break;
             }
         }
         if (!isFound){
@@ -174,11 +182,16 @@ function DiceField (props) {
         for (let dice of selectedDiceForReroll){
             if (dice.diceValue === value){
                 selectedDiceForReroll.splice(selectedDiceForReroll.indexOf(dice), 1)
+                break;
             }
         }
         setSelectedDiceForReroll([...selectedDiceForReroll])
+        console.log(selectedDiceForReroll)
         setGroupedDiceRolls([...groupedDiceRolls])
-    }
+        if (selectedDiceForReroll.length === 0){
+            setRerollButtonVisible(false)
+        }
+        }
 
         const groupDiceRolls = (rolls) => {
             let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
@@ -205,7 +218,16 @@ function DiceField (props) {
               }
             setGroupedDiceRolls(arr)
             setDicesVisible(false)
-        }   
+        }
+
+        const reRoll = (rolls) => {
+            setDiceRolls({diceRolls: selectedDiceForReroll})
+            setSelectedDiceForReroll([])
+            console.log("reroll")
+            setDicesVisible(true)
+        }
+
+
 
 
 
@@ -213,15 +235,19 @@ function DiceField (props) {
         <div className="dice-field">
              <Row>
                 <Col>
-                    <DiceGroupingField selectForReroll={selectForReroll} groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
+                    <DiceGroupingField dicesVisible={dicesVisible}
+                    myDice={myDice}
+                    cheatValues={cheatValues}
+                    getDiceValue={getDiceValue}
+                    selectForReroll={selectForReroll} groupedDiceRolls={groupedDiceRolls} faces={faces}></DiceGroupingField>
                 </Col>
                 <Col>
-                    <RerollSelectionField selectedDiceForReroll={selectedDiceForReroll} cancelForReroll={cancelForReroll} faces={faces}></RerollSelectionField>
+                    <RerollSelectionField reRoll={reRoll} selectedDiceForReroll={selectedDiceForReroll} cancelForReroll={cancelForReroll} rerollButtonVisible={rerollButtonVisible} faces={faces}></RerollSelectionField>
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    <DiceRollingField dicesVisible={dicesVisible} myDice={myDice} cheatValues={cheatValues} getDiceValue={getDiceValue} faces={faces}></DiceRollingField>
+                    <DiceRollingField diceRolls ={diceRolls} dicesVisible={dicesVisible} myDice={myDice} cheatValues={cheatValues} getDiceValue={getDiceValue} faces={faces} ></DiceRollingField>
                 </Col>
             </Row> 
             <Row>

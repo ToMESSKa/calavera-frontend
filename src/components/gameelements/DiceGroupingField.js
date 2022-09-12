@@ -1,6 +1,7 @@
 import {Col, Row} from "antd";
 import {React, useRef, useState, useEffect} from "react";
 import Dice from "react-dice-roll";
+import DiceRollingField from "./DiceRollingField";
 
 
 function DiceGroupingField (props) {
@@ -8,7 +9,9 @@ function DiceGroupingField (props) {
     
 
     return(
-            <div className="dice-grouping-field">
+            <Col className="dice-grouping-field">
+            <Row>
+            <div>
                 <Col>
                 {(props.groupedDiceRolls).map((group, index) => (
                     <Row key={Math.random() * Math.random()}>
@@ -21,6 +24,10 @@ function DiceGroupingField (props) {
                 }
                 </Col>
             </div>
+            </Row>
+            <Row>
+            </Row>
+            </Col>
         );
     }
 
