@@ -9,7 +9,7 @@ function DiceRollingField (props) {
         <div className="dice-rolling-field"> 
         {props.dicesVisible ? <Row ref={props.myDice}  gutter={1}>
         {(props.diceRolls.diceRolls).map((dice, index) => (
-                    <Dice cheatValue={props.cheatValues[index]} onRoll={(value) => props.getDiceValue(value, "dice" + (index+1))} faces={props.faces} size={40} key={Math.random() * Math.random()}></Dice>
+                    <Dice defaultValue={dice.diceValue} cheatValue={props.cheatValues[index]} onRoll={(value) => props.getDiceValue(value, "dice" + (index+1))} faces={props.faces} size={40} key={Math.random() * Math.random()}></Dice>
                 ))
         }
             

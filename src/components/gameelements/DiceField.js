@@ -36,9 +36,11 @@ function DiceField (props) {
     const [cheatValues, setCheatValues] = useState([]);
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
     const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
+    const [sortedDiceByColor, setSortedDiceByColor] = useState({purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]});
     const [dicesVisible, setDicesVisible] = useState(true);
     const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
     const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
+    const [numberOfRerolledDice, setNumberOfRerolledDice] = useState(6);
 
     useEffect(() => {
         rollAllDicesForTheOtherPlayer();
@@ -106,7 +108,7 @@ function DiceField (props) {
                     }
                 }
             counter = counter + 1;
-            if (counter === 6){
+            if (counter === numberOfRerolledDice){
                 sendDiceResults()
                 counter = 0;
             }
@@ -194,28 +196,29 @@ function DiceField (props) {
         }
 
         const groupDiceRolls = (rolls) => {
-            let groupedDiceRolls = {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
             for (let dice of rolls){
                 if (dice.diceValue === 1){
-                    groupedDiceRolls.purple.push(dice)
+                    sortedDiceByColor.purple.push(dice)
                 }else if(dice.diceValue === 2){
-                    groupedDiceRolls.black.push(dice)
+                    sortedDiceByColor.black.push(dice)
                 }else if(dice.diceValue === 3){
-                        groupedDiceRolls.orange.push(dice)
+                    sortedDiceByColor.orange.push(dice)
                 }else if(dice.diceValue === 4){
-                    groupedDiceRolls.rose.push(dice)
+                    sortedDiceByColor.rose.push(dice)
                 }else if(dice.diceValue === 5){
-                    groupedDiceRolls.skull.push(dice)
+                    sortedDiceByColor.skull.push(dice)
                 }else if(dice.diceValue === 6){
-                        groupedDiceRolls.turquoise.push(dice)
+                    sortedDiceByColor.turquoise.push(dice)
                 }
             }
             let arr =[]
-            for (const [key, value] of Object.entries(groupedDiceRolls)) {
+            for (const [key, value] of Object.entries(sortedDiceByColor)) {
                 if (value.length !== 0){
                     arr.push(value)
                 }
               }
+            console.log(sortedDiceByColor)
+            setSortedDiceByColor(sortedDiceByColor)
             setGroupedDiceRolls(arr)
             setDicesVisible(false)
         }
@@ -223,8 +226,9 @@ function DiceField (props) {
         const reRoll = (rolls) => {
             setDiceRolls({diceRolls: selectedDiceForReroll})
             setSelectedDiceForReroll([])
-            console.log("reroll")
+            setNumberOfRerolledDice(selectedDiceForReroll.length)
             setDicesVisible(true)
+            setRerollButtonVisible(false)
         }
 
 
