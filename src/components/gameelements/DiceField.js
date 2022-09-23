@@ -15,6 +15,7 @@ import Column from "antd/lib/table/Column";
 import DiceGroupingField from "./DiceGroupingField";
 import RerollSelectionField from "./RerollSelectionField";
 import DiceRollingField from "./DiceRollingField";
+import CheckableTag from "antd/lib/tag/CheckableTag";
 
 function DiceField (props) {
 
@@ -28,12 +29,18 @@ function DiceField (props) {
         {diceNumber:"dice6", diceValue:1}
     ]}
 
-    // const groupedDiceRolls = 
-    // {purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]}
-
-
+ 
+    const allDice = useRef();
+    const myDice1 = useRef();
+    const myDice2 = useRef();
+    const myDice3 = useRef();
+    const myDice4 = useRef();
+    const myDice5 = useRef();
+    const myDice6 = useRef();
     const myDice = useRef();
-    const [cheatValues, setCheatValues] = useState([]);
+    const [testDice, setTestDice] = useState([myDice1, myDice2, myDice3, myDice4, myDice5, myDice6]);
+    const myButton =  useRef();
+    const [cheatValues, setCheatValues] = useState(0);
     const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
     const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
     const [sortedDiceByColor, setSortedDiceByColor] = useState({purple:[], black:[], orange:[], rose:[], skull:[], turquoise:[]});
@@ -42,9 +49,12 @@ function DiceField (props) {
     const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
     const [numberOfRerolledDice, setNumberOfRerolledDice] = useState(6);
 
+
     useEffect(() => {
-        rollAllDicesForTheOtherPlayer();
-      },[cheatValues]);
+    if (cheatValues !== 0){
+        rollAllDicesForTheOtherPlayer()
+      }
+    },[cheatValues]);
 
     
 
@@ -58,12 +68,8 @@ function DiceField (props) {
     client.connect({}, frame => {
     client.subscribe("/topic/getdicerollresult", payload => {
         if (props.actualPlayer === "second"){
-            // groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
-            // setDiceRolls(JSON.parse(payload.body).diceRolls);
             setRollsForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
-            setTimeout(function() {groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)}, 1000);
-            // groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)
-            // groupDiceRolls()
+            // setTimeout(function() {groupForTheOtherPlayer(JSON.parse(payload.body).diceRolls)}, 1000);
         }
         })
     });
@@ -85,18 +91,15 @@ function DiceField (props) {
         };
 
         const rollAllDices = (e) => {
-            let dices = myDice.current.children;
-            for (let dice of dices) {
-                dice.click();
+            for (let dice of testDice) {
+                dice.current.rollDice()
             }
-           
         }   
 
         const rollAllDicesForTheOtherPlayer = (e) => {
-                let dices = myDice.current.children;
-                for (let dice of dices) {
-                    dice.click();
-                }
+            for (let dice of testDice) {
+                dice.current.rollDice()
+            }
         }
         
 
@@ -125,8 +128,8 @@ function DiceField (props) {
                 rolls[4].diceValue,
                 rolls[5].diceValue
             ];
-            setCheatValues(values)
-            setDiceRolls(rolls)
+            setCheatValues(values);
+
         }
 
         const groupForTheOtherPlayer = (rolls) => {
@@ -221,6 +224,7 @@ function DiceField (props) {
             setSortedDiceByColor(sortedDiceByColor)
             setGroupedDiceRolls(arr)
             setDicesVisible(false)
+            
         }
 
         const reRoll = (rolls) => {
@@ -251,12 +255,13 @@ function DiceField (props) {
             </Row>
             <Row>
                 <Col>
-                    <DiceRollingField diceRolls ={diceRolls} dicesVisible={dicesVisible} myDice={myDice} cheatValues={cheatValues} getDiceValue={getDiceValue} faces={faces} ></DiceRollingField>
+                    <DiceRollingField testDice={testDice} diceRolls ={diceRolls} dicesVisible={dicesVisible} allDice={allDice} cheatValues={cheatValues} getDiceValue={getDiceValue} faces={faces} ></DiceRollingField>
                 </Col>
             </Row> 
             <Row>
-                {dicesVisible ? <button onClick={rollAllDices}>Roll</button> : <div>{false}</div>}
+                {dicesVisible ? <button ref={myButton} onClick={rollAllDices}>Roll</button> : <div>{false}</div>}
             </Row>  
+            {/* <Dice ref={testDice} faces={props.faces} size={40}></Dice> */}
         </div> 
         
         );
