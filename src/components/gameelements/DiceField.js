@@ -111,7 +111,6 @@ function DiceField(props) {
   };
 
   const sendCanceledDice = (dice) => {
-    console.log("send");
     if (stompClient) {
       stompClient.publish({
         destination: "/app/canceldice",
@@ -189,7 +188,7 @@ function DiceField(props) {
         }
       }
       setGroupedDiceRolls([...groupedDiceRolls]);
-      if (selectedDiceForReroll !== []) {
+      if (selectedDiceForReroll !== [] && props.actualPlayer === "first") {
         setRerollButtonVisible(true);
       }
     }
@@ -216,7 +215,6 @@ function DiceField(props) {
       if (dice.diceValue === value) {
         selectedDiceForReroll.splice(selectedDiceForReroll.indexOf(dice), 1);
         if (props.actualPlayer === "first") {
-          console.log("fuck");
           sendCanceledDice(dice);
         }
         break;
