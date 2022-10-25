@@ -65,7 +65,7 @@ function DiceField(props) {
   }, [cheatValues]);
 
   const stompClient = useStompClient();
-  
+
   useSubscription("/topic/getdicerollresult", (message) => {
     if (props.actualPlayer === "second") {
       setRollsForTheOtherPlayer(JSON.parse(message.body).diceRolls);
@@ -78,6 +78,12 @@ function DiceField(props) {
   useSubscription("/topic/getdicererollresult", (message) => {
     if (props.actualPlayer === "second") {
       selectForReroll(JSON.parse(message.body).diceValue);
+    }
+  });
+
+  useSubscription("/topic/getcanceleddice", (message) => {
+    if (props.actualPlayer === "second") {
+      cancelForReroll(JSON.parse(message.body).diceValue);
     }
   });
 
@@ -97,6 +103,18 @@ function DiceField(props) {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/rerolldice",
+        body: JSON.stringify(dice),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const sendCanceledDice = (dice) => {
+    console.log("send");
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/canceldice",
         body: JSON.stringify(dice),
       });
     } else {
@@ -197,6 +215,10 @@ function DiceField(props) {
     for (let dice of selectedDiceForReroll) {
       if (dice.diceValue === value) {
         selectedDiceForReroll.splice(selectedDiceForReroll.indexOf(dice), 1);
+        if (props.actualPlayer === "first") {
+          console.log("fuck");
+          sendCanceledDice(dice);
+        }
         break;
       }
     }
@@ -206,6 +228,7 @@ function DiceField(props) {
       setRerollButtonVisible(false);
     }
   };
+
 
   const groupDiceRolls = (rolls) => {
     for (let dice of rolls) {
