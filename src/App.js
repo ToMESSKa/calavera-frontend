@@ -8,6 +8,9 @@ import Dice from 'react-dice-roll';
 import * as SockJS from 'sockjs-client';
 import Stomp from 'stompjs'
 import StartGame from './components/StartGame';
+import {
+  StompSessionProvider,
+} from "react-stomp-hooks";
 
 const savePlayer = () =>{
   const player = { id: "1234", playerName: "player"};
@@ -49,7 +52,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <StartGame></StartGame>
+      <StompSessionProvider
+      url={"http://localhost:8080/stomp"}
+      >
+        <StartGame></StartGame>
+    </StompSessionProvider>
       </header>
     </div>
   );

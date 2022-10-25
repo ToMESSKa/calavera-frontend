@@ -33,7 +33,6 @@ function StartGame (props) {
         setGameID(gameID)
         let secondPlayer = {playerName: "Dávid"}
         let game = {player: secondPlayer, gameId: gameID}
-        console.log("hu")
         axios.post("http://localhost:8080/joinnewgame", game)
         .then((response) => {
             console.log(response.data)
