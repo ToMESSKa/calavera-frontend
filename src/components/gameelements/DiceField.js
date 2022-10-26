@@ -75,7 +75,7 @@ function DiceField(props) {
     }
   });
 
-  useSubscription("/topic/getdicererollresult", (message) => {
+  useSubscription("/topic/getseledteddicererollresult", (message) => {
     if (props.actualPlayer === "second") {
       selectForReroll(JSON.parse(message.body).diceValue);
     }
@@ -87,10 +87,16 @@ function DiceField(props) {
     }
   });
 
-  const sendDiceResults = () => {
+  useSubscription("/topic/getnewdiceforroll", (message) => {
+    if (props.actualPlayer === "second") {
+      reRoll();
+    }
+  });
+
+  const sendRollResults = () => {
     if (stompClient) {
       stompClient.publish({
-        destination: "/app/rolldice",
+        destination: "/app/rolleddice",
         body: JSON.stringify(diceRolls),
       });
     } else {
@@ -99,10 +105,10 @@ function DiceField(props) {
     groupDiceRolls(diceRolls.diceRolls);
   };
 
-  const sendRerollResults = (dice) => {
+  const sendSelectedRerolldice = (dice) => {
     if (stompClient) {
       stompClient.publish({
-        destination: "/app/rerolldice",
+        destination: "/app/selectedrerolldice",
         body: JSON.stringify(dice),
       });
     } else {
@@ -113,7 +119,18 @@ function DiceField(props) {
   const sendCanceledDice = (dice) => {
     if (stompClient) {
       stompClient.publish({
-        destination: "/app/canceldice",
+        destination: "/app/canceleddice",
+        body: JSON.stringify(dice),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const sendNewDiceForRoll = (dice) => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/newdiceforroll",
         body: JSON.stringify(dice),
       });
     } else {
@@ -142,7 +159,7 @@ function DiceField(props) {
       }
       counter = counter + 1;
       if (counter === numberOfRerolledDice) {
-        sendDiceResults();
+        sendRollResults();
         counter = 0;
       }
       setDiceRolls(diceRolls);
@@ -181,7 +198,7 @@ function DiceField(props) {
             setSelectedDiceForReroll([...selectedDiceForReroll]);
             isFound = true;
             if (props.actualPlayer === "first") {
-              sendRerollResults(dice);
+              sendSelectedRerolldice(dice);
             }
             break;
           }
@@ -227,7 +244,6 @@ function DiceField(props) {
     }
   };
 
-
   const groupDiceRolls = (rolls) => {
     for (let dice of rolls) {
       if (dice.diceValue === 1) {
@@ -255,12 +271,15 @@ function DiceField(props) {
     setDicesVisible(false);
   };
 
-  const reRoll = (rolls) => {
+  const reRoll = () => {
     setDiceRolls({ diceRolls: selectedDiceForReroll });
     setSelectedDiceForReroll([]);
     setNumberOfRerolledDice(selectedDiceForReroll.length);
     setDicesVisible(true);
     setRerollButtonVisible(false);
+    if (props.actualPlayer === "first") {
+      sendNewDiceForRoll({ diceRolls: selectedDiceForReroll });
+    }
   };
 
   return (
