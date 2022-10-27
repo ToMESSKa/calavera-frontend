@@ -36,7 +36,7 @@ function PlayField(props) {
       <div>Game ID: {props.gameID}</div>
       <div>STOMP: {stomp}</div>
       <Row>
-        <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
+        <Col><RerollCounter rerollCounter={rerollCounter}></RerollCounter></Col>
       </Row>
       <Row>
         <Col span={12}>

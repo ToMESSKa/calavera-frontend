@@ -51,6 +51,7 @@ function DiceField(props) {
     turquoise: [],
   });
   const [dicesVisible, setDicesVisible] = useState(true);
+  const [stopButtonVisible, setStopButtonVisible] = useState(false);
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
   const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
   const [numberOfRerolledDice, setNumberOfRerolledDice] = useState(6);
@@ -181,32 +182,33 @@ function DiceField(props) {
   };
 
   const selectForReroll = (value) => {
-    if (props.rerollCounter !== "third"){
-    let isFound = false;
-    if (value !== 5) {
-      for (let group of groupedDiceRolls) {
-        if (isFound) {
-          break;
-        }
-        for (let dice of group) {
-          if (dice.diceValue === value) {
-            group.pop();
-            selectedDiceForReroll.push(dice);
-            setSelectedDiceForReroll([...selectedDiceForReroll]);
-            isFound = true;
-            if (props.actualPlayer === "first") {
-              sendSelectedRerolldice(dice);
-            }
+    if (props.rerollCounter !== "third") {
+      let isFound = false;
+      if (value !== 5) {
+        for (let group of groupedDiceRolls) {
+          if (isFound) {
             break;
           }
+          for (let dice of group) {
+            if (dice.diceValue === value) {
+              group.pop();
+              selectedDiceForReroll.push(dice);
+              setSelectedDiceForReroll([...selectedDiceForReroll]);
+              isFound = true;
+              if (props.actualPlayer === "first") {
+                sendSelectedRerolldice(dice);
+              }
+              break;
+            }
+          }
         }
-      }
-      setGroupedDiceRolls([...groupedDiceRolls]);
-      if (selectedDiceForReroll !== [] && props.actualPlayer === "first") {
-        setRerollButtonVisible(true);
+        setGroupedDiceRolls([...groupedDiceRolls]);
+        if (selectedDiceForReroll !== [] && props.actualPlayer === "first") {
+          setRerollButtonVisible(true);
+        }
+        setStopButtonVisible(false)
       }
     }
-  }
   };
 
   const cancelForReroll = (value) => {
@@ -239,6 +241,7 @@ function DiceField(props) {
     setGroupedDiceRolls([...groupedDiceRolls]);
     if (selectedDiceForReroll.length === 0) {
       setRerollButtonVisible(false);
+      setStopButtonVisible(true)
     }
   };
 
@@ -267,6 +270,7 @@ function DiceField(props) {
     setSortedDiceByColor(sortedDiceByColor);
     setGroupedDiceRolls(arr);
     setDicesVisible(false);
+    setStopButtonVisible(true)
   };
 
   const prepareForReRoll = () => {
@@ -314,6 +318,7 @@ function DiceField(props) {
             faces={faces}
           ></RerollSelectionField>
         </Col>
+        <Col>{stopButtonVisible ? <button>STOP</button> : <div></div>}</Col>
       </Row>
       <Row>
         <Col>
