@@ -13,6 +13,7 @@ import RerollCounter from "./gameelements/RerollCounter";
 
 function PlayField(props) {
   const [testContent, setTestContent] = useState(0);
+ 
   const [markedCells, setMarkedCells] = useState([
     "",
     "",
@@ -30,6 +31,9 @@ function PlayField(props) {
   ]);
   const [stomp, setStomp] = useState([]);
   const [rerollCounter, setRerollCounter] = useState("first");
+  let intialValue = ["", "", "", "", "", "", "", "", "", "", "", "", ""];
+
+  const [orangeCells, setOrangeCells] = useState(intialValue);
 
   return (
     <div className="play-field">
@@ -44,6 +48,8 @@ function PlayField(props) {
             setRerollCounter={setRerollCounter}
             rerollCounter={rerollCounter}
             actualPlayer={props.actualPlayer}
+            setOrangeCells={setOrangeCells}
+            orangeCells={orangeCells}
           ></DiceField>
         </Col>
         <Col span={12}>
@@ -52,10 +58,10 @@ function PlayField(props) {
       </Row>
       <Row>
         <Col className="rightBoard" span={12}>
-          <Board testContent={testContent} markedCells={markedCells}></Board>
+          <Board orangeCells={orangeCells} testContent={testContent} markedCells={markedCells}></Board>
         </Col>
         <Col className="rightBoard" span={12}>
-          <Board testContent={testContent} markedCells={markedCells}></Board>
+          <Board  orangeCells={orangeCells} testContent={testContent} markedCells={markedCells}></Board>
         </Col>
       </Row>
     </div>

@@ -57,6 +57,7 @@ function DiceField(props) {
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
   const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
   const [numberOfRerolledDice, setNumberOfRerolledDice] = useState(6);
+  const [cellsToMark, setCellsToMark] = useState(0);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
 
@@ -97,7 +98,7 @@ function DiceField(props) {
 
   useSubscription("/topic/getselectedcolor", (message) => {
     if (props.actualPlayer === "second") {
-      selectColor(JSON.parse(message.body).diceValue)
+      selectColor(JSON.parse(message.body).diceValue);
     }
   });
 
@@ -326,6 +327,18 @@ function DiceField(props) {
     setTurnOver(true);
   };
 
+  const markCells = (numberOfDice) => {
+    let cells = [];
+    for (let i = 0; i < 11; i++) {
+      if (i < cellsToMark + numberOfDice) {
+        cells.push("X");
+      } else {
+        cells.push("");
+      }
+    }
+    props.setOrangeCells(cells);
+  };
+
   const selectColor = (value) => {
     let isFound = false;
     for (let group of groupedDiceRolls) {
@@ -333,9 +346,10 @@ function DiceField(props) {
         let indexOfGroup = groupedDiceRolls.indexOf(group);
         groupedDiceRolls.splice(indexOfGroup, 1);
         isFound = true;
-        if (props.actualPlayer === "first"){
-          sendSelectedColor(group[0])
+        if (props.actualPlayer === "first") {
+          sendSelectedColor(group[0]);
         }
+        markCells(group.length);
         break;
       }
       if (isFound) {
