@@ -91,8 +91,13 @@ function DiceField(props) {
 
   useSubscription("/topic/getnewdiceforroll", (message) => {
     if (props.actualPlayer === "second") {
-      console.log("second");
       prepareForReRoll();
+    }
+  });
+
+  useSubscription("/topic/getselectedcolor", (message) => {
+    if (props.actualPlayer === "second") {
+      selectColor(JSON.parse(message.body).diceValue)
     }
   });
 
@@ -134,6 +139,17 @@ function DiceField(props) {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/newdiceforroll",
+        body: JSON.stringify(dice),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const sendSelectedColor = (dice) => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/selectedcolor",
         body: JSON.stringify(dice),
       });
     } else {
@@ -316,8 +332,10 @@ function DiceField(props) {
       if (group[0].diceValue === value) {
         let indexOfGroup = groupedDiceRolls.indexOf(group);
         groupedDiceRolls.splice(indexOfGroup, 1);
-        console.log(groupedDiceRolls);
         isFound = true;
+        if (props.actualPlayer === "first"){
+          sendSelectedColor(group[0])
+        }
         break;
       }
       if (isFound) {
