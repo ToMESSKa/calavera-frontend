@@ -23,7 +23,6 @@ function DiceField(props) {
     ],
   };
 
-  const allDice = useRef();
   const myDice1 = useRef();
   const myDice2 = useRef();
   const myDice3 = useRef();
@@ -31,7 +30,7 @@ function DiceField(props) {
   const myDice5 = useRef();
   const myDice6 = useRef();
   const myDice = useRef();
-  const [testDice, setTestDice] = useState([
+  const [allDiceToRoll, setAllDiceToRoll] = useState([
     myDice1,
     myDice2,
     myDice3,
@@ -89,7 +88,8 @@ function DiceField(props) {
 
   useSubscription("/topic/getnewdiceforroll", (message) => {
     if (props.actualPlayer === "second") {
-      reRoll();
+      console.log("second");
+      prepareForReRoll();
     }
   });
 
@@ -139,13 +139,13 @@ function DiceField(props) {
   };
 
   const rollAllDices = (e) => {
-    for (let dice of testDice) {
+    for (let dice of allDiceToRoll) {
       dice.current.rollDice();
     }
   };
 
   const rollAllDicesForTheOtherPlayer = (e) => {
-    for (let dice of testDice) {
+    for (let dice of allDiceToRoll) {
       dice.current.rollDice();
     }
   };
@@ -167,14 +167,10 @@ function DiceField(props) {
   };
 
   const setRollsForTheOtherPlayer = (rolls) => {
-    let values = [
-      rolls[0].diceValue,
-      rolls[1].diceValue,
-      rolls[2].diceValue,
-      rolls[3].diceValue,
-      rolls[4].diceValue,
-      rolls[5].diceValue,
-    ];
+    let values = [];
+    for (let i = 0; i < rolls.length; i++) {
+      values.push(rolls[i].diceValue);
+    }
     setCheatValues(values);
   };
 
@@ -185,6 +181,7 @@ function DiceField(props) {
   };
 
   const selectForReroll = (value) => {
+    if (props.rerollCounter !== "third"){
     let isFound = false;
     if (value !== 5) {
       for (let group of groupedDiceRolls) {
@@ -209,6 +206,7 @@ function DiceField(props) {
         setRerollButtonVisible(true);
       }
     }
+  }
   };
 
   const cancelForReroll = (value) => {
@@ -271,7 +269,8 @@ function DiceField(props) {
     setDicesVisible(false);
   };
 
-  const reRoll = () => {
+  const prepareForReRoll = () => {
+    console.log(selectedDiceForReroll);
     setDiceRolls({ diceRolls: selectedDiceForReroll });
     setSelectedDiceForReroll([]);
     setNumberOfRerolledDice(selectedDiceForReroll.length);
@@ -280,6 +279,16 @@ function DiceField(props) {
     if (props.actualPlayer === "first") {
       sendNewDiceForRoll({ diceRolls: selectedDiceForReroll });
     }
+    if (props.rerollCounter === "first") {
+      props.setRerollCounter("second");
+    } else if (props.rerollCounter === "second") {
+      props.setRerollCounter("third");
+    }
+    let newAllDiceToRoll = [];
+    for (let i = 0; i < selectedDiceForReroll.length; i++) {
+      newAllDiceToRoll.push(allDiceToRoll[i]);
+    }
+    setAllDiceToRoll(newAllDiceToRoll);
   };
 
   return (
@@ -298,7 +307,7 @@ function DiceField(props) {
         </Col>
         <Col>
           <RerollSelectionField
-            reRoll={reRoll}
+            reRoll={prepareForReRoll}
             selectedDiceForReroll={selectedDiceForReroll}
             cancelForReroll={cancelForReroll}
             rerollButtonVisible={rerollButtonVisible}
@@ -309,10 +318,9 @@ function DiceField(props) {
       <Row>
         <Col>
           <DiceRollingField
-            testDice={testDice}
+            allDiceToRoll={allDiceToRoll}
             diceRolls={diceRolls}
             dicesVisible={dicesVisible}
-            allDice={allDice}
             cheatValues={cheatValues}
             getDiceValue={getDiceValue}
             faces={faces}
