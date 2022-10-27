@@ -51,6 +51,8 @@ function DiceField(props) {
     turquoise: [],
   });
   const [dicesVisible, setDicesVisible] = useState(true);
+  const [turnOver, setTurnOver] = useState(false);
+  const [diceActionAfterRoll, setDiceActionAfterRoll] = useState();
   const [stopButtonVisible, setStopButtonVisible] = useState(false);
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
   const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
@@ -181,6 +183,14 @@ function DiceField(props) {
     }
   };
 
+  const handleClickOnDice = (value) => {
+    if (turnOver) {
+      selectColor(value);
+    } else {
+      selectForReroll(value);
+    }
+  };
+
   const selectForReroll = (value) => {
     if (props.rerollCounter !== "third") {
       let isFound = false;
@@ -206,7 +216,7 @@ function DiceField(props) {
         if (selectedDiceForReroll !== [] && props.actualPlayer === "first") {
           setRerollButtonVisible(true);
         }
-        setStopButtonVisible(false)
+        setStopButtonVisible(false);
       }
     }
   };
@@ -241,7 +251,7 @@ function DiceField(props) {
     setGroupedDiceRolls([...groupedDiceRolls]);
     if (selectedDiceForReroll.length === 0) {
       setRerollButtonVisible(false);
-      setStopButtonVisible(true)
+      setStopButtonVisible(true);
     }
   };
 
@@ -270,7 +280,7 @@ function DiceField(props) {
     setSortedDiceByColor(sortedDiceByColor);
     setGroupedDiceRolls(arr);
     setDicesVisible(false);
-    setStopButtonVisible(true)
+    setStopButtonVisible(true);
   };
 
   const prepareForReRoll = () => {
@@ -293,6 +303,28 @@ function DiceField(props) {
       newAllDiceToRoll.push(allDiceToRoll[i]);
     }
     setAllDiceToRoll(newAllDiceToRoll);
+    setDiceActionAfterRoll(selectForReroll);
+  };
+
+  const endTurn = (value) => {
+    setTurnOver(true);
+  };
+
+  const selectColor = (value) => {
+    let isFound = false;
+    for (let group of groupedDiceRolls) {
+      if (group[0].diceValue === value) {
+        let indexOfGroup = groupedDiceRolls.indexOf(group);
+        groupedDiceRolls.splice(indexOfGroup, 1);
+        console.log(groupedDiceRolls);
+        isFound = true;
+        break;
+      }
+      if (isFound) {
+        break;
+      }
+    }
+    setGroupedDiceRolls([...groupedDiceRolls]);
   };
 
   return (
@@ -304,7 +336,7 @@ function DiceField(props) {
             myDice={myDice}
             cheatValues={cheatValues}
             getDiceValue={getDiceValue}
-            selectForReroll={selectForReroll}
+            handleClickOnDice={handleClickOnDice}
             groupedDiceRolls={groupedDiceRolls}
             faces={faces}
           ></DiceGroupingField>
@@ -318,7 +350,13 @@ function DiceField(props) {
             faces={faces}
           ></RerollSelectionField>
         </Col>
-        <Col>{stopButtonVisible ? <button>STOP</button> : <div></div>}</Col>
+        <Col>
+          {stopButtonVisible ? (
+            <button onClick={endTurn}>STOP</button>
+          ) : (
+            <div></div>
+          )}
+        </Col>
       </Row>
       <Row>
         <Col>

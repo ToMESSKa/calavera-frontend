@@ -16,7 +16,7 @@ function DiceGroupingField (props) {
                 {(props.groupedDiceRolls).map((group, index) => (
                     <Row key={Math.random() * Math.random()}>
                     {group.map((dice => 
-                    <Dice cheatValue={dice.diceValue} onRoll={props.selectForReroll} defaultValue={dice.diceValue} faces={props.faces} rollingTime={0} size={40} key={Math.random() * Math.random()}></Dice>
+                    <Dice cheatValue={dice.diceValue} onRoll={props.handleClickOnDice} defaultValue={dice.diceValue} faces={props.faces} rollingTime={0} size={40} key={Math.random() * Math.random()}></Dice>
                         )) 
                     }
                     </Row>
