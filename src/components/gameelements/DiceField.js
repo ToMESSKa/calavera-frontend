@@ -57,7 +57,11 @@ function DiceField(props) {
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
   const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
   const [numberOfRerolledDice, setNumberOfRerolledDice] = useState(6);
-  const [cellsToMark, setCellsToMark] = useState(0);
+  const [orangeCellsToMark, setOrangeCellsToMark] = useState(0);
+  const [purpleCellsToMark, setRedCellsToMark] = useState(0);
+  const [turquoiseCellsToMark, setTurquoiseCellsToMark] = useState(0);
+  const [blackCellsToMark, setBlackCellsToMark] = useState(0);
+  const [whosTurnItIs, setWhosTurnItIs] = useState(1);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
 
@@ -327,16 +331,49 @@ function DiceField(props) {
     setTurnOver(true);
   };
 
-  const markCells = (numberOfDice) => {
+  const markCells = (numberOfDice, value) => {
     let cells = [];
-    for (let i = 0; i < 11; i++) {
+    let cellsToMark = defineColor(value);
+    for (let i = 0; i < 13; i++) {
       if (i < cellsToMark + numberOfDice) {
         cells.push("X");
       } else {
         cells.push("");
       }
     }
-    props.setOrangeCells(cells);
+    selectPlayer(value, whosTurnItIs, cells);
+  };
+
+  const defineColor = (value) => {
+    if (value === 1) {
+      return purpleCellsToMark;
+    } else if (value === 2) {
+      return blackCellsToMark;
+    } else if (value === 3) {
+      return orangeCellsToMark;
+    } else if (value === 6) {
+      return turquoiseCellsToMark;
+    }
+  };
+
+  const selectPlayer = (value, player, cells) => {
+    if (player === 1 && value === 1) {
+      props.setPlayerOnePurpleCells(cells);
+    } else if (player === 1 && value === 2) {
+      props.setPlayerOneBlackCells(cells);
+    } else if (player === 1 && value === 3) {
+      props.setPlayerOneOrangeCells(cells);
+    } else if (player === 1 && value === 6) {
+      props.setPlayerOneTurquoiseCells(cells);
+    } else if (player === 2 && value === 1) {
+      props.setPlayerTwoPurpleCells(cells);
+    } else if (player === 2 && value === 2) {
+      props.setPlayerTwoBlackCells(cells);
+    } else if (player === 2 && value === 3) {
+      props.setPlayerTwoOrangeCells(cells);
+    } else if (player === 2 && value === 6) {
+      props.setPlayerTwoTurquoiseCells(cells);
+    }
   };
 
   const selectColor = (value) => {
@@ -347,9 +384,9 @@ function DiceField(props) {
         groupedDiceRolls.splice(indexOfGroup, 1);
         isFound = true;
         if (props.actualPlayer === "first") {
-          sendSelectedColor(group[0]);
+          sendSelectedColor(group[0], value);
         }
-        markCells(group.length);
+        markCells(group.length, value);
         break;
       }
       if (isFound) {

@@ -13,7 +13,7 @@ import RerollCounter from "./gameelements/RerollCounter";
 
 function PlayField(props) {
   const [testContent, setTestContent] = useState(0);
- 
+
   const [markedCells, setMarkedCells] = useState([
     "",
     "",
@@ -33,14 +33,26 @@ function PlayField(props) {
   const [rerollCounter, setRerollCounter] = useState("first");
   let intialValue = ["", "", "", "", "", "", "", "", "", "", "", "", ""];
 
-  const [orangeCells, setOrangeCells] = useState(intialValue);
+  const [playerOneOrangeCells, setPlayerOneOrangeCells] = useState(intialValue);
+  const [playerOnePurpleCells, setPlayerOnePurpleCells] = useState(intialValue);
+  const [playerOneTurquoiseCells, setPlayerOneTurquoiseCells] =
+    useState(intialValue);
+  const [playerOneBlackCells, setPlayerOneBlackCells] = useState(intialValue);
+
+  const [playerTwoOrangeCells, setPlayerTwoOrangeCells] = useState(intialValue);
+  const [playerTwoPurpleCells, setPlayerTwoPurpleCells] = useState(intialValue);
+  const [playerTwoTurquoiseCells, setPlayerTwoTurquoiseCells] =
+    useState(intialValue);
+  const [playerTwoBlackCells, setPlayerTwoBlackCells] = useState(intialValue);
 
   return (
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
       <div>STOMP: {stomp}</div>
       <Row>
-        <Col><RerollCounter rerollCounter={rerollCounter}></RerollCounter></Col>
+        <Col>
+          <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
+        </Col>
       </Row>
       <Row>
         <Col span={12}>
@@ -48,8 +60,14 @@ function PlayField(props) {
             setRerollCounter={setRerollCounter}
             rerollCounter={rerollCounter}
             actualPlayer={props.actualPlayer}
-            setOrangeCells={setOrangeCells}
-            orangeCells={orangeCells}
+            setPlayerOneOrangeCells={setPlayerOneOrangeCells}
+            setPlayerOneBlackCells={setPlayerOneBlackCells}
+            setPlayerOnePurpleCells={setPlayerOnePurpleCells}
+            setPlayerOneTurquoiseCells={setPlayerOneTurquoiseCells}
+            setPlayerTwoOrangeCells={setPlayerOneOrangeCells}
+            setPlayerTwoBlackCells={setPlayerOneBlackCells}
+            setPlayerTwoPurpleCells={setPlayerOnePurpleCells}
+            setPlayerTwoTurquoiseCells={setPlayerOneTurquoiseCells}
           ></DiceField>
         </Col>
         <Col span={12}>
@@ -58,10 +76,20 @@ function PlayField(props) {
       </Row>
       <Row>
         <Col className="rightBoard" span={12}>
-          <Board orangeCells={orangeCells} testContent={testContent} markedCells={markedCells}></Board>
+          <Board
+            orangeCells={playerOneOrangeCells}
+            purpleCells={playerOnePurpleCells}
+            turquoiseCells={playerOneTurquoiseCells}
+            blackCells={playerOneBlackCells}
+          ></Board>
         </Col>
         <Col className="rightBoard" span={12}>
-          <Board  orangeCells={orangeCells} testContent={testContent} markedCells={markedCells}></Board>
+          <Board
+          orangeCells={playerTwoOrangeCells}
+          purpleCells={playerTwoPurpleCells}
+          turquoiseCells={playerTwoTurquoiseCells}
+          blackCells={playerTwoBlackCells}
+          ></Board>
         </Col>
       </Row>
     </div>
