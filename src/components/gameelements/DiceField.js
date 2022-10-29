@@ -106,6 +106,14 @@ function DiceField(props) {
     }
   });
 
+  useSubscription("/topic/getmarkedcells", (message) => {
+    if (props.actualPlayer === "second") {
+      markCells(JSON.parse(message.body).numberOfDice,JSON.parse(message.body).value)
+      console.log(message)
+    }
+  });
+
+
   const sendRollResults = () => {
     if (stompClient) {
       stompClient.publish({
@@ -156,6 +164,17 @@ function DiceField(props) {
       stompClient.publish({
         destination: "/app/selectedcolor",
         body: JSON.stringify(dice),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const sendMarkedCells= (markedCells) => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/markedcells",
+        body: JSON.stringify(markedCells),
       });
     } else {
       //Handle error
@@ -387,6 +406,10 @@ function DiceField(props) {
           sendSelectedColor(group[0], value);
         }
         markCells(group.length, value);
+        if (props.actualPlayer === "first"){
+        let markedCells = {numberOfDice: group.length, value: value}
+        sendMarkedCells(markedCells)
+        }
         break;
       }
       if (isFound) {
