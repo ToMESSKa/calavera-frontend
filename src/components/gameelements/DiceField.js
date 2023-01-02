@@ -61,7 +61,8 @@ function DiceField(props) {
   const [purpleCellsToMark, setRedCellsToMark] = useState(0);
   const [turquoiseCellsToMark, setTurquoiseCellsToMark] = useState(0);
   const [blackCellsToMark, setBlackCellsToMark] = useState(0);
-  const [whosTurnItIs, setWhosTurnItIs] = useState(1);
+  const [whoseTurnItIs, setWhosTurnItIs] = useState(1);
+  const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
 
@@ -108,11 +109,19 @@ function DiceField(props) {
 
   useSubscription("/topic/getmarkedcells", (message) => {
     if (props.actualPlayer === "second") {
-      markCells(JSON.parse(message.body).numberOfDice,JSON.parse(message.body).value)
-      console.log(message)
+      markCells(
+        JSON.parse(message.body).numberOfDice,
+        JSON.parse(message.body).value
+      );
     }
   });
 
+  useSubscription("/topic/getwhoseturnitis", (message) => {
+    if (props.actualPlayer === "second") {
+      setWhosTurnItIs(2);
+      setTurnOver(true);
+    }
+  });
 
   const sendRollResults = () => {
     if (stompClient) {
@@ -170,11 +179,22 @@ function DiceField(props) {
     }
   };
 
-  const sendMarkedCells= (markedCells) => {
+  const sendMarkedCells = (markedCells) => {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/markedcells",
         body: JSON.stringify(markedCells),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const sendWhoseTurnItIs = () => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/whoseturnitis",
+        body: JSON.stringify({ whoseTurnItIs: whoseTurnItIs }),
       });
     } else {
       //Handle error
@@ -224,8 +244,13 @@ function DiceField(props) {
   };
 
   const handleClickOnDice = (value) => {
-    if (turnOver) {
+    if (turnOver === true && whoseTurnItIs === 1) {
       selectColor(value);
+      setWhosTurnItIs(2);
+      sendWhoseTurnItIs();
+    } else if (turnOver === true && whoseTurnItIs === 2) {
+      console.log("click");
+      otherPlayerChosesFromTheRestofDice(value);
     } else {
       selectForReroll(value);
     }
@@ -360,7 +385,7 @@ function DiceField(props) {
         cells.push("");
       }
     }
-    selectPlayer(value, whosTurnItIs, cells);
+    selectPlayer(value, whoseTurnItIs, cells);
   };
 
   const defineColor = (value) => {
@@ -376,6 +401,7 @@ function DiceField(props) {
   };
 
   const selectPlayer = (value, player, cells) => {
+    console.log("whos turn " + whoseTurnItIs);
     if (player === 1 && value === 1) {
       props.setPlayerOnePurpleCells(cells);
     } else if (player === 1 && value === 2) {
@@ -396,6 +422,7 @@ function DiceField(props) {
   };
 
   const selectColor = (value) => {
+    console.log(props.actualPlayer);
     let isFound = false;
     for (let group of groupedDiceRolls) {
       if (group[0].diceValue === value) {
@@ -404,11 +431,12 @@ function DiceField(props) {
         isFound = true;
         if (props.actualPlayer === "first") {
           sendSelectedColor(group[0], value);
-        }
-        markCells(group.length, value);
-        if (props.actualPlayer === "first"){
-        let markedCells = {numberOfDice: group.length, value: value}
-        sendMarkedCells(markedCells)
+          markCells(group.length, value);
+          let markedCells = { numberOfDice: group.length, value: value };
+          sendMarkedCells(markedCells);
+        } else if (props.actualPlayer === "second") {
+          console.log("heeeey");
+          markCells(group.length, value);
         }
         break;
       }
@@ -417,6 +445,10 @@ function DiceField(props) {
       }
     }
     setGroupedDiceRolls([...groupedDiceRolls]);
+  };
+
+  const otherPlayerChosesFromTheRestofDice = (value) => {
+    selectColor(value);
   };
 
   return (
@@ -465,7 +497,7 @@ function DiceField(props) {
       <Row>
         {dicesVisible ? (
           <button ref={myButton} onClick={rollAllDices}>
-            Roll
+            Rolly
           </button>
         ) : (
           <div>{false}</div>

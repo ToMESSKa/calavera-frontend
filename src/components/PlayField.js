@@ -64,10 +64,10 @@ function PlayField(props) {
             setPlayerOneBlackCells={setPlayerOneBlackCells}
             setPlayerOnePurpleCells={setPlayerOnePurpleCells}
             setPlayerOneTurquoiseCells={setPlayerOneTurquoiseCells}
-            setPlayerTwoOrangeCells={setPlayerOneOrangeCells}
-            setPlayerTwoBlackCells={setPlayerOneBlackCells}
-            setPlayerTwoPurpleCells={setPlayerOnePurpleCells}
-            setPlayerTwoTurquoiseCells={setPlayerOneTurquoiseCells}
+            setPlayerTwoOrangeCells={setPlayerTwoOrangeCells}
+            setPlayerTwoBlackCells={setPlayerTwoBlackCells}
+            setPlayerTwoPurpleCells={setPlayerTwoPurpleCells}
+            setPlayerTwoTurquoiseCells={setPlayerTwoTurquoiseCells}
           ></DiceField>
         </Col>
         <Col span={12}>
@@ -83,7 +83,7 @@ function PlayField(props) {
             blackCells={playerOneBlackCells}
           ></Board>
         </Col>
-        <Col className="rightBoard" span={12}>
+        <Col className="leftBoard" span={12}>
           <Board
           orangeCells={playerTwoOrangeCells}
           purpleCells={playerTwoPurpleCells}
