@@ -102,7 +102,10 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getselectedcolor", (message) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === "second" && whoseTurnItIs === 1) {
+      selectColor(JSON.parse(message.body).diceValue);
+    }
+    if (props.actualPlayer === "first" && whoseTurnItIs === 2) {
       selectColor(JSON.parse(message.body).diceValue);
     }
   });
