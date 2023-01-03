@@ -113,13 +113,20 @@ function DiceField(props) {
         JSON.parse(message.body).numberOfDice,
         JSON.parse(message.body).value
       );
+    } else if (props.actualPlayer === "first" && whoseTurnItIs === 2) {
+      console.log("cool");
+      markCells(
+        JSON.parse(message.body).numberOfDice,
+        JSON.parse(message.body).value
+      );
+    } else if (props.actualPlayer === "first") {
+      setWhosTurnItIs(2);
     }
   });
 
   useSubscription("/topic/getwhoseturnitis", (message) => {
     if (props.actualPlayer === "second") {
       setWhosTurnItIs(2);
-      setTurnOver(true);
     }
   });
 
@@ -246,9 +253,8 @@ function DiceField(props) {
   const handleClickOnDice = (value) => {
     if (turnOver === true && whoseTurnItIs === 1) {
       selectColor(value);
-      setWhosTurnItIs(2);
       sendWhoseTurnItIs();
-    } else if (turnOver === true && whoseTurnItIs === 2) {
+    } else if (whoseTurnItIs === 2) {
       console.log("click");
       otherPlayerChosesFromTheRestofDice(value);
     } else {
@@ -385,7 +391,19 @@ function DiceField(props) {
         cells.push("");
       }
     }
-    selectPlayer(value, whoseTurnItIs, cells);
+    if (props.actualPlayer === "first" && whoseTurnItIs === 1) {
+      console.log("first if");
+      selectPlayer(value, 1, cells);
+    } else if (props.actualPlayer === "first" && whoseTurnItIs === 2) {
+      console.log("second if");
+      selectPlayer(value, 2, cells);
+    } else if (props.actualPlayer === "second" && whoseTurnItIs === 1) {
+      console.log("third if");
+      selectPlayer(value, 1, cells);
+    } else if (props.actualPlayer === "second" && whoseTurnItIs === 2) {
+      console.log("fourth if");
+      selectPlayer(value, 2, cells);
+    }
   };
 
   const defineColor = (value) => {
@@ -401,7 +419,6 @@ function DiceField(props) {
   };
 
   const selectPlayer = (value, player, cells) => {
-    console.log("whos turn " + whoseTurnItIs);
     if (player === 1 && value === 1) {
       props.setPlayerOnePurpleCells(cells);
     } else if (player === 1 && value === 2) {
@@ -422,7 +439,6 @@ function DiceField(props) {
   };
 
   const selectColor = (value) => {
-    console.log(props.actualPlayer);
     let isFound = false;
     for (let group of groupedDiceRolls) {
       if (group[0].diceValue === value) {
@@ -436,7 +452,10 @@ function DiceField(props) {
           sendMarkedCells(markedCells);
         } else if (props.actualPlayer === "second") {
           console.log("heeeey");
+          sendSelectedColor(group[0], value);
           markCells(group.length, value);
+          let markedCells = { numberOfDice: group.length, value: value };
+          sendMarkedCells(markedCells);
         }
         break;
       }
