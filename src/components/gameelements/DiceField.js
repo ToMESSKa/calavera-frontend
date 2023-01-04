@@ -51,7 +51,7 @@ function DiceField(props) {
     turquoise: [],
   });
   const [dicesVisible, setDicesVisible] = useState(true);
-  const [turnOver, setTurnOver] = useState(false);
+  const [selectionForMarkingOver, setSelectionForMarkingOver] = useState(false);
   const [diceActionAfterRoll, setDiceActionAfterRoll] = useState();
   const [stopButtonVisible, setStopButtonVisible] = useState(false);
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
@@ -111,7 +111,7 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === "second" && whoseTurnItIs === 1) {
       markCells(
         JSON.parse(message.body).numberOfDice,
         JSON.parse(message.body).value
@@ -254,7 +254,7 @@ function DiceField(props) {
   };
 
   const handleClickOnDice = (value) => {
-    if (turnOver === true && whoseTurnItIs === 1) {
+    if (selectionForMarkingOver === true && whoseTurnItIs === 1) {
       selectColor(value);
       sendWhoseTurnItIs();
     } else if (whoseTurnItIs === 2) {
@@ -381,7 +381,7 @@ function DiceField(props) {
   };
 
   const endTurn = (value) => {
-    setTurnOver(true);
+    setSelectionForMarkingOver(true);
   };
 
   const markCells = (numberOfDice, value) => {
@@ -471,6 +471,7 @@ function DiceField(props) {
 
   const otherPlayerChosesFromTheRestofDice = (value) => {
     selectColor(value);
+
   };
 
   return (
@@ -519,7 +520,7 @@ function DiceField(props) {
       <Row>
         {dicesVisible ? (
           <button ref={myButton} onClick={rollAllDices}>
-            Rolly
+            Roll
           </button>
         ) : (
           <div>{false}</div>
