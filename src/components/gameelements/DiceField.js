@@ -63,6 +63,7 @@ function DiceField(props) {
   const [blackCellsToMark, setBlackCellsToMark] = useState(0);
   const [whoseTurnItIs, setWhosTurnItIs] = useState(1);
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
+  const [isTurnOver, setTurnOver] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
 
@@ -71,6 +72,13 @@ function DiceField(props) {
       rollAllDicesForTheOtherPlayer();
     }
   }, [cheatValues]);
+
+  useEffect(() => {
+    if (props.rollButtonHidden === true){
+      setDicesVisible(false)
+    }
+  }, []);
+
 
   const stompClient = useStompClient();
 
@@ -471,7 +479,6 @@ function DiceField(props) {
 
   const otherPlayerChosesFromTheRestofDice = (value) => {
     selectColor(value);
-
   };
 
   return (
@@ -498,7 +505,7 @@ function DiceField(props) {
           ></RerollSelectionField>
         </Col>
         <Col>
-          {stopButtonVisible ? (
+          {stopButtonVisible  ? (
             <button onClick={endTurn}>STOP</button>
           ) : (
             <div></div>
@@ -518,7 +525,7 @@ function DiceField(props) {
         </Col>
       </Row>
       <Row>
-        {dicesVisible ? (
+        { dicesVisible ? (
           <button ref={myButton} onClick={rollAllDices}>
             Roll
           </button>

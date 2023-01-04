@@ -45,10 +45,12 @@ function PlayField(props) {
     useState(intialValue);
   const [playerTwoBlackCells, setPlayerTwoBlackCells] = useState(intialValue);
 
+  const [rollButtonHidden, setRollButtonHidden] = useState(true);
+
+
   return (
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
-      <div>STOMP: {stomp}</div>
       <Row>
         <Col>
           <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
@@ -71,7 +73,9 @@ function PlayField(props) {
           ></DiceField>
         </Col>
         <Col span={12}>
-          <DiceField></DiceField>
+          <DiceField
+          rollButtonHidden={rollButtonHidden}
+          ></DiceField>
         </Col>
       </Row>
       <Row>

@@ -9,6 +9,7 @@ function DiceRollingField(props) {
         <Row gutter={1}>
           {props.diceRolls.diceRolls.map((dice, index) => (
             <Dice
+              disabled={true}
               ref={props.allDiceToRoll[index]}
               defaultValue={dice.diceValue}
               cheatValue={props.cheatValues[index]}

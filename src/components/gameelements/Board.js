@@ -6,11 +6,6 @@ import PointsHeader from "./PointsHeader";
 import RoseHeader from "./RoseHeader";
 
 function Board(props) {
-  //   let intialValue = ["", "", "", "", "", "", "", "", "", "", "", "", ""];
-
-  //   const [purpleCells, setPurpleCells] = useState([intialValue]);
-  //   const [greenCells, setGreenCells] = useState([intialValue]);
-  //   const [blackCells, setBlackCells] = useState([intialValue]);
 
   return (
     <div className="board">
