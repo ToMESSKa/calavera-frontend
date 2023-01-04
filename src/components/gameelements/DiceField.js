@@ -74,11 +74,10 @@ function DiceField(props) {
   }, [cheatValues]);
 
   useEffect(() => {
-    if (props.rollButtonHidden === true){
-      setDicesVisible(false)
+    if (props.rollButtonHidden === true) {
+      setDicesVisible(false);
     }
   }, []);
-
 
   const stompClient = useStompClient();
 
@@ -139,6 +138,10 @@ function DiceField(props) {
     if (props.actualPlayer === "second") {
       setWhosTurnItIs(2);
     }
+  });
+
+  useSubscription("/topic/turnisover", (message) => {
+    startNewTurn();
   });
 
   const sendRollResults = () => {
@@ -213,6 +216,17 @@ function DiceField(props) {
       stompClient.publish({
         destination: "/app/whoseturnitis",
         body: JSON.stringify({ whoseTurnItIs: whoseTurnItIs }),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const notifyServerAboutTheEndOfTurn = () => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/turnisover",
+        body: JSON.stringify({ turnIsOver: true }),
       });
     } else {
       //Handle error
@@ -479,6 +493,12 @@ function DiceField(props) {
 
   const otherPlayerChosesFromTheRestofDice = (value) => {
     selectColor(value);
+    notifyServerAboutTheEndOfTurn();
+  };
+
+  const startNewTurn = () => {
+    setDiceRolls(defaultDiceRolls);
+    setDicesVisible(true);
   };
 
   return (
@@ -505,7 +525,7 @@ function DiceField(props) {
           ></RerollSelectionField>
         </Col>
         <Col>
-          {stopButtonVisible  ? (
+          {stopButtonVisible ? (
             <button onClick={endTurn}>STOP</button>
           ) : (
             <div></div>
@@ -525,7 +545,7 @@ function DiceField(props) {
         </Col>
       </Row>
       <Row>
-        { dicesVisible ? (
+        {dicesVisible ? (
           <button ref={myButton} onClick={rollAllDices}>
             Roll
           </button>
