@@ -14,12 +14,12 @@ import { useStompClient, useSubscription } from "react-stomp-hooks";
 function DiceField(props) {
   const defaultDiceRolls = {
     diceRolls: [
-      { diceNumber: "dice1", diceValue: 1 },
-      { diceNumber: "dice2", diceValue: 1 },
-      { diceNumber: "dice3", diceValue: 1 },
-      { diceNumber: "dice4", diceValue: 1 },
-      { diceNumber: "dice5", diceValue: 1 },
-      { diceNumber: "dice6", diceValue: 1 },
+      { diceNumber: "dice1", diceColor: 1 },
+      { diceNumber: "dice2", diceColor: 2 },
+      { diceNumber: "dice3", diceColor: 3 },
+      { diceNumber: "dice4", diceColor: 4 },
+      { diceNumber: "dice5", diceColor: 5 },
+      { diceNumber: "dice6", diceColor: 6 },
     ],
   };
 
@@ -41,7 +41,7 @@ function DiceField(props) {
   const myButton = useRef();
   const [cheatValues, setCheatValues] = useState(0);
   const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
-  const [groupedDiceRolls, setGroupedDiceRolls] = useState([]);
+  const [dicesGroupedByColor, setGroupedDiceRolls] = useState([]);
   const [sortedDiceByColor, setSortedDiceByColor] = useState({
     purple: [],
     black: [],
@@ -51,7 +51,7 @@ function DiceField(props) {
     turquoise: [],
   });
   const [dicesVisible, setDicesVisible] = useState(true);
-  const [selectionForMarkingOver, setSelectionForMarkingOver] = useState(false);
+  const [rollingIsOver, setRollingIsOver] = useState(false);
   const [diceActionAfterRoll, setDiceActionAfterRoll] = useState();
   const [stopButtonVisible, setStopButtonVisible] = useState(false);
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
@@ -61,7 +61,7 @@ function DiceField(props) {
   const [purpleCellsToMark, setRedCellsToMark] = useState(0);
   const [turquoiseCellsToMark, setTurquoiseCellsToMark] = useState(0);
   const [blackCellsToMark, setBlackCellsToMark] = useState(0);
-  const [whoseTurnItIs, setWhosTurnItIs] = useState(1);
+  const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
@@ -82,7 +82,7 @@ function DiceField(props) {
   const stompClient = useStompClient();
 
   useSubscription("/topic/getdicerollresult", (message) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === 2) {
       setRollsForTheOtherPlayer(JSON.parse(message.body).diceRolls);
       setTimeout(function () {
         groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
@@ -91,52 +91,50 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getseledteddicererollresult", (message) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === 2) {
       selectForReroll(JSON.parse(message.body).diceValue);
     }
   });
 
   useSubscription("/topic/getcanceleddice", (message) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === 2) {
       cancelForReroll(JSON.parse(message.body).diceValue);
     }
   });
 
   useSubscription("/topic/getnewdiceforroll", (message) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === 2) {
       prepareForReRoll();
     }
   });
 
   useSubscription("/topic/getselectedcolor", (message) => {
-    if (props.actualPlayer === "second" && whoseTurnItIs === 1) {
-      selectColor(JSON.parse(message.body).diceValue);
-    }
-    if (props.actualPlayer === "first" && whoseTurnItIs === 2) {
-      selectColor(JSON.parse(message.body).diceValue);
+    if (props.actualPlayer === 2) {
+      selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
+    } else if (props.actualPlayer === 1) {
+      selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
     }
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    if (props.actualPlayer === "second" && whoseTurnItIs === 1) {
+    if (props.actualPlayer === 2 && playerToMarkCells === 1) {
       markCells(
         JSON.parse(message.body).numberOfDice,
         JSON.parse(message.body).value
       );
-    } else if (props.actualPlayer === "first" && whoseTurnItIs === 2) {
-      console.log("cool");
+    } else if (props.actualPlayer === 1 && playerToMarkCells === 2) {
       markCells(
         JSON.parse(message.body).numberOfDice,
         JSON.parse(message.body).value
       );
-    } else if (props.actualPlayer === "first") {
-      setWhosTurnItIs(2);
+    } else if (props.actualPlayer === 1) {
+      setPlayerToMarkCells(2);
     }
   });
 
   useSubscription("/topic/getwhoseturnitis", (message) => {
-    if (props.actualPlayer === "second") {
-      setWhosTurnItIs(2);
+    if (props.actualPlayer === 2) {
+      setPlayerToMarkCells(2);
     }
   });
 
@@ -215,7 +213,7 @@ function DiceField(props) {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/whoseturnitis",
-        body: JSON.stringify({ whoseTurnItIs: whoseTurnItIs }),
+        body: JSON.stringify({ whoseTurnItIs: playerToMarkCells }),
       });
     } else {
       //Handle error
@@ -246,10 +244,10 @@ function DiceField(props) {
   };
 
   const getDiceValue = (value, number) => {
-    if (props.actualPlayer === "first") {
+    if (props.actualPlayer === 1) {
       for (let dice of diceRolls.diceRolls) {
         if (dice.diceNumber === number) {
-          dice.diceValue = value;
+          dice.diceColor = value;
         }
       }
       counter = counter + 1;
@@ -261,26 +259,42 @@ function DiceField(props) {
     }
   };
 
+  const convertDiceValueToColor = (diceValue) => {
+    switch (diceValue) {
+      case 1:
+        return 1;
+      case 2:
+        return 1;
+      case 3:
+        return 1;
+      case 4:
+        return 1;
+      case 5:
+        return 1;
+      default:
+        return 1;
+    }
+  };
+
   const setRollsForTheOtherPlayer = (rolls) => {
     let values = [];
     for (let i = 0; i < rolls.length; i++) {
-      values.push(rolls[i].diceValue);
+      values.push(rolls[i].diceColor);
     }
     setCheatValues(values);
   };
 
   const groupForTheOtherPlayer = (rolls) => {
-    if (props.actualPlayer === "second") {
+    if (props.actualPlayer === 2) {
       groupDiceRolls(rolls);
     }
   };
 
   const handleClickOnDice = (value) => {
-    if (selectionForMarkingOver === true && whoseTurnItIs === 1) {
-      selectColor(value);
+    if (rollingIsOver && playerToMarkCells === props.actualPlayer) {
+      selectDiceColorToMarkCells(value);
       sendWhoseTurnItIs();
-    } else if (whoseTurnItIs === 2) {
-      console.log("click");
+    } else if (playerToMarkCells === 2) {
       otherPlayerChosesFromTheRestofDice(value);
     } else {
       selectForReroll(value);
@@ -291,7 +305,7 @@ function DiceField(props) {
     if (props.rerollCounter !== "third") {
       let isFound = false;
       if (value !== 5) {
-        for (let group of groupedDiceRolls) {
+        for (let group of dicesGroupedByColor) {
           if (isFound) {
             break;
           }
@@ -301,15 +315,15 @@ function DiceField(props) {
               selectedDiceForReroll.push(dice);
               setSelectedDiceForReroll([...selectedDiceForReroll]);
               isFound = true;
-              if (props.actualPlayer === "first") {
+              if (props.actualPlayer === 1) {
                 sendSelectedRerolldice(dice);
               }
               break;
             }
           }
         }
-        setGroupedDiceRolls([...groupedDiceRolls]);
-        if (selectedDiceForReroll !== [] && props.actualPlayer === "first") {
+        setGroupedDiceRolls([...dicesGroupedByColor]);
+        if (selectedDiceForReroll !== [] && props.actualPlayer === 1) {
           setRerollButtonVisible(true);
         }
         setStopButtonVisible(false);
@@ -319,7 +333,7 @@ function DiceField(props) {
 
   const cancelForReroll = (value) => {
     let isFound = false;
-    for (let group of groupedDiceRolls) {
+    for (let group of dicesGroupedByColor) {
       if (isFound) {
         break;
       }
@@ -332,19 +346,19 @@ function DiceField(props) {
       }
     }
     if (!isFound) {
-      groupedDiceRolls.push([{ diceNumber: "example", diceValue: value }]);
+      dicesGroupedByColor.push([{ diceNumber: "example", diceValue: value }]);
     }
     for (let dice of selectedDiceForReroll) {
       if (dice.diceValue === value) {
         selectedDiceForReroll.splice(selectedDiceForReroll.indexOf(dice), 1);
-        if (props.actualPlayer === "first") {
+        if (props.actualPlayer === 1) {
           sendCanceledDice(dice);
         }
         break;
       }
     }
     setSelectedDiceForReroll([...selectedDiceForReroll]);
-    setGroupedDiceRolls([...groupedDiceRolls]);
+    setGroupedDiceRolls([...dicesGroupedByColor]);
     if (selectedDiceForReroll.length === 0) {
       setRerollButtonVisible(false);
       setStopButtonVisible(true);
@@ -353,17 +367,17 @@ function DiceField(props) {
 
   const groupDiceRolls = (rolls) => {
     for (let dice of rolls) {
-      if (dice.diceValue === 1) {
+      if (dice.diceColor === 1) {
         sortedDiceByColor.purple.push(dice);
-      } else if (dice.diceValue === 2) {
+      } else if (dice.diceColor === 2) {
         sortedDiceByColor.black.push(dice);
-      } else if (dice.diceValue === 3) {
+      } else if (dice.diceColor === 3) {
         sortedDiceByColor.orange.push(dice);
-      } else if (dice.diceValue === 4) {
+      } else if (dice.diceColor === 4) {
         sortedDiceByColor.rose.push(dice);
-      } else if (dice.diceValue === 5) {
+      } else if (dice.diceColor === 5) {
         sortedDiceByColor.skull.push(dice);
-      } else if (dice.diceValue === 6) {
+      } else if (dice.diceColor === 6) {
         sortedDiceByColor.turquoise.push(dice);
       }
     }
@@ -380,16 +394,15 @@ function DiceField(props) {
   };
 
   const prepareForReRoll = () => {
-    console.log(selectedDiceForReroll);
     setDiceRolls({ diceRolls: selectedDiceForReroll });
     setSelectedDiceForReroll([]);
     setNumberOfRerolledDice(selectedDiceForReroll.length);
     setDicesVisible(true);
     setRerollButtonVisible(false);
-    if (props.actualPlayer === "first") {
+    if (props.actualPlayer === 1) {
       sendNewDiceForRoll({ diceRolls: selectedDiceForReroll });
     }
-    if (props.rerollCounter === "first") {
+    if (props.rerollCounter === 1) {
       props.setRerollCounter("second");
     } else if (props.rerollCounter === "second") {
       props.setRerollCounter("third");
@@ -402,8 +415,9 @@ function DiceField(props) {
     setDiceActionAfterRoll(selectForReroll);
   };
 
-  const endTurn = (value) => {
-    setSelectionForMarkingOver(true);
+  const endRollingPhase = (value) => {
+    setPlayerToMarkCells(props.actualPlayer);
+    setRollingIsOver(true);
   };
 
   const markCells = (numberOfDice, value) => {
@@ -416,17 +430,13 @@ function DiceField(props) {
         cells.push("");
       }
     }
-    if (props.actualPlayer === "first" && whoseTurnItIs === 1) {
-      console.log("first if");
+    if (props.actualPlayer === 1 && playerToMarkCells === 1) {
       selectPlayer(value, 1, cells);
-    } else if (props.actualPlayer === "first" && whoseTurnItIs === 2) {
-      console.log("second if");
+    } else if (props.actualPlayer === 1 && playerToMarkCells === 2) {
       selectPlayer(value, 2, cells);
-    } else if (props.actualPlayer === "second" && whoseTurnItIs === 1) {
-      console.log("third if");
+    } else if (props.actualPlayer === 2 && playerToMarkCells === 1) {
       selectPlayer(value, 1, cells);
-    } else if (props.actualPlayer === "second" && whoseTurnItIs === 2) {
-      console.log("fourth if");
+    } else if (props.actualPlayer === 2 && playerToMarkCells === 2) {
       selectPlayer(value, 2, cells);
     }
   };
@@ -463,36 +473,42 @@ function DiceField(props) {
     }
   };
 
-  const selectColor = (value) => {
-    let isFound = false;
-    for (let group of groupedDiceRolls) {
-      if (group[0].diceValue === value) {
-        let indexOfGroup = groupedDiceRolls.indexOf(group);
-        groupedDiceRolls.splice(indexOfGroup, 1);
-        isFound = true;
-        if (props.actualPlayer === "first") {
-          sendSelectedColor(group[0], value);
-          markCells(group.length, value);
-          let markedCells = { numberOfDice: group.length, value: value };
+  const selectDiceColorToMarkCells = (selectedDiceColor) => {
+    sendSelectedColor(props.actualPlayer);
+    let isSelectedColorFound = false;
+    for (let group of dicesGroupedByColor) {
+      if (group[0].diceColor === selectedDiceColor) {
+        let indexOfGroup = dicesGroupedByColor.indexOf(group);
+        dicesGroupedByColor.splice(indexOfGroup, 1);
+        isSelectedColorFound = true;
+        if (props.actualPlayer === 1) {
+          sendSelectedColor(group[0], selectedDiceColor);
+          markCells(group.length, selectedDiceColor);
+          let markedCells = {
+            numberOfDice: group.length,
+            value: selectedDiceColor,
+          };
           sendMarkedCells(markedCells);
-        } else if (props.actualPlayer === "second") {
-          console.log("heeeey");
-          sendSelectedColor(group[0], value);
-          markCells(group.length, value);
-          let markedCells = { numberOfDice: group.length, value: value };
+        } else if (props.actualPlayer === 2) {
+          sendSelectedColor(group[0], selectedDiceColor);
+          markCells(group.length, selectedDiceColor);
+          let markedCells = {
+            numberOfDice: group.length,
+            value: selectedDiceColor,
+          };
           sendMarkedCells(markedCells);
         }
         break;
       }
-      if (isFound) {
+      if (isSelectedColorFound) {
         break;
       }
     }
-    setGroupedDiceRolls([...groupedDiceRolls]);
+    setGroupedDiceRolls([...dicesGroupedByColor]);
   };
 
   const otherPlayerChosesFromTheRestofDice = (value) => {
-    selectColor(value);
+    selectDiceColorToMarkCells(value);
     notifyServerAboutTheEndOfTurn();
   };
 
@@ -511,7 +527,7 @@ function DiceField(props) {
             cheatValues={cheatValues}
             getDiceValue={getDiceValue}
             handleClickOnDice={handleClickOnDice}
-            groupedDiceRolls={groupedDiceRolls}
+            groupedDiceRolls={dicesGroupedByColor}
             faces={faces}
           ></DiceGroupingField>
         </Col>
@@ -526,7 +542,7 @@ function DiceField(props) {
         </Col>
         <Col>
           {stopButtonVisible ? (
-            <button onClick={endTurn}>STOP</button>
+            <button onClick={endRollingPhase}>STOP</button>
           ) : (
             <div></div>
           )}

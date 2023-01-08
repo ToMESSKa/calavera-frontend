@@ -13,18 +13,17 @@ function StartGame (props) {
     const [newGame, setNewGame] = useState(false);
     const [gameNotFound, setGameNotFound] = useState(false);
     const [gameID, setGameID] = useState(false);
-    const [firtsPlayer, setFirstPlayer] = useState(false);
-    const [actualPlayer, setActualPlayer] = useState(false);
+    const [playerID, setPlayerID] = useState(false);
 
 
     const startNewGame = () => {
         setNewGame(true)
-        let firtsPlayer = {playerName: "Player1"};
-        axios.post("http://localhost:8080/startnewgame", firtsPlayer)
+        let firstPlayer = {playerName: "Player1"};
+        axios.post("http://localhost:8080/startnewgame", firstPlayer)
         .then((response) => {
             console.log(response.data.gameId);
             setGameID(response.data.gameId);
-            setActualPlayer("first")
+            setPlayerID(1)
         })      
     }
 
@@ -43,7 +42,7 @@ function StartGame (props) {
             setNewGame(true)
             setGameNotFound(false)
             setGameID(response.data.gameId)
-            setActualPlayer("second")
+            setPlayerID(2)
             }
         }
         )      
@@ -61,7 +60,7 @@ function StartGame (props) {
         <SignIn></SignIn>
         </div>
         }
-        {newGame ? <PlayField gameID={gameID} actualPlayer={actualPlayer}></PlayField> : <div>{false}</div>}
+        {newGame ? <PlayField gameID={gameID} actualPlayer={playerID}></PlayField> : <div>{false}</div>}
     </div>
     )
 }
