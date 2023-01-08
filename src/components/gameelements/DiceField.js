@@ -82,6 +82,7 @@ function DiceField(props) {
   const stompClient = useStompClient();
 
   useSubscription("/topic/getdicerollresult", (message) => {
+
     if (props.actualPlayer === 2) {
       setRollsForTheOtherPlayer(JSON.parse(message.body).diceRolls);
       setTimeout(function () {
@@ -128,6 +129,8 @@ function DiceField(props) {
         JSON.parse(message.body).value
       );
     } else if (props.actualPlayer === 1) {
+      setPlayerToMarkCells(2);
+    } else if (props.actualPlayer === 2) {
       setPlayerToMarkCells(2);
     }
   });
@@ -291,10 +294,11 @@ function DiceField(props) {
   };
 
   const handleClickOnDice = (value) => {
+    console.log(playerToMarkCells)
     if (rollingIsOver && playerToMarkCells === props.actualPlayer) {
       selectDiceColorToMarkCells(value);
       sendWhoseTurnItIs();
-    } else if (playerToMarkCells === 2) {
+    } else if (playerToMarkCells === props.actualPlayer) {
       otherPlayerChosesFromTheRestofDice(value);
     } else {
       selectForReroll(value);
