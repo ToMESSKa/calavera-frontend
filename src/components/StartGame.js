@@ -34,7 +34,6 @@ function StartGame (props) {
         let game = {player: secondPlayer, gameId: gameID}
         axios.post("http://localhost:8080/joinnewgame", game)
         .then((response) => {
-            console.log(response.data)
             if (response.data.gameStatus === "NOT_FOUND"){
                 console.log("NOT_FOUND")
                 setGameNotFound(true)
