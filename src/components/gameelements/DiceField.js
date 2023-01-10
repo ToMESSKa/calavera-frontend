@@ -66,6 +66,7 @@ function DiceField(props) {
   const [isTurnOver, setTurnOver] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
+  let numberOfCellsToMark = 0;
 
   useEffect(() => {
     if (cheatValues !== 0) {
@@ -109,11 +110,7 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getselectedcolor", (message) => {
-    if (props.actualPlayer === 2) {
-      selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
-    } else if (props.actualPlayer === 1) {
-      selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
-    }
+    selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
@@ -132,13 +129,15 @@ function DiceField(props) {
     } else if (props.actualPlayer === 2) {
       setPlayerToMarkCells(2);
     }
+    deleteDiceGroupByColorAndGetNumberOfCellsToMark(JSON.parse(message.body).value);
+    setGroupedDiceRolls([...dicesGroupedByColor]);
   });
 
   useSubscription("/topic/getwhoseturnitis", (message) => {
-    console.log(JSON.parse(message.body).whoseTurnItIs)
-    if (JSON.parse(message.body).whoseTurnItIs === 1){
+    console.log(JSON.parse(message.body).whoseTurnItIs);
+    if (JSON.parse(message.body).whoseTurnItIs === 1) {
       setPlayerToMarkCells(2);
-    }else if (JSON.parse(message.body).whoseTurnItIs === 2){
+    } else if (JSON.parse(message.body).whoseTurnItIs === 2) {
       setPlayerToMarkCells(1);
     }
     setRollingIsOver(true);
@@ -478,37 +477,49 @@ function DiceField(props) {
   };
 
   const selectDiceColorToMarkCells = (selectedDiceColor) => {
-    sendSelectedColor(props.actualPlayer);
-    let isSelectedColorFound = false;
+    let numberOfCellsToMark =
+      deleteDiceGroupByColorAndGetNumberOfCellsToMark(selectedDiceColor);
+    markCells(numberOfCellsToMark, selectedDiceColor);
+    let markedCells = {
+      numberOfDice: numberOfCellsToMark,
+      value: selectedDiceColor,
+    };
+    sendMarkedCells(markedCells);
+    // let isSelectedColorFound = false;
+    // for (let group of dicesGroupedByColor) {
+    //   if (group.length !== 0 && group[0].diceColor === selectedDiceColor) {
+    //     let indexOfGroup = dicesGroupedByColor.indexOf(group);
+    //     dicesGroupedByColor.splice(indexOfGroup, 1);
+    //     isSelectedColorFound = true;
+    //     sendSelectedColor(group[0], selectedDiceColor);
+    //     markCells(group.length, selectedDiceColor);
+    //     let markedCells = {
+    //       numberOfDice: group.length,
+    //       value: selectedDiceColor,
+    //     };
+    //     sendMarkedCells(markedCells);
+    //     break;
+    //   }
+    //   if (isSelectedColorFound) {
+    //     break;
+    //   }
+    // }
+    setGroupedDiceRolls([...dicesGroupedByColor]);
+  };
+
+  const deleteDiceGroupByColorAndGetNumberOfCellsToMark = (
+    selectedDiceColor
+  ) => {
+    let numberOfCellsToMark = 0;
     for (let group of dicesGroupedByColor) {
-      if (group[0].diceColor === selectedDiceColor) {
+      if (group.length !== 0 && group[0].diceColor === selectedDiceColor) {
         let indexOfGroup = dicesGroupedByColor.indexOf(group);
         dicesGroupedByColor.splice(indexOfGroup, 1);
-        isSelectedColorFound = true;
-        if (props.actualPlayer === 1) {
-          sendSelectedColor(group[0], selectedDiceColor);
-          markCells(group.length, selectedDiceColor);
-          let markedCells = {
-            numberOfDice: group.length,
-            value: selectedDiceColor,
-          };
-          sendMarkedCells(markedCells);
-        } else if (props.actualPlayer === 2) {
-          sendSelectedColor(group[0], selectedDiceColor);
-          markCells(group.length, selectedDiceColor);
-          let markedCells = {
-            numberOfDice: group.length,
-            value: selectedDiceColor,
-          };
-          sendMarkedCells(markedCells);
-        }
-        break;
-      }
-      if (isSelectedColorFound) {
+        numberOfCellsToMark = group.length;
         break;
       }
     }
-    setGroupedDiceRolls([...dicesGroupedByColor]);
+    return numberOfCellsToMark;
   };
 
   const otherPlayerChosesFromTheRestofDice = (value) => {
