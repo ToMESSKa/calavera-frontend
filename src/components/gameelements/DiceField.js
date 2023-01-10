@@ -64,9 +64,10 @@ function DiceField(props) {
   const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
+  // const [selectedDiceColorToMarkCellIsSend, setSelectedDiceColorToMarkCellIsSend] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
-  let numberOfCellsToMark = 0;
+  let selectedDiceColorToMarkCellIsSend = false;
 
   useEffect(() => {
     if (cheatValues !== 0) {
@@ -109,32 +110,19 @@ function DiceField(props) {
     }
   });
 
-  useSubscription("/topic/getselectedcolor", (message) => {
-    selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
-  });
+  // useSubscription("/topic/getselectedcolor", (message) => {
+  //   selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
+  // });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    if (props.actualPlayer === 2 && playerToMarkCells === 1) {
-      markCells(
-        JSON.parse(message.body).numberOfDice,
-        JSON.parse(message.body).value
-      );
-    } else if (props.actualPlayer === 1 && playerToMarkCells === 2) {
-      markCells(
-        JSON.parse(message.body).numberOfDice,
-        JSON.parse(message.body).value
-      );
-    } else if (props.actualPlayer === 1) {
-      setPlayerToMarkCells(2);
-    } else if (props.actualPlayer === 2) {
-      setPlayerToMarkCells(2);
+    if (props.actualPlayer !== playerToMarkCells) {
+      selectedDiceColorToMarkCellIsSend = true;
+      selectDiceColorToMarkCells(JSON.parse(message.body).value);
+      selectedDiceColorToMarkCellIsSend = false;
     }
-    deleteDiceGroupByColorAndGetNumberOfCellsToMark(JSON.parse(message.body).value);
-    setGroupedDiceRolls([...dicesGroupedByColor]);
   });
 
   useSubscription("/topic/getwhoseturnitis", (message) => {
-    console.log(JSON.parse(message.body).whoseTurnItIs);
     if (JSON.parse(message.body).whoseTurnItIs === 1) {
       setPlayerToMarkCells(2);
     } else if (JSON.parse(message.body).whoseTurnItIs === 2) {
@@ -261,23 +249,6 @@ function DiceField(props) {
         counter = 0;
       }
       setDiceRolls(diceRolls);
-    }
-  };
-
-  const convertDiceValueToColor = (diceValue) => {
-    switch (diceValue) {
-      case 1:
-        return 1;
-      case 2:
-        return 1;
-      case 3:
-        return 1;
-      case 4:
-        return 1;
-      case 5:
-        return 1;
-      default:
-        return 1;
     }
   };
 
@@ -480,31 +451,15 @@ function DiceField(props) {
     let numberOfCellsToMark =
       deleteDiceGroupByColorAndGetNumberOfCellsToMark(selectedDiceColor);
     markCells(numberOfCellsToMark, selectedDiceColor);
-    let markedCells = {
-      numberOfDice: numberOfCellsToMark,
-      value: selectedDiceColor,
-    };
-    sendMarkedCells(markedCells);
-    // let isSelectedColorFound = false;
-    // for (let group of dicesGroupedByColor) {
-    //   if (group.length !== 0 && group[0].diceColor === selectedDiceColor) {
-    //     let indexOfGroup = dicesGroupedByColor.indexOf(group);
-    //     dicesGroupedByColor.splice(indexOfGroup, 1);
-    //     isSelectedColorFound = true;
-    //     sendSelectedColor(group[0], selectedDiceColor);
-    //     markCells(group.length, selectedDiceColor);
-    //     let markedCells = {
-    //       numberOfDice: group.length,
-    //       value: selectedDiceColor,
-    //     };
-    //     sendMarkedCells(markedCells);
-    //     break;
-    //   }
-    //   if (isSelectedColorFound) {
-    //     break;
-    //   }
-    // }
     setGroupedDiceRolls([...dicesGroupedByColor]);
+    if (!selectedDiceColorToMarkCellIsSend) {
+      let markedCells = {
+        numberOfDice: numberOfCellsToMark,
+        value: selectedDiceColor,
+      };
+      sendMarkedCells(markedCells);
+      selectedDiceColorToMarkCellIsSend = false;
+    }
   };
 
   const deleteDiceGroupByColorAndGetNumberOfCellsToMark = (
