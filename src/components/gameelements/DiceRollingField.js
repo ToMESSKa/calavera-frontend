@@ -11,8 +11,8 @@ function DiceRollingField(props) {
             <Dice
               disabled={true}
               ref={props.allDiceToRoll[index]}
-              defaultValue={dice.diceValue}
-              cheatValue={props.cheatValues[index]}
+              defaultValue={1}
+              cheatValue={props.presetColorForRollResult[index]}
               onRoll={(value) =>
                 props.getDiceValue(value, "dice" + (index + 1))
               }

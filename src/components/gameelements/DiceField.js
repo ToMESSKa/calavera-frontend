@@ -12,7 +12,7 @@ import DiceRollingField from "./DiceRollingField";
 import { useStompClient, useSubscription } from "react-stomp-hooks";
 
 function DiceField(props) {
-  const defaultDiceRolls = {
+  const defaultDicesToBeRolled = {
     diceRolls: [
       { diceNumber: "dice1", diceColor: 1 },
       { diceNumber: "dice2", diceColor: 2 },
@@ -39,8 +39,11 @@ function DiceField(props) {
     myDice6,
   ]);
   const myButton = useRef();
-  const [cheatValues, setCheatValues] = useState(0);
-  const [diceRolls, setDiceRolls] = useState(defaultDiceRolls);
+  const [presetColorForRollResult, setPresetColorForRollResult] = useState(0);
+  const [dicesToBeRolled, setDicesToBeRolled] = useState(
+    defaultDicesToBeRolled
+  );
+  const [diceRollResults, setDiceRollResults] = useState({ diceRolls: [] });
   const [dicesGroupedByColor, setGroupedDiceRolls] = useState([]);
   const [sortedDiceByColor, setSortedDiceByColor] = useState({
     purple: [],
@@ -56,7 +59,7 @@ function DiceField(props) {
   const [stopButtonVisible, setStopButtonVisible] = useState(false);
   const [selectedDiceForReroll, setSelectedDiceForReroll] = useState([]);
   const [rerollButtonVisible, setRerollButtonVisible] = useState(false);
-  const [numberOfRerolledDice, setNumberOfRerolledDice] = useState(6);
+  const [numberOfRolledDices, setNumberOfRolledDices] = useState(6);
   const [orangeCellsToMark, setOrangeCellsToMark] = useState(0);
   const [purpleCellsToMark, setRedCellsToMark] = useState(0);
   const [turquoiseCellsToMark, setTurquoiseCellsToMark] = useState(0);
@@ -64,16 +67,15 @@ function DiceField(props) {
   const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
-  // const [selectedDiceColorToMarkCellIsSend, setSelectedDiceColorToMarkCellIsSend] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
   let selectedDiceColorToMarkCellIsSend = false;
 
   useEffect(() => {
-    if (cheatValues !== 0) {
-      rollAllDicesForTheOtherPlayer();
+    if (presetColorForRollResult !== 0) {
+      rollAllDices();
     }
-  }, [cheatValues]);
+  }, [presetColorForRollResult]);
 
   useEffect(() => {
     if (props.rollButtonHidden === true) {
@@ -94,7 +96,7 @@ function DiceField(props) {
 
   useSubscription("/topic/getseledteddicererollresult", (message) => {
     if (props.actualPlayer === 2) {
-      selectForReroll(JSON.parse(message.body).diceValue);
+      selectDiceToReroll(JSON.parse(message.body).diceValue);
     }
   });
 
@@ -110,10 +112,6 @@ function DiceField(props) {
     }
   });
 
-  // useSubscription("/topic/getselectedcolor", (message) => {
-  //   selectDiceColorToMarkCells(JSON.parse(message.body).diceColor);
-  // });
-
   useSubscription("/topic/getmarkedcells", (message) => {
     if (props.actualPlayer !== playerToMarkCells) {
       selectedDiceColorToMarkCellIsSend = true;
@@ -122,7 +120,7 @@ function DiceField(props) {
     }
   });
 
-  useSubscription("/topic/getwhoseturnitis", (message) => {
+  useSubscription("/topic/getwhichplayeristomarkcells", (message) => {
     if (JSON.parse(message.body).whoseTurnItIs === 1) {
       setPlayerToMarkCells(2);
     } else if (JSON.parse(message.body).whoseTurnItIs === 2) {
@@ -135,16 +133,16 @@ function DiceField(props) {
     startNewTurn();
   });
 
-  const sendRollResults = () => {
+  const sendRollResultsAndGroupThem = () => {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/rolleddice",
-        body: JSON.stringify(diceRolls),
+        body: JSON.stringify(diceRollResults),
       });
     } else {
       //Handle error
     }
-    groupDiceRolls(diceRolls.diceRolls);
+    groupDiceRolls(diceRollResults.diceRolls);
   };
 
   const sendSelectedRerolldice = (dice) => {
@@ -202,7 +200,7 @@ function DiceField(props) {
     }
   };
 
-  const sendWhoseTurnItIs = () => {
+  const sendWhichPlayerIsToMarkCells = () => {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/whoseturnitis",
@@ -230,25 +228,17 @@ function DiceField(props) {
     }
   };
 
-  const rollAllDicesForTheOtherPlayer = (e) => {
-    for (let dice of allDiceToRoll) {
-      dice.current.rollDice();
-    }
-  };
-
-  const getDiceValue = (value, number) => {
+  const getRolledDicesColorAndSendThemToServer = (value, number) => {
     if (props.actualPlayer === 1) {
-      for (let dice of diceRolls.diceRolls) {
-        if (dice.diceNumber === number) {
-          dice.diceColor = value;
-        }
+      if (diceRollResults.diceRolls.length < numberOfRolledDices) {
+        diceRollResults.diceRolls.push({
+          diceNumber: "dice1",
+          diceColor: value,
+        });
       }
-      counter = counter + 1;
-      if (counter === numberOfRerolledDice) {
-        sendRollResults();
-        counter = 0;
+      if (diceRollResults.diceRolls.length === numberOfRolledDices) {
+        sendRollResultsAndGroupThem();
       }
-      setDiceRolls(diceRolls);
     }
   };
 
@@ -257,7 +247,7 @@ function DiceField(props) {
     for (let i = 0; i < rolls.length; i++) {
       values.push(rolls[i].diceColor);
     }
-    setCheatValues(values);
+    setPresetColorForRollResult(values);
   };
 
   const groupForTheOtherPlayer = (rolls) => {
@@ -269,22 +259,22 @@ function DiceField(props) {
   const handleClickOnDice = (value) => {
     if (rollingIsOver && playerToMarkCells === props.actualPlayer) {
       selectDiceColorToMarkCells(value);
-      sendWhoseTurnItIs();
+      sendWhichPlayerIsToMarkCells();
     } else {
-      selectForReroll(value);
+      selectDiceToReroll(value);
     }
   };
 
-  const selectForReroll = (value) => {
+  const selectDiceToReroll = (diceColor) => {
     if (props.rerollCounter !== "third") {
       let isFound = false;
-      if (value !== 5) {
+      if (diceColor !== 5) {
         for (let group of dicesGroupedByColor) {
           if (isFound) {
             break;
           }
           for (let dice of group) {
-            if (dice.diceValue === value) {
+            if (dice.diceColor === diceColor) {
               group.pop();
               selectedDiceForReroll.push(dice);
               setSelectedDiceForReroll([...selectedDiceForReroll]);
@@ -368,9 +358,9 @@ function DiceField(props) {
   };
 
   const prepareForReRoll = () => {
-    setDiceRolls({ diceRolls: selectedDiceForReroll });
+    setDicesToBeRolled({ diceRolls: selectedDiceForReroll });
     setSelectedDiceForReroll([]);
-    setNumberOfRerolledDice(selectedDiceForReroll.length);
+    setNumberOfRolledDices(selectedDiceForReroll.length);
     setDicesVisible(true);
     setRerollButtonVisible(false);
     if (props.actualPlayer === 1) {
@@ -386,7 +376,7 @@ function DiceField(props) {
       newAllDiceToRoll.push(allDiceToRoll[i]);
     }
     setAllDiceToRoll(newAllDiceToRoll);
-    setDiceActionAfterRoll(selectForReroll);
+    setDiceActionAfterRoll(selectDiceToReroll);
   };
 
   const endRollingPhase = (value) => {
@@ -477,13 +467,8 @@ function DiceField(props) {
     return numberOfCellsToMark;
   };
 
-  const otherPlayerChosesFromTheRestofDice = (value) => {
-    selectDiceColorToMarkCells(value);
-    notifyServerAboutTheEndOfTurn();
-  };
-
   const startNewTurn = () => {
-    setDiceRolls(defaultDiceRolls);
+    setDicesToBeRolled(defaultDicesToBeRolled);
     setDicesVisible(true);
   };
 
@@ -494,8 +479,7 @@ function DiceField(props) {
           <DiceGroupingField
             dicesVisible={dicesVisible}
             myDice={myDice}
-            cheatValues={cheatValues}
-            getDiceValue={getDiceValue}
+            getDiceValue={getRolledDicesColorAndSendThemToServer}
             handleClickOnDice={handleClickOnDice}
             groupedDiceRolls={dicesGroupedByColor}
             faces={faces}
@@ -522,10 +506,10 @@ function DiceField(props) {
         <Col>
           <DiceRollingField
             allDiceToRoll={allDiceToRoll}
-            diceRolls={diceRolls}
+            diceRolls={dicesToBeRolled}
             dicesVisible={dicesVisible}
-            cheatValues={cheatValues}
-            getDiceValue={getDiceValue}
+            presetColorForRollResult={presetColorForRollResult}
+            getDiceValue={getRolledDicesColorAndSendThemToServer}
             faces={faces}
           ></DiceRollingField>
         </Col>
