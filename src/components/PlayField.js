@@ -61,7 +61,7 @@ function PlayField(props) {
           <DiceField
             setRerollCounter={setRerollCounter}
             rerollCounter={rerollCounter}
-            actualPlayer={props.actualPlayer}
+            playerIDForGame={props.playerIDForGame}
             setPlayerOneOrangeCells={setPlayerOneOrangeCells}
             setPlayerOneBlackCells={setPlayerOneBlackCells}
             setPlayerOnePurpleCells={setPlayerOnePurpleCells}

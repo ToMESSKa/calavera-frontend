@@ -69,10 +69,13 @@ function DiceField(props) {
   const [isTurnOver, setTurnOver] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
-  let selectedDiceColorToMarkCellIsSend = false;
+  let selectedDiceColorToMarkCellIsSent = false;
 
   useEffect(() => {
-    if (presetColorForRollResult !== 0) {
+    if (
+      props.playerIDForGame !== playerToMarkCells &&
+      presetColorForRollResult !== 0
+    ) {
       rollAllDices();
     }
   }, [presetColorForRollResult]);
@@ -86,8 +89,10 @@ function DiceField(props) {
   const stompClient = useStompClient();
 
   useSubscription("/topic/getdicerollresult", (message) => {
-    if (props.actualPlayer === 2) {
-      setRollsForTheOtherPlayer(JSON.parse(message.body).diceRolls);
+    if (props.playerIDForGame === 2) {
+      setPresetColorForRollResultForTheOtherPlayer(
+        JSON.parse(message.body).diceRolls
+      );
       setTimeout(function () {
         groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
       }, 1500);
@@ -95,28 +100,28 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getseledteddicererollresult", (message) => {
-    if (props.actualPlayer === 2) {
+    if (props.playerIDForGame === 2) {
       selectDiceToReroll(JSON.parse(message.body).diceValue);
     }
   });
 
   useSubscription("/topic/getcanceleddice", (message) => {
-    if (props.actualPlayer === 2) {
+    if (props.playerIDForGame === 2) {
       cancelForReroll(JSON.parse(message.body).diceValue);
     }
   });
 
   useSubscription("/topic/getnewdiceforroll", (message) => {
-    if (props.actualPlayer === 2) {
+    if (props.playerIDForGame === 2) {
       prepareForReRoll();
     }
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    if (props.actualPlayer !== playerToMarkCells) {
-      selectedDiceColorToMarkCellIsSend = true;
+    if (props.playerIDForGame !== playerToMarkCells) {
+      selectedDiceColorToMarkCellIsSent = true;
       selectDiceColorToMarkCells(JSON.parse(message.body).value);
-      selectedDiceColorToMarkCellIsSend = false;
+      selectedDiceColorToMarkCellIsSent = false;
     }
   });
 
@@ -229,7 +234,7 @@ function DiceField(props) {
   };
 
   const getRolledDicesColorAndSendThemToServer = (value, number) => {
-    if (props.actualPlayer === 1) {
+    if (props.playerIDForGame === playerToMarkCells) {
       if (diceRollResults.diceRolls.length < numberOfRolledDices) {
         diceRollResults.diceRolls.push({
           diceNumber: "dice1",
@@ -242,7 +247,7 @@ function DiceField(props) {
     }
   };
 
-  const setRollsForTheOtherPlayer = (rolls) => {
+  const setPresetColorForRollResultForTheOtherPlayer = (rolls) => {
     let values = [];
     for (let i = 0; i < rolls.length; i++) {
       values.push(rolls[i].diceColor);
@@ -251,13 +256,13 @@ function DiceField(props) {
   };
 
   const groupForTheOtherPlayer = (rolls) => {
-    if (props.actualPlayer === 2) {
+    if (props.playerIDForGame === 2) {
       groupDiceRolls(rolls);
     }
   };
 
   const handleClickOnDice = (value) => {
-    if (rollingIsOver && playerToMarkCells === props.actualPlayer) {
+    if (rollingIsOver && playerToMarkCells === props.playerIDForGame) {
       selectDiceColorToMarkCells(value);
       sendWhichPlayerIsToMarkCells();
     } else {
@@ -279,7 +284,7 @@ function DiceField(props) {
               selectedDiceForReroll.push(dice);
               setSelectedDiceForReroll([...selectedDiceForReroll]);
               isFound = true;
-              if (props.actualPlayer === 1) {
+              if (props.playerIDForGame === 1) {
                 sendSelectedRerolldice(dice);
               }
               break;
@@ -287,7 +292,7 @@ function DiceField(props) {
           }
         }
         setGroupedDiceRolls([...dicesGroupedByColor]);
-        if (selectedDiceForReroll !== [] && props.actualPlayer === 1) {
+        if (selectedDiceForReroll !== [] && props.playerIDForGame === 1) {
           setRerollButtonVisible(true);
         }
         setStopButtonVisible(false);
@@ -315,7 +320,7 @@ function DiceField(props) {
     for (let dice of selectedDiceForReroll) {
       if (dice.diceValue === value) {
         selectedDiceForReroll.splice(selectedDiceForReroll.indexOf(dice), 1);
-        if (props.actualPlayer === 1) {
+        if (props.playerIDForGame === 1) {
           sendCanceledDice(dice);
         }
         break;
@@ -363,7 +368,7 @@ function DiceField(props) {
     setNumberOfRolledDices(selectedDiceForReroll.length);
     setDicesVisible(true);
     setRerollButtonVisible(false);
-    if (props.actualPlayer === 1) {
+    if (props.playerIDForGame === 1) {
       sendNewDiceForRoll({ diceRolls: selectedDiceForReroll });
     }
     if (props.rerollCounter === 1) {
@@ -380,7 +385,7 @@ function DiceField(props) {
   };
 
   const endRollingPhase = (value) => {
-    setPlayerToMarkCells(props.actualPlayer); //handle the case when inactive player presses STOP
+    setPlayerToMarkCells(props.playerIDForGame); //handle the case when inactive player presses STOP
     setRollingIsOver(true);
   };
 
@@ -394,13 +399,13 @@ function DiceField(props) {
         cells.push("");
       }
     }
-    if (props.actualPlayer === 1 && playerToMarkCells === 1) {
+    if (props.playerIDForGame === 1 && playerToMarkCells === 1) {
       selectPlayer(value, 1, cells);
-    } else if (props.actualPlayer === 1 && playerToMarkCells === 2) {
+    } else if (props.playerIDForGame === 1 && playerToMarkCells === 2) {
       selectPlayer(value, 2, cells);
-    } else if (props.actualPlayer === 2 && playerToMarkCells === 1) {
+    } else if (props.playerIDForGame === 2 && playerToMarkCells === 1) {
       selectPlayer(value, 1, cells);
-    } else if (props.actualPlayer === 2 && playerToMarkCells === 2) {
+    } else if (props.playerIDForGame === 2 && playerToMarkCells === 2) {
       selectPlayer(value, 2, cells);
     }
   };
@@ -442,13 +447,13 @@ function DiceField(props) {
       deleteDiceGroupByColorAndGetNumberOfCellsToMark(selectedDiceColor);
     markCells(numberOfCellsToMark, selectedDiceColor);
     setGroupedDiceRolls([...dicesGroupedByColor]);
-    if (!selectedDiceColorToMarkCellIsSend) {
+    if (!selectedDiceColorToMarkCellIsSent) {
       let markedCells = {
         numberOfDice: numberOfCellsToMark,
         value: selectedDiceColor,
       };
       sendMarkedCells(markedCells);
-      selectedDiceColorToMarkCellIsSend = false;
+      selectedDiceColorToMarkCellIsSent = false;
     }
   };
 

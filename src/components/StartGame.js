@@ -14,6 +14,7 @@ function StartGame (props) {
     const [gameNotFound, setGameNotFound] = useState(false);
     const [gameID, setGameID] = useState(false);
     const [playerID, setPlayerID] = useState(false);
+    const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
 
 
     const startNewGame = () => {
@@ -23,7 +24,8 @@ function StartGame (props) {
         .then((response) => {
             console.log(response.data.gameId);
             setGameID(response.data.gameId);
-            setPlayerID(1)
+            let id = 1;
+            setPlayerID(id)
         })      
     }
 
@@ -59,7 +61,7 @@ function StartGame (props) {
         <SignIn></SignIn>
         </div>
         }
-        {newGame ? <PlayField gameID={gameID} actualPlayer={playerID}></PlayField> : <div>{false}</div>}
+        {newGame ? <PlayField gameID={gameID} playerIDForGame={playerID}></PlayField> : <div>{false}</div>}
     </div>
     )
 }
