@@ -7,9 +7,24 @@ function DiceGroupingField(props) {
   return (
     <Col className="dice-grouping-field">
       <Row>
-        <div>
           <Col>
-            {props.groupedDiceRolls.map((group, index) => (
+          {Object.keys(props.groupedDiceRolls).map((key, value) => (
+          <Row key={Math.random() * Math.random()}>
+          {props.groupedDiceRolls[key].map((dice) => (
+              <Dice
+                cheatValue={dice.diceColor}
+                onRoll={props.handleClickOnDice}
+                defaultValue={dice.diceColor}
+                faces={props.faces}
+                rollingTime={0}
+                size={40}
+                key={Math.random() * Math.random()}
+              ></Dice>
+              ))}
+            </Row>))}
+
+
+            {/* {props.groupedDiceRolls.map((group) => (
               <Row key={Math.random() * Math.random()}>
                 {group.map((dice) => (
                   <Dice
@@ -22,10 +37,8 @@ function DiceGroupingField(props) {
                     key={Math.random() * Math.random()}
                   ></Dice>
                 ))}
-              </Row>
-            ))}
+              </Row>))} */}
           </Col>
-        </div>
       </Row>
       <Row></Row>
     </Col>
