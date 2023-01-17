@@ -335,7 +335,6 @@ function DiceField(props) {
   };
 
   const groupRolledDicesByColor = (diceRollResults) => {
-
     for (let dice of diceRollResults) {
       if (dice.diceColor === 1) {
         sortedDiceByColor.purple.push(dice);
@@ -446,7 +445,7 @@ function DiceField(props) {
     let numberOfCellsToMark =
       deleteDiceGroupByColorAndGetNumberOfCellsToMark(selectedDiceColor);
     markCells(numberOfCellsToMark, selectedDiceColor);
-    setDicesGroupedByColor([...dicesGroupedByColor]);
+    setDicesGroupedByColor(dicesGroupedByColor);
     if (!selectedDiceColorToMarkCellIsSent) {
       let markedCells = {
         numberOfDice: numberOfCellsToMark,
@@ -460,12 +459,12 @@ function DiceField(props) {
   const deleteDiceGroupByColorAndGetNumberOfCellsToMark = (
     selectedDiceColor
   ) => {
+    console.log(dicesGroupedByColor);
     let numberOfCellsToMark = 0;
-    for (let group of dicesGroupedByColor) {
-      if (group.length !== 0 && group[0].diceColor === selectedDiceColor) {
-        let indexOfGroup = dicesGroupedByColor.indexOf(group);
-        dicesGroupedByColor.splice(indexOfGroup, 1);
-        numberOfCellsToMark = group.length;
+    for (const [key, value] of Object.entries(dicesGroupedByColor)) {
+      if (dicesGroupedByColor[key][0] !== undefined && dicesGroupedByColor[key][0].diceColor === selectedDiceColor) {
+        numberOfCellsToMark = dicesGroupedByColor[key].length;
+        dicesGroupedByColor[key] = [];
         break;
       }
     }
