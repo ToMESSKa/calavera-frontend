@@ -13,7 +13,7 @@ function RerollSelectionField(props) {
                   {props.selectedDicesForReroll[key].map((dice) => (
                     <Dice
                       cheatValue={dice.diceColor}
-                      onRoll={props.handleClickOnDice}
+                      onRoll={props.cancelDiceForReroll}
                       defaultValue={dice.diceColor}
                       faces={props.faces}
                       rollingTime={0}

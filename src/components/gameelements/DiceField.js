@@ -298,8 +298,7 @@ function DiceField(props) {
         diceColor
       );
       addSelectedDiceToGroup(selectedDicesForReroll, removedDice);
-      setDicesGroupedByColor((dicesGroupedByColor) => ({ ...dicesGroupedByColor}));
-      setSelectedDicesForReroll((selectedDicesForReroll) => selectedDicesForReroll);
+      setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
       if (playerToMarkCells === props.playerIDForGame) {
         sendSelectedDiceForReroll(removedDice);
         setRerollButtonVisible(true);
@@ -347,39 +346,13 @@ function DiceField(props) {
   };
 
   const cancelDiceForReroll = (diceColor) => {
-    let isFound = false;
-    for (let group of dicesGroupedByColor) {
-      if (isFound) {
-        break;
-      }
-      for (let dice of group) {
-        if (dice.diceValue === diceColor) {
-          group.push(dice);
-          isFound = true;
-          break;
-        }
-      }
-    }
-    if (!isFound) {
-      dicesGroupedByColor.push([
-        { diceNumber: "example", diceValue: diceColor },
-      ]);
-    }
-    for (let dice of selectedDicesForReroll) {
-      if (dice.diceValue === diceColor) {
-        selectedDicesForReroll.splice(selectedDicesForReroll.indexOf(dice), 1);
-        if (props.playerIDForGame === 1) {
-          sendCanceledDice(dice);
-        }
-        break;
-      }
-    }
-    setSelectedDicesForReroll([...selectedDicesForReroll]);
-    setDicesGroupedByColor([...dicesGroupedByColor]);
-    if (selectedDicesForReroll.length === 0) {
-      setRerollButtonVisible(false);
-      setStopButtonVisible(true);
-    }
+    let removedDice = removeSelectedDiceFromGroupAndReturnIt(
+      selectedDicesForReroll,
+      diceColor
+    );
+    console.log(removedDice)
+    addSelectedDiceToGroup(dicesGroupedByColor, removedDice);
+    setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
   };
 
   const groupDicesByColor = (group, dices) => {
@@ -535,7 +508,7 @@ function DiceField(props) {
           <RerollSelectionField
             reRoll={prepareForReRoll}
             selectedDicesForReroll={selectedDicesForReroll}
-            cancelForReroll={cancelDiceForReroll}
+            cancelDiceForReroll={cancelDiceForReroll}
             rerollButtonVisible={rerollButtonVisible}
             faces={faces}
           ></RerollSelectionField>
