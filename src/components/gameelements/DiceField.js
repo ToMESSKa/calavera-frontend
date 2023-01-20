@@ -298,8 +298,8 @@ function DiceField(props) {
         diceColor
       );
       addSelectedDiceToGroup(selectedDicesForReroll, removedDice);
-      setDicesGroupedByColor(dicesGroupedByColor);
-      setSelectedDicesForReroll(selectedDicesForReroll);
+      setDicesGroupedByColor((dicesGroupedByColor) => ({ ...dicesGroupedByColor}));
+      setSelectedDicesForReroll((selectedDicesForReroll) => selectedDicesForReroll);
       if (playerToMarkCells === props.playerIDForGame) {
         sendSelectedDiceForReroll(removedDice);
         setRerollButtonVisible(true);
@@ -499,7 +499,6 @@ function DiceField(props) {
   };
 
   const deleteDiceGroupByColorAndGetNumberOfCellsToMark = (diceColor) => {
-    console.log(dicesGroupedByColor);
     let numberOfCellsToMark = 0;
     for (const [key] of Object.entries(dicesGroupedByColor)) {
       if (
