@@ -25,7 +25,15 @@ function RerollSelectionField(props) {
               ))}
             </Col>
           </Row>
-          <Row></Row>
+          <Row>
+          </Row>
+        </Col>
+        <Col>
+          {props.rerollButtonVisible ? (
+            <button onClick={props.reRoll}>Start reroll</button>
+          ) : (
+            <div></div>
+          )}
         </Col>
     </div>
   );

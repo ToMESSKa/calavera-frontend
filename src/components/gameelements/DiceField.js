@@ -299,6 +299,7 @@ function DiceField(props) {
       );
       addSelectedDiceToGroup(selectedDicesForReroll, removedDice);
       setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
+      setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }))
       if (playerToMarkCells === props.playerIDForGame) {
         sendSelectedDiceForReroll(removedDice);
         setRerollButtonVisible(true);
@@ -319,6 +320,16 @@ function DiceField(props) {
       }
     }
     return selectedDicesKey;
+  };
+
+  const checkIfRerollFieldIsEmpty = (dicesGroupedByColor) => {
+    for (const [key] of Object.entries(dicesGroupedByColor)) {
+      if (dicesGroupedByColor[key].length !== 0) {
+        console.log(dicesGroupedByColor[key])
+        return false
+      }
+    }
+    return true;
   };
 
   const removeSelectedDiceFromGroupAndReturnIt = (
@@ -350,9 +361,13 @@ function DiceField(props) {
       selectedDicesForReroll,
       diceColor
     );
-    console.log(removedDice)
     addSelectedDiceToGroup(dicesGroupedByColor, removedDice);
     setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
+    setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }))
+    if (checkIfRerollFieldIsEmpty(selectedDicesForReroll)) {
+      setRerollButtonVisible(false);
+      setStopButtonVisible(true);
+    }
   };
 
   const groupDicesByColor = (group, dices) => {
