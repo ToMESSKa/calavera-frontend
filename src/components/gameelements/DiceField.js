@@ -115,7 +115,6 @@ function DiceField(props) {
 
   useSubscription("/topic/getseledteddiceforreroll", (message) => {
     if (props.playerIDForGame === 2) {
-      console.log("hiii");
       selectDiceForReroll(JSON.parse(message.body).diceColor);
     }
   });
@@ -126,9 +125,9 @@ function DiceField(props) {
     }
   });
 
-  useSubscription("/topic/getnewdiceforroll", (message) => {
+  useSubscription("/topic/getnewdicesforroll", (message) => {
     if (props.playerIDForGame === 2) {
-      prepareForReRoll();
+      setDiceFieldForReroll(JSON.parse(message.body));
     }
   });
 
@@ -190,11 +189,12 @@ function DiceField(props) {
     }
   };
 
-  const sendNewDiceForRoll = (dice) => {
+  const sendNewDicesForRoll = (degroupedDices) => {
+    console.log(degroupedDices);
     if (stompClient) {
       stompClient.publish({
-        destination: "/app/newdiceforroll",
-        body: JSON.stringify(dice),
+        destination: "/app/newdicesforroll",
+        body: JSON.stringify({ diceRolls: degroupedDices }),
       });
     } else {
       //Handle error
@@ -299,7 +299,7 @@ function DiceField(props) {
       );
       addSelectedDiceToGroup(selectedDicesForReroll, removedDice);
       setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
-      setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }))
+      setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }));
       if (playerToMarkCells === props.playerIDForGame) {
         sendSelectedDiceForReroll(removedDice);
         setRerollButtonVisible(true);
@@ -325,8 +325,8 @@ function DiceField(props) {
   const checkIfRerollFieldIsEmpty = (dicesGroupedByColor) => {
     for (const [key] of Object.entries(dicesGroupedByColor)) {
       if (dicesGroupedByColor[key].length !== 0) {
-        console.log(dicesGroupedByColor[key])
-        return false
+        console.log(dicesGroupedByColor[key]);
+        return false;
       }
     }
     return true;
@@ -363,7 +363,7 @@ function DiceField(props) {
     );
     addSelectedDiceToGroup(dicesGroupedByColor, removedDice);
     setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
-    setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }))
+    setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }));
     if (checkIfRerollFieldIsEmpty(selectedDicesForReroll)) {
       setRerollButtonVisible(false);
       setStopButtonVisible(true);
@@ -386,31 +386,49 @@ function DiceField(props) {
         group.turquoise.push(dice);
       }
     }
-    // setDicesGroupedByColor(dicesGroupedByColor);
-    // setDicesVisible(false);
-    // setStopButtonVisible(true);
+  };
+
+  const degroupDices = (dicesGroupedByColor) => {
+    let dices = [];
+    for (const [key] of Object.entries(dicesGroupedByColor)) {
+      if (dicesGroupedByColor[key].length !== 0) {
+        for (let dice of dicesGroupedByColor[key]) {
+          dices.push(dice);
+        }
+      }
+    }
+    return dices;
+  };
+
+  const setDiceFieldForReroll = (newDices) => {
+    setDicesToBeRolled(newDices);
+    setSelectedDicesForReroll(defaultDicesGroupedByColor);
+    setDicesVisible(true);
   };
 
   const prepareForReRoll = () => {
-    setDicesToBeRolled({ diceRolls: selectedDicesForReroll });
-    setSelectedDicesForReroll([]);
-    setNumberOfRolledDices(selectedDicesForReroll.length);
-    setDicesVisible(true);
+    let newDicesToBeRolled = degroupDices(selectedDicesForReroll);
+    setDiceFieldForReroll({ diceRolls: newDicesToBeRolled });
     setRerollButtonVisible(false);
-    if (props.playerIDForGame === 1) {
-      sendNewDiceForRoll({ diceRolls: selectedDicesForReroll });
-    }
-    if (props.rerollCounter === 1) {
-      props.setRerollCounter("second");
-    } else if (props.rerollCounter === "second") {
-      props.setRerollCounter("third");
-    }
-    let newAllDiceToRoll = [];
-    for (let i = 0; i < selectedDicesForReroll.length; i++) {
-      newAllDiceToRoll.push(allDiceToRoll[i]);
-    }
-    setAllDiceToRoll(newAllDiceToRoll);
-    setDiceActionAfterRoll(selectDiceForReroll);
+    sendNewDicesForRoll(newDicesToBeRolled);
+    //   setSelectedDicesForReroll(defaultDicesGroupedByColor);
+    //   setNumberOfRolledDices(selectedDicesForReroll.length);
+    //   setDicesVisible(true);
+    //   setRerollButtonVisible(false);
+    //   if (props.playerIDForGame === 1) {
+    //     sendNewDiceForRoll({ diceRolls: selectedDicesForReroll });
+    //   }
+    //   if (props.rerollCounter === 1) {
+    //     props.setRerollCounter("second");
+    //   } else if (props.rerollCounter === "second") {
+    //     props.setRerollCounter("third");
+    //   }
+    //   let newAllDiceToRoll = [];
+    //   for (let i = 0; i < selectedDicesForReroll.length; i++) {
+    //     newAllDiceToRoll.push(allDiceToRoll[i]);
+    //   }
+    //   setAllDiceToRoll(newAllDiceToRoll);
+    //   setDiceActionAfterRoll(selectDiceForReroll);
   };
 
   const endRollingPhase = (value) => {
@@ -521,7 +539,7 @@ function DiceField(props) {
         </Col>
         <Col>
           <RerollSelectionField
-            reRoll={prepareForReRoll}
+            prepareForReRoll={prepareForReRoll}
             selectedDicesForReroll={selectedDicesForReroll}
             cancelDiceForReroll={cancelDiceForReroll}
             rerollButtonVisible={rerollButtonVisible}
@@ -540,7 +558,7 @@ function DiceField(props) {
         <Col>
           <DiceRollingField
             allDiceToRoll={allDiceToRoll}
-            diceRolls={dicesToBeRolled}
+            dicesToBeRolled={dicesToBeRolled}
             dicesVisible={dicesVisible}
             presetColorForRollResult={presetColorForRollResult}
             getDiceValue={getRolledDicesColorAndSendThemToServer}
