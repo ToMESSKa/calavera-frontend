@@ -38,7 +38,7 @@ function DiceField(props) {
   const myDice5 = useRef();
   const myDice6 = useRef();
   const myDice = useRef();
-  const [allDiceToRoll, setAllDiceToRoll] = useState([
+  const [diceReferences, setDiceReferences] = useState([
     myDice1,
     myDice2,
     myDice3,
@@ -246,7 +246,7 @@ function DiceField(props) {
   };
 
   const rollAllDices = (e) => {
-    for (let dice of allDiceToRoll) {
+    for (let dice of diceReferences) {
       dice.current.rollDice();
     }
   };
@@ -260,7 +260,9 @@ function DiceField(props) {
         });
       }
       if (diceRollResults.diceRolls.length === numberOfRolledDices) {
+        console.log(diceRollResults)
         sendRollResultsAndGroupThem();
+        setDiceRollResults({ diceRolls: [] });
       }
     }
   };
@@ -404,6 +406,9 @@ function DiceField(props) {
     setDicesToBeRolled(newDices);
     setSelectedDicesForReroll(defaultDicesGroupedByColor);
     setDicesVisible(true);
+    diceReferences.splice(newDices.diceRolls.length)
+    setDiceReferences(diceReferences);
+    setNumberOfRolledDices(newDices.diceRolls.length)
   };
 
   const prepareForReRoll = () => {
@@ -557,7 +562,7 @@ function DiceField(props) {
       <Row>
         <Col>
           <DiceRollingField
-            allDiceToRoll={allDiceToRoll}
+            diceReferences={diceReferences}
             dicesToBeRolled={dicesToBeRolled}
             dicesVisible={dicesVisible}
             presetColorForRollResult={presetColorForRollResult}

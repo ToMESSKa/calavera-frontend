@@ -10,7 +10,7 @@ function DiceRollingField(props) {
           {props.dicesToBeRolled.diceRolls.map((dice, index) => (
             <Dice
               disabled={true}
-              ref={props.allDiceToRoll[index]}
+              ref={props.diceReferences[index]}
               defaultValue={dice.diceColor}
               cheatValue={props.presetColorForRollResult[index]}
               onRoll={(value) =>
