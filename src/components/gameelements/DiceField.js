@@ -81,6 +81,7 @@ function DiceField(props) {
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
   const [stopButtonDisabled, setstopButtonDisabled] = useState(false);
+  const [startingPlayer, setStartingPlayer] = useState(1);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
   let selectedDiceColorToMarkCellIsSent = false;
@@ -479,6 +480,13 @@ function DiceField(props) {
       sendMarkedCells(markedCells);
       selectedDiceColorToMarkCellIsSent = false;
     }
+    checkIfTurnIsOver();
+  };
+
+  const checkIfTurnIsOver = () => {
+    if (startingPlayer !== playerToMarkCells) {
+      startNewTurn();
+    }
   };
 
   const deleteDiceGroupByColorAndGetNumberOfCellsToMark = (diceColor) => {
@@ -498,10 +506,7 @@ function DiceField(props) {
     return numberOfCellsToMark;
   };
 
-  const startNewTurn = () => {
-    setDicesToBeRolled(defaultDicesToBeRolled);
-    setDicesVisible(true);
-  };
+  const startNewTurn = () => {};
 
   return (
     <div className="dice-field">

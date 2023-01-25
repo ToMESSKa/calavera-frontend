@@ -47,53 +47,62 @@ function PlayField(props) {
 
   const [rollButtonHidden, setRollButtonHidden] = useState(true);
 
-
   return (
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
       <Row>
-        <Col>
-          <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
-        </Col>
-      </Row>
-      <Row>
         <Col span={12}>
-          <DiceField
-            setRerollCounter={setRerollCounter}
-            rerollCounter={rerollCounter}
-            playerIDForGame={props.playerIDForGame}
-            setPlayerOneOrangeCells={setPlayerOneOrangeCells}
-            setPlayerOneBlackCells={setPlayerOneBlackCells}
-            setPlayerOnePurpleCells={setPlayerOnePurpleCells}
-            setPlayerOneTurquoiseCells={setPlayerOneTurquoiseCells}
-            setPlayerTwoOrangeCells={setPlayerTwoOrangeCells}
-            setPlayerTwoBlackCells={setPlayerTwoBlackCells}
-            setPlayerTwoPurpleCells={setPlayerTwoPurpleCells}
-            setPlayerTwoTurquoiseCells={setPlayerTwoTurquoiseCells}
-          ></DiceField>
+          <Col className="rightDiceField">
+            <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
+            <DiceField
+              setRerollCounter={setRerollCounter}
+              rerollCounter={rerollCounter}
+              playerIDForGame={props.playerIDForGame}
+              setPlayerOneOrangeCells={setPlayerOneOrangeCells}
+              setPlayerOneBlackCells={setPlayerOneBlackCells}
+              setPlayerOnePurpleCells={setPlayerOnePurpleCells}
+              setPlayerOneTurquoiseCells={setPlayerOneTurquoiseCells}
+              setPlayerTwoOrangeCells={setPlayerTwoOrangeCells}
+              setPlayerTwoBlackCells={setPlayerTwoBlackCells}
+              setPlayerTwoPurpleCells={setPlayerTwoPurpleCells}
+              setPlayerTwoTurquoiseCells={setPlayerTwoTurquoiseCells}
+            ></DiceField>
+          </Col>
+          <Col className="rightBoard">
+            <Board
+              orangeCells={playerOneOrangeCells}
+              purpleCells={playerOnePurpleCells}
+              turquoiseCells={playerOneTurquoiseCells}
+              blackCells={playerOneBlackCells}
+            ></Board>
+          </Col>
         </Col>
+
         <Col span={12}>
-          <DiceField
-          rollButtonHidden={rollButtonHidden}
-          ></DiceField>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="rightBoard" span={12}>
-          <Board
-            orangeCells={playerOneOrangeCells}
-            purpleCells={playerOnePurpleCells}
-            turquoiseCells={playerOneTurquoiseCells}
-            blackCells={playerOneBlackCells}
-          ></Board>
-        </Col>
-        <Col className="leftBoard" span={12}>
-          <Board
-          orangeCells={playerTwoOrangeCells}
-          purpleCells={playerTwoPurpleCells}
-          turquoiseCells={playerTwoTurquoiseCells}
-          blackCells={playerTwoBlackCells}
-          ></Board>
+          <Col className="leftDiceField">
+            <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
+            <DiceField
+              setRerollCounter={setRerollCounter}
+              rerollCounter={rerollCounter}
+              playerIDForGame={props.playerIDForGame}
+              setPlayerOneOrangeCells={setPlayerOneOrangeCells}
+              setPlayerOneBlackCells={setPlayerOneBlackCells}
+              setPlayerOnePurpleCells={setPlayerOnePurpleCells}
+              setPlayerOneTurquoiseCells={setPlayerOneTurquoiseCells}
+              setPlayerTwoOrangeCells={setPlayerTwoOrangeCells}
+              setPlayerTwoBlackCells={setPlayerTwoBlackCells}
+              setPlayerTwoPurpleCells={setPlayerTwoPurpleCells}
+              setPlayerTwoTurquoiseCells={setPlayerTwoTurquoiseCells}
+            ></DiceField>
+          </Col>
+          <Col className="rightBoard">
+            <Board
+              orangeCells={playerOneOrangeCells}
+              purpleCells={playerOnePurpleCells}
+              turquoiseCells={playerOneTurquoiseCells}
+              blackCells={playerOneBlackCells}
+            ></Board>
+          </Col>
         </Col>
       </Row>
     </div>
