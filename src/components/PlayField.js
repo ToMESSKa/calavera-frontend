@@ -29,8 +29,42 @@ function PlayField(props) {
     "",
     "",
   ]);
+
+  const playerOneDice1 = useRef();
+  const playerOneDice2 = useRef();
+  const playerOneDice3 = useRef();
+  const playerOneDice4 = useRef();
+  const playerOneDice5 = useRef();
+  const playerOneDice6 = useRef();
+
+  const [diceReferencesPlayerOne, setDiceReferencesPlayerOne] = useState([
+    playerOneDice1,
+    playerOneDice2,
+    playerOneDice3,
+    playerOneDice4,
+    playerOneDice5,
+    playerOneDice6,
+  ]);
+
+  const playerTwoDice1 = useRef();
+  const playerTwoDice2 = useRef();
+  const playerTwoDice3 = useRef();
+  const playerTwoDice4 = useRef();
+  const playerTwoDice5 = useRef();
+  const playerTwoDice6 = useRef();
+
+  const [diceReferencesPlayerTwo, setDiceReferencesPlayerTwo] = useState([
+    playerTwoDice1,
+    playerTwoDice2,
+    playerTwoDice3,
+    playerTwoDice4,
+    playerTwoDice5,
+    playerTwoDice6,
+  ]);
+
   const [stomp, setStomp] = useState([]);
-  const [rerollCounter, setRerollCounter] = useState("first");
+  const [rerollCounterPlayOne, setRerollCounterPlayerOne] = useState("first");
+  const [rerollCounterPlayerTwo, setRerollCounterPlayerTwo] = useState("first");
   let intialValue = ["", "", "", "", "", "", "", "", "", "", "", "", ""];
 
   const [playerOneOrangeCells, setPlayerOneOrangeCells] = useState(intialValue);
@@ -47,16 +81,51 @@ function PlayField(props) {
 
   const [rollButtonHidden, setRollButtonHidden] = useState(true);
 
+  // const [diceRollResultsPlayOne, setDiceRollResultsPlayerOne] = useState({
+  //   diceRolls: [],
+  // });
+  // const [diceRollResultsPlayerTwo, setDiceRollResultsPlayerTwo] = useState({
+  //   diceRolls: [],
+  // });
+
+  const [dicesGroupedByColorPlayerOne, setDicesGroupedByColorPlayerOne] =
+    useState({
+      purple: [],
+      black: [],
+      orange: [],
+      rose: [],
+      skull: [],
+      turquoise: [],
+    });
+
+  const [dicesGroupedByColorPlayerTwo, setDicesGroupedByColorPlayerTwo] =
+    useState({
+      purple: [],
+      black: [],
+      orange: [],
+      rose: [],
+      skull: [],
+      turquoise: [],
+    });
+
+  const playerOne = 1;
+  const playerTwo = 2;
+
   return (
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
       <Row>
         <Col span={12}>
           <Col className="rightDiceField">
-            <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
+            <RerollCounter rerollCounter={rerollCounterPlayOne}></RerollCounter>
             <DiceField
-              setRerollCounter={setRerollCounter}
-              rerollCounter={rerollCounter}
+              dicesGroupedByColor={dicesGroupedByColorPlayerOne}
+              setDicesGroupedByColor={setDicesGroupedByColorPlayerOne}
+              ownerOfDiceField={playerOne}
+              setDiceReferences={setDiceReferencesPlayerOne}
+              diceReferences={diceReferencesPlayerOne}
+              setRerollCounter={setRerollCounterPlayerOne}
+              rerollCounter={rerollCounterPlayOne}
               playerIDForGame={props.playerIDForGame}
               setPlayerOneOrangeCells={setPlayerOneOrangeCells}
               setPlayerOneBlackCells={setPlayerOneBlackCells}
@@ -80,10 +149,17 @@ function PlayField(props) {
 
         <Col span={12}>
           <Col className="leftDiceField">
-            <RerollCounter rerollCounter={rerollCounter}></RerollCounter>
+            <RerollCounter
+              rerollCounter={rerollCounterPlayerTwo}
+            ></RerollCounter>
             <DiceField
-              setRerollCounter={setRerollCounter}
-              rerollCounter={rerollCounter}
+              dicesGroupedByColor={dicesGroupedByColorPlayerTwo}
+              setDicesGroupedByColor={setDicesGroupedByColorPlayerTwo}
+              ownerOfDiceField={playerTwo}
+              setDiceReferences={setDiceReferencesPlayerTwo}
+              diceReferences={diceReferencesPlayerTwo}
+              setRerollCounter={setRerollCounterPlayerTwo}
+              rerollCounter={rerollCounterPlayerTwo}
               playerIDForGame={props.playerIDForGame}
               setPlayerOneOrangeCells={setPlayerOneOrangeCells}
               setPlayerOneBlackCells={setPlayerOneBlackCells}

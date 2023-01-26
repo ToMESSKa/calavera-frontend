@@ -4,8 +4,7 @@ import Dice from "react-dice-roll";
 
 function DiceRollingField(props) {
   return (
-    <div className="dice-rolling-field">
-      {props.dicesVisible ? (
+    <div style={{visibility: props.dicesVisible }}  className="dice-rolling-field">
         <Row gutter={1}>
           {props.dicesToBeRolled.diceRolls.map((dice, index) => (
             <Dice
@@ -22,9 +21,6 @@ function DiceRollingField(props) {
             ></Dice>
           ))}
         </Row>
-      ) : (
-        <div>{false}</div>
-      )}
     </div>
   );
 }
