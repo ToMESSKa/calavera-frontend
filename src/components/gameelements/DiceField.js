@@ -106,8 +106,8 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getcanceleddice", (message) => {
-    if (props.playerIDForGame === 2) {
-      cancelDiceForReroll(JSON.parse(message.body).diceValue);
+    if (props.playerIDForGame === 2 && props.ownerOfDiceField === 1) {
+      cancelDiceForReroll(JSON.parse(message.body).diceColor);
     }
   });
 
@@ -160,6 +160,17 @@ function DiceField(props) {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/selecteddiceforreroll",
+        body: JSON.stringify(dice),
+      });
+    } else {
+      //Handle error
+    }
+  };
+
+  const sendCancelledDiceForReroll = (dice) => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: "/app/canceleddice",
         body: JSON.stringify(dice),
       });
     } else {
@@ -352,6 +363,9 @@ function DiceField(props) {
     if (checkIfRerollFieldIsEmpty(selectedDicesForReroll)) {
       setRerollButtonVisible(false);
       setStopButtonVisible(true);
+    }
+    if (playerToMarkCells === props.playerIDForGame) {
+      sendCancelledDiceForReroll(removedDice)
     }
   };
 
