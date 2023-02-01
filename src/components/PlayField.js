@@ -173,10 +173,10 @@ function PlayField(props) {
           </Col>
           <Col className="rightBoard">
             <Board
-              orangeCells={playerOneOrangeCells}
-              purpleCells={playerOnePurpleCells}
-              turquoiseCells={playerOneTurquoiseCells}
-              blackCells={playerOneBlackCells}
+              orangeCells={playerTwoOrangeCells}
+              purpleCells={playerTwoPurpleCells}
+              turquoiseCells={playerTwoTurquoiseCells}
+              blackCells={playerTwoBlackCells}
             ></Board>
           </Col>
         </Col>
