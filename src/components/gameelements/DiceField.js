@@ -63,7 +63,7 @@ function DiceField(props) {
   const [markedPurpleCellsCounter, setRedCellsToMark] = useState(0);
   const [markedTurquoiseCellsCounter, setTurquoiseCellsToMark] = useState(0);
   const [markedBlackCellsCounter, setBlackCellsToMark] = useState(0);
-  const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
+  // const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
   const [stopButtonDisabled, setstopButtonDisabled] = useState(false);
@@ -74,7 +74,7 @@ function DiceField(props) {
 
   useEffect(() => {
     if (
-      props.playerIDForGame !== playerToMarkCells &&
+      props.playerIDForGame !== props.playerToMarkCells &&
       presetColorForRollResult !== 0
     ) {
       rollAllDicesForTheOtherPlayer();
@@ -88,7 +88,7 @@ function DiceField(props) {
   }, []);
 
   useEffect(() => {
-    if (playerToMarkCells !== props.ownerOfDiceField) {
+    if (props.playerToMarkCells !== props.ownerOfDiceField) {
       props.setDicesVisible("hidden");
       setrollButtonVisible("hidden");
       props.setRerollCounterVisible("hidden");
@@ -130,10 +130,10 @@ function DiceField(props) {
     console.log("server answered");
     if (
       (props.playerIDForGame === 2 &&
-        playerToMarkCells === 1 &&
+        props.playerToMarkCells === 1 &&
         props.ownerOfDiceField === 1) ||
       (props.playerIDForGame === 1 &&
-        playerToMarkCells === 2 &&
+        props.playerToMarkCells === 2 &&
         props.ownerOfDiceField === 1) 
         // ||
       // (props.playerIDForGame === 2 &&
@@ -148,16 +148,16 @@ function DiceField(props) {
     } else {
       console.log("fail");
       console.log(props.playerIDForGame);
-      console.log(playerToMarkCells);
+      console.log(props.playerToMarkCells);
       console.log(props.ownerOfDiceField);
     }
   });
 
   useSubscription("/topic/getwhichplayeristomarkcells", (message) => {
     if (JSON.parse(message.body).whoseTurnItIs === 1) {
-      setPlayerToMarkCells(2);
+      props.setPlayerToMarkCells(2);
     } else if (JSON.parse(message.body).whoseTurnItIs === 2) {
-      setPlayerToMarkCells(1);
+      props.setPlayerToMarkCells(1);
     }
     setRollingIsOver(true);
   });
@@ -232,7 +232,7 @@ function DiceField(props) {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/whoseturnitis",
-        body: JSON.stringify({ whoseTurnItIs: playerToMarkCells }),
+        body: JSON.stringify({ whoseTurnItIs: props.playerToMarkCells }),
       });
     } else {
       //Handle error
@@ -263,7 +263,7 @@ function DiceField(props) {
   };
 
   const getRolledDicesColorAndSendThemToServer = (diceColor, number) => {
-    if (props.playerIDForGame === playerToMarkCells) {
+    if (props.playerIDForGame === props.playerToMarkCells) {
       if (diceRollResults.diceRolls.length < numberOfRolledDices) {
         diceRollResults.diceRolls.push({
           diceNumber: "dice1",
@@ -299,7 +299,7 @@ function DiceField(props) {
   };
 
   const handleClickOnDice = (diceColor) => {
-    if (rollingIsOver && playerToMarkCells === props.playerIDForGame) {
+    if (rollingIsOver && props.playerToMarkCells === props.playerIDForGame) {
       selectDiceColorToMarkCells(diceColor);
       sendWhichPlayerIsToMarkCells();
     } else {
@@ -316,7 +316,7 @@ function DiceField(props) {
       addSelectedDiceToGroup(selectedDicesForReroll, removedDice);
       props.setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
       setSelectedDicesForReroll((diceGroup) => ({ ...diceGroup }));
-      if (playerToMarkCells === props.playerIDForGame) {
+      if (props.playerToMarkCells === props.playerIDForGame) {
         sendSelectedDiceForReroll(removedDice);
         setRerollButtonVisible(true);
       }
@@ -393,7 +393,7 @@ function DiceField(props) {
       setRerollButtonVisible(false);
       setStopButtonVisible(true);
     }
-    if (playerToMarkCells === props.playerIDForGame) {
+    if (props.playerToMarkCells === props.playerIDForGame) {
       sendCancelledDiceForReroll(removedDice);
     }
   };
@@ -454,7 +454,7 @@ function DiceField(props) {
   };
 
   const endRollingPhase = (value) => {
-    setPlayerToMarkCells(props.playerIDForGame); //handle the case when inactive player presses STOP
+    props.setPlayerToMarkCells(props.playerIDForGame); //handle the case when inactive player presses STOP
     setRollingIsOver(true);
   };
 
@@ -473,32 +473,32 @@ function DiceField(props) {
     }
 
     console.log(props.playerIDForGame);
-    console.log(playerToMarkCells);
+    console.log(props.playerToMarkCells);
     console.log(props.ownerOfDiceField);
     if (
       //run
       props.playerIDForGame === 1 &&
-      playerToMarkCells === 1 &&
+      props.playerToMarkCells === 1 &&
       props.ownerOfDiceField === 1
     ) {
       setMarkedCells(diceColor, 1, cells);
     } else if (
       props.playerIDForGame === 1 &&
-      playerToMarkCells === 2 &&
+      props.playerToMarkCells === 2 &&
       props.ownerOfDiceField === 1
     ) {
       setMarkedCells(diceColor, 2, cells);
     } else if (
       //Run
       props.playerIDForGame === 2 &&
-      playerToMarkCells === 1 &&
+      props.playerToMarkCells === 1 &&
       props.ownerOfDiceField === 1
     ) {
       setMarkedCells(diceColor, 1, cells);
     } else if (
       //other
       props.playerIDForGame === 2 &&
-      playerToMarkCells === 2 &&
+      props.playerToMarkCells === 2 &&
       props.ownerOfDiceField === 1
     ) {
       console.log("ughh");
@@ -566,7 +566,7 @@ function DiceField(props) {
   };
 
   const checkIfTurnIsOver = () => {
-    if (startingPlayer !== playerToMarkCells) {
+    if (startingPlayer !== props.playerToMarkCells) {
       notifyServerAboutTheEndOfTurn()
     }
   };
@@ -589,7 +589,7 @@ function DiceField(props) {
   };
 
   const startNewTurn = () => {
-    if (props.ownerOfDiceField === playerToMarkCells ) {
+    if (props.ownerOfDiceField === props.playerToMarkCells) {
       props.setDicesVisible("visible");
       props.setRerollCounterVisible("visible")
     }else{

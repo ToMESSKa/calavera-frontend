@@ -65,11 +65,13 @@ function PlayField(props) {
   const [stomp, setStomp] = useState([]);
   const [rerollCounterPlayOne, setRerollCounterPlayerOne] = useState("first");
   const [rerollCounterPlayerTwo, setRerollCounterPlayerTwo] = useState("first");
-  const [rerollCounterPlayerOneVisible, setRerollCounterPlayerOneVisible] = useState("visible");
-  const [rerollCounterPlayerTwoVisible, setRerollCounterPlayerTwoVisible] = useState("hidden");
+  const [rerollCounterPlayerOneVisible, setRerollCounterPlayerOneVisible] =
+    useState("visible");
+  const [rerollCounterPlayerTwoVisible, setRerollCounterPlayerTwoVisible] =
+    useState("hidden");
   let intialValue = ["", "", "", "", "", "", "", "", "", "", "", "", ""];
-  const [dicesPlayerOneVisible, setDicesPlayerOneVisible] = useState("visible")
-  const [dicesPlayerTwoVisible, setDicesPlayerTwoVisible] = useState("hidden")
+  const [dicesPlayerOneVisible, setDicesPlayerOneVisible] = useState("visible");
+  const [dicesPlayerTwoVisible, setDicesPlayerTwoVisible] = useState("hidden");
   const [playerOneOrangeCells, setPlayerOneOrangeCells] = useState(intialValue);
   const [playerOnePurpleCells, setPlayerOnePurpleCells] = useState(intialValue);
   const [playerOneTurquoiseCells, setPlayerOneTurquoiseCells] =
@@ -81,6 +83,7 @@ function PlayField(props) {
   const [playerTwoTurquoiseCells, setPlayerTwoTurquoiseCells] =
     useState(intialValue);
   const [playerTwoBlackCells, setPlayerTwoBlackCells] = useState(intialValue);
+  const [playerToMarkCells, setPlayerToMarkCells] = useState(1);
 
   const [rollButtonHidden, setRollButtonHidden] = useState(true);
 
@@ -125,8 +128,10 @@ function PlayField(props) {
               rerollCounterVisible={rerollCounterPlayerOneVisible}
             ></RerollCounter>
             <DiceField
-              dicesVisible = {dicesPlayerOneVisible}
-              setDicesVisible ={setDicesPlayerOneVisible}
+              playerToMarkCells={playerToMarkCells}
+              setPlayerToMarkCells={setPlayerToMarkCells}
+              dicesVisible={dicesPlayerOneVisible}
+              setDicesVisible={setDicesPlayerOneVisible}
               dicesGroupedByColor={dicesGroupedByColorPlayerOne}
               setDicesGroupedByColor={setDicesGroupedByColorPlayerOne}
               ownerOfDiceField={playerOne}
@@ -163,8 +168,10 @@ function PlayField(props) {
               rerollCounterVisible={rerollCounterPlayerTwoVisible}
             ></RerollCounter>
             <DiceField
-            dicesVisible = {dicesPlayerTwoVisible}
-            setDicesVisible ={setDicesPlayerTwoVisible}
+              playerToMarkCells={playerToMarkCells}
+              setPlayerToMarkCells={setPlayerToMarkCells}
+              dicesVisible={dicesPlayerTwoVisible}
+              setDicesVisible={setDicesPlayerTwoVisible}
               dicesGroupedByColor={dicesGroupedByColorPlayerTwo}
               setDicesGroupedByColor={setDicesGroupedByColorPlayerTwo}
               ownerOfDiceField={playerTwo}
