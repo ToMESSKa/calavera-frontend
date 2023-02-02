@@ -5,8 +5,8 @@ import "antd/dist/antd.css";
 function RerollCounter (props) {
 
     return(
-    <div>
-       This is your {props.rerollCounter} roll.
+    <div style={{visibility: props.rerollCounterVisible }}>
+       This is your {props.counter} roll.
     </div>
     );
 }

@@ -45,9 +45,10 @@ function DiceField(props) {
   //   skull: [],
   //   turquoise: [],
   // });
-  const [dicesVisible, setDicesVisible] = useState("visible");
+  // const [dicesVisible, setDicesVisible] = useState("visible");
+  const [rollButtonVisible, setrollButtonVisible] = useState("visible");
   const [rollingIsOver, setRollingIsOver] = useState(false);
-  const [stopButtonVisible, setStopButtonVisible] = useState(false);
+  const [stopButtonVisible, setStopButtonVisible] = useState("hidden");
   const [selectedDicesForReroll, setSelectedDicesForReroll] = useState({
     purple: [],
     black: [],
@@ -82,7 +83,15 @@ function DiceField(props) {
 
   useEffect(() => {
     if (props.rollButtonHidden === true) {
-      setDicesVisible("hidden");
+      props.setDicesVisible("hidden");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (playerToMarkCells !== props.ownerOfDiceField) {
+      props.setDicesVisible("hidden");
+      setrollButtonVisible("hidden");
+      props.setRerollCounterVisible("hidden");
     }
   }, []);
 
@@ -118,58 +127,31 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
+    console.log("server answered");
     if (
       (props.playerIDForGame === 2 &&
         playerToMarkCells === 1 &&
         props.ownerOfDiceField === 1) ||
       (props.playerIDForGame === 1 &&
-        playerToMarkCells === 2    &&
-        props.ownerOfDiceField === 1)
+        playerToMarkCells === 2 &&
+        props.ownerOfDiceField === 1) 
+        // ||
+      // (props.playerIDForGame === 2 &&
+      //   playerToMarkCells === 2 &&
+      //   props.ownerOfDiceField === 2)
     ) {
       console.log(props.dicesGroupedByColor);
       selectedDiceColorToMarkCellIsSent = true;
       selectDiceColorToMarkCells(JSON.parse(message.body).value);
       selectedDiceColorToMarkCellIsSent = false;
       console.log(props.dicesGroupedByColor);
+    } else {
+      console.log("fail");
+      console.log(props.playerIDForGame);
+      console.log(playerToMarkCells);
+      console.log(props.ownerOfDiceField);
     }
   });
-  // }else if ()
-  // selectedDiceColorToMarkCellIsSent = true;
-  // selectDiceColorToMarkCells(JSON.parse(message.body).value);
-  // selectedDiceColorToMarkCellIsSent = false;
-
-  //   if (
-  //     props.playerIDForGame !== props.ownerOfDiceField &&
-  //     playerToMarkCells !== props.playerIDForGame
-  //   ) {
-  //     selectedDiceColorToMarkCellIsSent = true;
-  //     selectDiceColorToMarkCells(JSON.parse(message.body).value);
-  //     selectedDiceColorToMarkCellIsSent = false;
-  //     console.log(props.dicesGroupedByColor);
-  //   } else if (
-  //     props.playerIDForGame === props.ownerOfDiceField &&
-  //     playerToMarkCells !== props.playerIDForGame
-  //   ) {
-  //     selectedDiceColorToMarkCellIsSent = true;
-  //     selectDiceColorToMarkCells(JSON.parse(message.body).value);
-  //     selectedDiceColorToMarkCellIsSent = false;
-  //     console.log(props.dicesGroupedByColor);
-  //   }
-  // })
-  // if ( /// this brach in forn when
-  //   props.playerIDForGame !== props.ownerOfDiceField &&
-  //   playerToMarkCells !== props.playerIDForGame
-  // ) {
-  //   selectedDiceColorToMarkCellIsSent = true;
-  //   selectDiceColorToMarkCells(JSON.parse(message.body).value);
-  //   selectedDiceColorToMarkCellIsSent = false;
-  // }
-  // if (
-  //   props.playerIDForGame === props.ownerOfDiceField &&
-  //   playerToMarkCells !== props.playerIDForGame
-  // ) {
-  //   console.log(props.dicesGroupedByColor);
-  // }
 
   useSubscription("/topic/getwhichplayeristomarkcells", (message) => {
     if (JSON.parse(message.body).whoseTurnItIs === 1) {
@@ -197,7 +179,7 @@ function DiceField(props) {
     if (props.ownerOfDiceField === 1) {
       props.setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
     }
-    setDicesVisible("hidden");
+    props.setDicesVisible("hidden");
     setStopButtonVisible(true);
   };
 
@@ -308,7 +290,7 @@ function DiceField(props) {
       groupDicesByColor(props.dicesGroupedByColor, rolls);
       console.log(props.dicesGroupedByColor);
       props.setDicesGroupedByColor(props.dicesGroupedByColor);
-      setDicesVisible("hidden");
+      props.setDicesVisible("hidden");
       setStopButtonVisible(true);
       setstopButtonDisabled(true);
     }
@@ -449,7 +431,7 @@ function DiceField(props) {
   const setDiceFieldForReroll = (newDices) => {
     setDicesToBeRolled(newDices);
     setSelectedDicesForReroll(defaultDicesGroupedByColor);
-    setDicesVisible("visible");
+    props.setDicesVisible("visible");
     props.diceReferences.splice(newDices.diceRolls.length);
     props.setDiceReferences(props.diceReferences);
     setNumberOfRolledDices(newDices.diceRolls.length);
@@ -513,7 +495,8 @@ function DiceField(props) {
       props.ownerOfDiceField === 1
     ) {
       setMarkedCells(diceColor, 1, cells);
-    } else if ( //other
+    } else if (
+      //other
       props.playerIDForGame === 2 &&
       playerToMarkCells === 2 &&
       props.ownerOfDiceField === 1
@@ -584,7 +567,7 @@ function DiceField(props) {
 
   const checkIfTurnIsOver = () => {
     if (startingPlayer !== playerToMarkCells) {
-      startNewTurn();
+      notifyServerAboutTheEndOfTurn()
     }
   };
 
@@ -605,14 +588,24 @@ function DiceField(props) {
     return numberOfCellsToMark;
   };
 
-  const startNewTurn = () => {};
+  const startNewTurn = () => {
+    if (props.ownerOfDiceField === playerToMarkCells ) {
+      props.setDicesVisible("visible");
+      props.setRerollCounterVisible("visible")
+    }else{
+      props.setDicesGroupedByColor(defaultDicesGroupedByColor)
+      setrollButtonVisible("hidden")
+      setStopButtonVisible("hidden")
+      props.setRerollCounterVisible("hidden")
+    }
+  };
 
   return (
     <div className="dice-field">
       <Row>
         <Col>
           <DiceGroupingField
-            dicesVisible={dicesVisible}
+            dicesVisible={props.dicesVisible}
             getDiceValue={getRolledDicesColorAndSendThemToServer}
             handleClickOnDice={handleClickOnDice}
             groupedDiceRolls={props.dicesGroupedByColor}
@@ -629,13 +622,9 @@ function DiceField(props) {
           ></RerollSelectionField>
         </Col>
         <Col>
-          {stopButtonVisible ? (
-            <button disabled={stopButtonDisabled} onClick={endRollingPhase}>
+            <button style={{visibility: stopButtonVisible }} disabled={stopButtonDisabled} onClick={endRollingPhase}>
               STOP
             </button>
-          ) : (
-            <div></div>
-          )}
         </Col>
       </Row>
       <Row>
@@ -643,7 +632,7 @@ function DiceField(props) {
           <DiceRollingField
             diceReferences={props.diceReferences}
             dicesToBeRolled={dicesToBeRolled}
-            dicesVisible={dicesVisible}
+            dicesVisible={props.dicesVisible}
             presetColorForRollResult={presetColorForRollResult}
             getDiceValue={getRolledDicesColorAndSendThemToServer}
             faces={faces}
@@ -651,8 +640,12 @@ function DiceField(props) {
         </Col>
       </Row>
       <Row>
-        {dicesVisible ? (
-          <button ref={myButton} onClick={rollAllDices}>
+        {props.dicesVisible ? (
+          <button
+            style={{ visibility: rollButtonVisible }}
+            ref={myButton}
+            onClick={rollAllDices}
+          >
             Roll
           </button>
         ) : (

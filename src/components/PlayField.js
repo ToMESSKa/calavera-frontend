@@ -65,8 +65,11 @@ function PlayField(props) {
   const [stomp, setStomp] = useState([]);
   const [rerollCounterPlayOne, setRerollCounterPlayerOne] = useState("first");
   const [rerollCounterPlayerTwo, setRerollCounterPlayerTwo] = useState("first");
+  const [rerollCounterPlayerOneVisible, setRerollCounterPlayerOneVisible] = useState("visible");
+  const [rerollCounterPlayerTwoVisible, setRerollCounterPlayerTwoVisible] = useState("hidden");
   let intialValue = ["", "", "", "", "", "", "", "", "", "", "", "", ""];
-
+  const [dicesPlayerOneVisible, setDicesPlayerOneVisible] = useState("visible")
+  const [dicesPlayerTwoVisible, setDicesPlayerTwoVisible] = useState("hidden")
   const [playerOneOrangeCells, setPlayerOneOrangeCells] = useState(intialValue);
   const [playerOnePurpleCells, setPlayerOnePurpleCells] = useState(intialValue);
   const [playerOneTurquoiseCells, setPlayerOneTurquoiseCells] =
@@ -117,14 +120,20 @@ function PlayField(props) {
       <Row>
         <Col span={12}>
           <Col className="rightDiceField">
-            <RerollCounter rerollCounter={rerollCounterPlayOne}></RerollCounter>
+            <RerollCounter
+              counter={rerollCounterPlayOne}
+              rerollCounterVisible={rerollCounterPlayerOneVisible}
+            ></RerollCounter>
             <DiceField
+              dicesVisible = {dicesPlayerOneVisible}
+              setDicesVisible ={setDicesPlayerOneVisible}
               dicesGroupedByColor={dicesGroupedByColorPlayerOne}
               setDicesGroupedByColor={setDicesGroupedByColorPlayerOne}
               ownerOfDiceField={playerOne}
               setDiceReferences={setDiceReferencesPlayerOne}
               diceReferences={diceReferencesPlayerOne}
               setRerollCounter={setRerollCounterPlayerOne}
+              setRerollCounterVisible={setRerollCounterPlayerOneVisible}
               rerollCounter={rerollCounterPlayOne}
               playerIDForGame={props.playerIDForGame}
               setPlayerOneOrangeCells={setPlayerOneOrangeCells}
@@ -150,9 +159,12 @@ function PlayField(props) {
         <Col span={12}>
           <Col className="leftDiceField">
             <RerollCounter
-              rerollCounter={rerollCounterPlayerTwo}
+              counter={rerollCounterPlayerTwo}
+              rerollCounterVisible={rerollCounterPlayerTwoVisible}
             ></RerollCounter>
             <DiceField
+            dicesVisible = {dicesPlayerTwoVisible}
+            setDicesVisible ={setDicesPlayerTwoVisible}
               dicesGroupedByColor={dicesGroupedByColorPlayerTwo}
               setDicesGroupedByColor={setDicesGroupedByColorPlayerTwo}
               ownerOfDiceField={playerTwo}
@@ -160,6 +172,7 @@ function PlayField(props) {
               diceReferences={diceReferencesPlayerTwo}
               setRerollCounter={setRerollCounterPlayerTwo}
               rerollCounter={rerollCounterPlayerTwo}
+              setRerollCounterVisible={setRerollCounterPlayerTwoVisible}
               playerIDForGame={props.playerIDForGame}
               setPlayerOneOrangeCells={setPlayerOneOrangeCells}
               setPlayerOneBlackCells={setPlayerOneBlackCells}
