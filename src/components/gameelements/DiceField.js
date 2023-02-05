@@ -127,37 +127,46 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    console.log("server answered");
+    console.log("served answered")
     if (
       (props.playerIDForGame === 2 &&
         props.playerToMarkCells === 1 &&
         props.ownerOfDiceField === 1) ||
       (props.playerIDForGame === 1 &&
         props.playerToMarkCells === 2 &&
-        props.ownerOfDiceField === 1) 
-        // ||
-      // (props.playerIDForGame === 2 &&
-      //   playerToMarkCells === 2 &&
-      //   props.ownerOfDiceField === 2)
+        props.ownerOfDiceField === 1)
     ) {
       console.log(props.dicesGroupedByColor);
       selectedDiceColorToMarkCellIsSent = true;
       selectDiceColorToMarkCells(JSON.parse(message.body).value);
       selectedDiceColorToMarkCellIsSent = false;
       console.log(props.dicesGroupedByColor);
+      // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
+      // // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
     } else {
       console.log("fail");
       console.log(props.playerIDForGame);
       console.log(props.playerToMarkCells);
       console.log(props.ownerOfDiceField);
     }
+      if (startingPlayer === JSON.parse(message.body).playerToMarkCells){
+      console.log("i have set it to for player 2")
+      props.setPlayerToMarkCells(2)
+      setRollingIsOver(true);
+    }
   });
 
   useSubscription("/topic/getwhichplayeristomarkcells", (message) => {
-    if (JSON.parse(message.body).whoseTurnItIs === 1) {
+    if (
+      JSON.parse(message.body).whoseTurnItIs === 1 &&
+      props.playerIDForGame === 1
+    ) {
       props.setPlayerToMarkCells(2);
-    } else if (JSON.parse(message.body).whoseTurnItIs === 2) {
-      props.setPlayerToMarkCells(1);
+    } else if (
+      JSON.parse(message.body).whoseTurnItIs === 1 &&
+      props.playerIDForGame === 2
+    ) {
+      props.setPlayerToMarkCells(2);
     }
     setRollingIsOver(true);
   });
@@ -299,9 +308,12 @@ function DiceField(props) {
   };
 
   const handleClickOnDice = (diceColor) => {
+    console.log(props.playerToMarkCells);
+    console.log(props.playerIDForGame);
+    console.log(rollingIsOver)
     if (rollingIsOver && props.playerToMarkCells === props.playerIDForGame) {
       selectDiceColorToMarkCells(diceColor);
-      sendWhichPlayerIsToMarkCells();
+      console.log("player to mark cell" + props.playerToMarkCells);
     } else {
       selectDiceForReroll(diceColor);
     }
@@ -558,6 +570,7 @@ function DiceField(props) {
       let markedCells = {
         numberOfDice: numberOfCellsToMark,
         value: selectedDiceColor,
+        playerToMarkCells: props.playerToMarkCells,
       };
       sendMarkedCells(markedCells);
       selectedDiceColorToMarkCellIsSent = false;
@@ -567,7 +580,7 @@ function DiceField(props) {
 
   const checkIfTurnIsOver = () => {
     if (startingPlayer !== props.playerToMarkCells) {
-      notifyServerAboutTheEndOfTurn()
+      notifyServerAboutTheEndOfTurn();
     }
   };
 
@@ -589,14 +602,22 @@ function DiceField(props) {
   };
 
   const startNewTurn = () => {
+    // console.log("marker " + props.playerToMarkCells + " " + "owner " + props.ownerOfDiceField)
+    // if (props.playerToMarkCells === 1){
+    //   props.setPlayerToMarkCells(2)
+    // }else{
+    //   props.setPlayerToMarkCells(1)
+    // }
+    console.log(props.playerToMarkCells)
     if (props.ownerOfDiceField === props.playerToMarkCells) {
+      console.log(props.playerToMarkCells)
       props.setDicesVisible("visible");
-      props.setRerollCounterVisible("visible")
-    }else{
-      props.setDicesGroupedByColor(defaultDicesGroupedByColor)
-      setrollButtonVisible("hidden")
-      setStopButtonVisible("hidden")
-      props.setRerollCounterVisible("hidden")
+      props.setRerollCounterVisible("visible");
+    } else {
+      props.setDicesGroupedByColor(defaultDicesGroupedByColor);
+      setrollButtonVisible("hidden");
+      setStopButtonVisible("hidden");
+      props.setRerollCounterVisible("hidden");
     }
   };
 
@@ -622,9 +643,13 @@ function DiceField(props) {
           ></RerollSelectionField>
         </Col>
         <Col>
-            <button style={{visibility: stopButtonVisible }} disabled={stopButtonDisabled} onClick={endRollingPhase}>
-              STOP
-            </button>
+          <button
+            style={{ visibility: stopButtonVisible }}
+            disabled={stopButtonDisabled}
+            onClick={endRollingPhase}
+          >
+            STOP
+          </button>
         </Col>
       </Row>
       <Row>
