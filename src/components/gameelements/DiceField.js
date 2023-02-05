@@ -46,7 +46,7 @@ function DiceField(props) {
   //   turquoise: [],
   // });
   // const [dicesVisible, setDicesVisible] = useState("visible");
-  const [rollButtonVisible, setrollButtonVisible] = useState("visible");
+  // const [rollButtonVisible, setrollButtonVisible] = useState("visible");
   const [rollingIsOver, setRollingIsOver] = useState(false);
   const [stopButtonVisible, setStopButtonVisible] = useState("hidden");
   const [selectedDicesForReroll, setSelectedDicesForReroll] = useState({
@@ -67,7 +67,6 @@ function DiceField(props) {
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
   const [stopButtonDisabled, setstopButtonDisabled] = useState(false);
-  const [startingPlayer, setStartingPlayer] = useState(1);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
   let selectedDiceColorToMarkCellIsSent = false;
@@ -82,7 +81,7 @@ function DiceField(props) {
   }, [presetColorForRollResult]);
 
   useEffect(() => {
-    if (props.rollButtonHidden === true) {
+    if (props.rollButtonVisible === "hidden") {
       props.setDicesVisible("hidden");
     }
   }, []);
@@ -90,7 +89,7 @@ function DiceField(props) {
   useEffect(() => {
     if (props.playerToMarkCells !== props.ownerOfDiceField) {
       props.setDicesVisible("hidden");
-      setrollButtonVisible("hidden");
+      props.setRollButtonVisible("hidden");
       props.setRerollCounterVisible("hidden");
     }
   }, []);
@@ -127,7 +126,7 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    console.log("served answered")
+    console.log("served answered");
     if (
       (props.playerIDForGame === 2 &&
         props.playerToMarkCells === 1 &&
@@ -149,9 +148,9 @@ function DiceField(props) {
       console.log(props.playerToMarkCells);
       console.log(props.ownerOfDiceField);
     }
-      if (startingPlayer === JSON.parse(message.body).playerToMarkCells){
-      console.log("i have set it to for player 2")
-      props.setPlayerToMarkCells(2)
+    if (props.startingPlayer === JSON.parse(message.body).playerToMarkCells) {
+      console.log("i have set it to for player 2");
+      props.setPlayerToMarkCells(2);
       setRollingIsOver(true);
     }
   });
@@ -310,7 +309,7 @@ function DiceField(props) {
   const handleClickOnDice = (diceColor) => {
     console.log(props.playerToMarkCells);
     console.log(props.playerIDForGame);
-    console.log(rollingIsOver)
+    console.log(rollingIsOver);
     if (rollingIsOver && props.playerToMarkCells === props.playerIDForGame) {
       selectDiceColorToMarkCells(diceColor);
       console.log("player to mark cell" + props.playerToMarkCells);
@@ -579,7 +578,7 @@ function DiceField(props) {
   };
 
   const checkIfTurnIsOver = () => {
-    if (startingPlayer !== props.playerToMarkCells) {
+    if (props.startingPlayer !== props.playerToMarkCells) {
       notifyServerAboutTheEndOfTurn();
     }
   };
@@ -602,20 +601,15 @@ function DiceField(props) {
   };
 
   const startNewTurn = () => {
-    // console.log("marker " + props.playerToMarkCells + " " + "owner " + props.ownerOfDiceField)
-    // if (props.playerToMarkCells === 1){
-    //   props.setPlayerToMarkCells(2)
-    // }else{
-    //   props.setPlayerToMarkCells(1)
-    // }
-    console.log(props.playerToMarkCells)
+    console.log(props.playerToMarkCells);
     if (props.ownerOfDiceField === props.playerToMarkCells) {
-      console.log(props.playerToMarkCells)
+      console.log(props.playerToMarkCells);
       props.setDicesVisible("visible");
       props.setRerollCounterVisible("visible");
+      props.setRollButtonVisible("visible");
     } else {
       props.setDicesGroupedByColor(defaultDicesGroupedByColor);
-      setrollButtonVisible("hidden");
+      props.setRollButtonVisible("hidden");
       setStopButtonVisible("hidden");
       props.setRerollCounterVisible("hidden");
     }
@@ -667,7 +661,7 @@ function DiceField(props) {
       <Row>
         {props.dicesVisible ? (
           <button
-            style={{ visibility: rollButtonVisible }}
+            style={{ visibility: props.rollButtonVisible }}
             ref={myButton}
             onClick={rollAllDices}
           >
