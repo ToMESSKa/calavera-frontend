@@ -134,54 +134,13 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    ///playerID 2
-    //player to mark cells 1
-    //owner of dicefield 1
-
-    ///playerID 1
-    ///player to mark cells 2
-    //owner of dicefield 2
-
-    console.log("served answered");
-    console.log("playerID" + props.playerIDForGame);
-    console.log("player to mark cells" + props.playerToMarkCells);
-    console.log("owner of dicefield" + props.ownerOfDiceField);
-    console.log("starintg player" + props.startingPlayer);
-    console.log(props.dicesGroupedByColor);
-    if (
-      (props.playerIDForGame === 2 &&
-        props.playerToMarkCells === 1 &&
-        props.ownerOfDiceField === 1 &&
-        props.startingPlayer === 1) ||
-      (props.playerIDForGame === 1 &&
-        props.playerToMarkCells === 2 &&
-        props.ownerOfDiceField === 1 &&
-        props.startingPlayer === 1) ||
-      (props.playerIDForGame === 1 &&
-        props.playerToMarkCells === 2 &&
-        props.ownerOfDiceField === 2 &&
-        props.startingPlayer === 2) ||
-      (props.playerIDForGame === 2 &&
-        props.playerToMarkCells === 1 &&
-        props.ownerOfDiceField === 2 &&
-        props.startingPlayer === 2)
-    ) {
-      // if (
-      //   (props.playerIDForGame === 2 &&
-      //     props.playerToMarkCells === 1 &&
-      //     props.ownerOfDiceField === 1) ||
-      //   (props.playerIDForGame === 1 &&
-      //     props.playerToMarkCells === 2 &&
-      //     props.ownerOfDiceField === 1) ||
-      //   (props.playerIDForGame === 1 &&
-      //     props.playerToMarkCells === 2 &&
-      //     props.ownerOfDiceField === 2)||
-      //     (props.playerIDForGame === 1 &&
-      //       props.playerToMarkCells === 1 &&
-      //       props.ownerOfDiceField === 1 &&
-      //       props.startingPlayer === 2 &&
-      //       selectedDiceColorToMarkCellIsSent === false
-      //       )
+    // console.log("served answered");
+    // console.log("playerID for game: " + props.playerIDForGame);
+    // console.log("player to mark cells: " + props.playerToMarkCells);
+    // console.log("owner of dicefield: " + props.ownerOfDiceField);
+    // console.log("starting player: " + props.startingPlayer);
+    // console.log(props.dicesGroupedByColor);
+    if (checkIfCellsShouldBeMarked() === true) {
       console.log("sucess");
       selectedDiceColorToMarkCellIsSent = true;
       selectDiceColorToMarkCells(
@@ -189,13 +148,8 @@ function DiceField(props) {
         props.playerToMarkCells
       );
       selectedDiceColorToMarkCellIsSent = false;
-      // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
-      // // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
     } else {
       console.log("fail");
-      console.log(props.playerIDForGame);
-      console.log(props.playerToMarkCells);
-      console.log(props.ownerOfDiceField);
     }
     if (props.startingPlayer === JSON.parse(message.body).playerToMarkCells) {
       if (props.startingPlayer === 1) {
@@ -309,6 +263,34 @@ function DiceField(props) {
       });
     } else {
       //Handle error
+    }
+  };
+
+  const checkIfCellsShouldBeMarked = () => {
+    console.log("playerID for game: " + props.playerIDForGame);
+    console.log("player to mark cells: " + props.playerToMarkCells);
+    console.log("owner of dicefield: " + props.ownerOfDiceField);
+    console.log("starting player: " + props.startingPlayer);
+    if (
+      (props.playerIDForGame === 2 && // when player one is starting player and chooses
+        props.playerToMarkCells === 1 &&
+        props.ownerOfDiceField === 1 &&
+        props.startingPlayer === 1) ||
+      (props.playerIDForGame === 1 && // when player one is starting player and player two chooses
+        props.playerToMarkCells === 2 &&
+        props.ownerOfDiceField === 1 &&
+        props.startingPlayer === 1) ||
+      (props.playerIDForGame === 1 && // when player two is starting player and chooses
+        props.playerToMarkCells === 2 &&
+        props.ownerOfDiceField === 2 &&
+        props.startingPlayer === 2) ||
+      (props.playerIDForGame === 2 && // when player two is starting player and player one chooses
+        props.playerToMarkCells === 1 &&
+        props.ownerOfDiceField === 2 &&
+        props.startingPlayer === 2)
+    ) {
+      console.log("true");
+      return true;
     }
   };
 
