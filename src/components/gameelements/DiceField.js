@@ -97,14 +97,22 @@ function DiceField(props) {
   const stompClient = useStompClient();
 
   useSubscription("/topic/getdicerollresult", (message) => {
-    if (props.playerIDForGame === 2 && props.ownerOfDiceField === 1) {
+    console.log(props.startingPlayer);
+    console.log(props.ownerOfDiceField);
+    if (
+      props.playerIDForGame !== props.startingPlayer &&
+      props.ownerOfDiceField === props.startingPlayer
+    ) {
       setPresetColorForRollResultForTheOtherPlayer(
         JSON.parse(message.body).diceRolls
       );
-      setTimeout(function () {
-        groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
-      }, 1500);
+      // setTimeout(function () {
+      //   groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
+      // }, 1500);
     }
+    setTimeout(function () {
+      groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
+    }, 1500);
   });
 
   useSubscription("/topic/getseledteddiceforreroll", (message) => {
@@ -126,20 +134,58 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
+    ///playerID 2
+    //player to mark cells 1
+    //owner of dicefield 1
+
+    ///playerID 1
+    ///player to mark cells 2
+    //owner of dicefield 2
+
     console.log("served answered");
+    console.log("playerID" + props.playerIDForGame);
+    console.log("player to mark cells" + props.playerToMarkCells);
+    console.log("owner of dicefield" + props.ownerOfDiceField);
+    console.log("starintg player" + props.startingPlayer);
+    console.log(props.dicesGroupedByColor);
     if (
       (props.playerIDForGame === 2 &&
         props.playerToMarkCells === 1 &&
-        props.ownerOfDiceField === 1) ||
+        props.ownerOfDiceField === 1 &&
+        props.startingPlayer === 1) ||
       (props.playerIDForGame === 1 &&
         props.playerToMarkCells === 2 &&
-        props.ownerOfDiceField === 1)
+        props.ownerOfDiceField === 1 &&
+        props.startingPlayer === 1) ||
+      (props.playerIDForGame === 1 &&
+        props.playerToMarkCells === 2 &&
+        props.ownerOfDiceField === 2 &&
+        props.startingPlayer === 2) ||
+      (props.playerIDForGame === 2 &&
+        props.playerToMarkCells === 1 &&
+        props.ownerOfDiceField === 2 &&
+        props.startingPlayer === 2)
     ) {
-      console.log(props.dicesGroupedByColor);
+      // if (
+      //   (props.playerIDForGame === 2 &&
+      //     props.playerToMarkCells === 1 &&
+      //     props.ownerOfDiceField === 1) ||
+      //   (props.playerIDForGame === 1 &&
+      //     props.playerToMarkCells === 2 &&
+      //     props.ownerOfDiceField === 1) ||
+      //   (props.playerIDForGame === 1 &&
+      //     props.playerToMarkCells === 2 &&
+      //     props.ownerOfDiceField === 2)||
+      //     (props.playerIDForGame === 1 &&
+      //       props.playerToMarkCells === 1 &&
+      //       props.ownerOfDiceField === 1 &&
+      //       props.startingPlayer === 2 &&
+      //       selectedDiceColorToMarkCellIsSent === false
+      //       )
+      console.log("sucess");
       selectedDiceColorToMarkCellIsSent = true;
       selectDiceColorToMarkCells(JSON.parse(message.body).value);
       selectedDiceColorToMarkCellIsSent = false;
-      console.log(props.dicesGroupedByColor);
       // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
       // // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
     } else {
@@ -149,8 +195,11 @@ function DiceField(props) {
       console.log(props.ownerOfDiceField);
     }
     if (props.startingPlayer === JSON.parse(message.body).playerToMarkCells) {
-      console.log("i have set it to for player 2");
-      props.setPlayerToMarkCells(2);
+      if (props.startingPlayer === 1) {
+        props.setPlayerToMarkCells(2);
+      } else {
+        props.setPlayerToMarkCells(1);
+      }
       setRollingIsOver(true);
     }
   });
@@ -172,6 +221,8 @@ function DiceField(props) {
 
   useSubscription("/topic/turnisover", (message) => {
     startNewTurn();
+    console.log(props.startingPlayer);
+    props.setStartingPlayer(2);
   });
 
   const sendRollResultsAndGroupThem = () => {
@@ -184,7 +235,7 @@ function DiceField(props) {
       //Handle error
     }
     groupDicesByColor(props.dicesGroupedByColor, diceRollResults.diceRolls);
-    if (props.ownerOfDiceField === 1) {
+    if (props.ownerOfDiceField === props.startingPlayer) {
       props.setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
     }
     props.setDicesVisible("hidden");
@@ -294,7 +345,12 @@ function DiceField(props) {
   };
 
   const groupForTheOtherPlayer = (rolls) => {
-    if (props.playerIDForGame === 2 && props.ownerOfDiceField === 1) {
+    console.log(props.playerToMarkCells);
+    console.log(props.startingPlayer);
+    if (
+      props.playerIDForGame !== props.playerToMarkCells &&
+      props.ownerOfDiceField === props.startingPlayer
+    ) {
       groupDicesByColor(props.dicesGroupedByColor, rolls);
       console.log(props.dicesGroupedByColor);
       props.setDicesGroupedByColor(props.dicesGroupedByColor);
@@ -309,10 +365,10 @@ function DiceField(props) {
   const handleClickOnDice = (diceColor) => {
     console.log(props.playerToMarkCells);
     console.log(props.playerIDForGame);
+    console.log(props.ownerOfDiceField);
     console.log(rollingIsOver);
     if (rollingIsOver && props.playerToMarkCells === props.playerIDForGame) {
       selectDiceColorToMarkCells(diceColor);
-      console.log("player to mark cell" + props.playerToMarkCells);
     } else {
       selectDiceForReroll(diceColor);
     }
@@ -514,6 +570,50 @@ function DiceField(props) {
     ) {
       console.log("ughh");
       setMarkedCells(diceColor, 2, cells);
+    } else if (
+      //other
+      props.playerIDForGame === 2 &&
+      props.playerToMarkCells === 2 &&
+      props.ownerOfDiceField === 2
+    ) {
+      console.log("ughh");
+      setMarkedCells(diceColor, 2, cells);
+    } else if (
+      //other
+      props.playerIDForGame === 1 &&
+      props.playerToMarkCells === 2 &&
+      props.ownerOfDiceField === 2 &&
+      props.startingPlayer === 1
+    ) {
+      console.log("ughh");
+      setMarkedCells(diceColor, 1, cells);
+    } else if (
+      //other
+      props.playerIDForGame === 1 &&
+      props.playerToMarkCells === 2 &&
+      props.ownerOfDiceField === 2 &&
+      props.startingPlayer === 2
+    ) {
+      console.log("ughh");
+      setMarkedCells(diceColor, 2, cells);
+    } else if (
+      //other
+      props.playerIDForGame === 1 &&
+      props.playerToMarkCells === 1 &&
+      props.ownerOfDiceField === 2 &&
+      props.startingPlayer === 2
+    ) {
+      console.log("ughh");
+      setMarkedCells(diceColor, 1, cells);
+    } else if (
+      //other
+      props.playerIDForGame === 2 &&
+      props.playerToMarkCells === 1 &&
+      props.ownerOfDiceField === 2 &&
+      props.startingPlayer === 2
+    ) {
+      console.log("ughh");
+      setMarkedCells(diceColor, 1, cells);
     }
   };
 
@@ -572,6 +672,7 @@ function DiceField(props) {
         playerToMarkCells: props.playerToMarkCells,
       };
       sendMarkedCells(markedCells);
+      console.log("send again");
       selectedDiceColorToMarkCellIsSent = false;
     }
     checkIfTurnIsOver();
