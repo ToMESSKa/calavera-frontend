@@ -184,7 +184,10 @@ function DiceField(props) {
       //       )
       console.log("sucess");
       selectedDiceColorToMarkCellIsSent = true;
-      selectDiceColorToMarkCells(JSON.parse(message.body).value);
+      selectDiceColorToMarkCells(
+        JSON.parse(message.body).value,
+        props.playerToMarkCells
+      );
       selectedDiceColorToMarkCellIsSent = false;
       // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
       // // props.setPlayerToMarkCells(JSON.parse(message.body).playerToMarkCells);
@@ -368,7 +371,7 @@ function DiceField(props) {
     console.log(props.ownerOfDiceField);
     console.log(rollingIsOver);
     if (rollingIsOver && props.playerToMarkCells === props.playerIDForGame) {
-      selectDiceColorToMarkCells(diceColor);
+      selectDiceColorToMarkCells(diceColor, props.playerToMarkCells);
     } else {
       selectDiceForReroll(diceColor);
     }
@@ -525,12 +528,9 @@ function DiceField(props) {
     setRollingIsOver(true);
   };
 
-  const markCells = (numberOfDices, diceColor) => {
+  const markCells = (numberOfDices, diceColor, ownerOfDiceField) => {
     let cells = [];
-    console.log(numberOfDices);
-    console.log(diceColor);
     let numberOfMarkedCells = getNumberOfMarkedCells(diceColor);
-    console.log(numberOfMarkedCells);
     for (let i = 0; i < 13; i++) {
       if (i < numberOfMarkedCells + numberOfDices) {
         cells.push("X");
@@ -538,82 +538,22 @@ function DiceField(props) {
         cells.push("");
       }
     }
-
-    console.log(props.playerIDForGame);
-    console.log(props.playerToMarkCells);
-    console.log(props.ownerOfDiceField);
-    if (
-      //run
-      props.playerIDForGame === 1 &&
-      props.playerToMarkCells === 1 &&
-      props.ownerOfDiceField === 1
-    ) {
-      setMarkedCells(diceColor, 1, cells);
-    } else if (
-      props.playerIDForGame === 1 &&
-      props.playerToMarkCells === 2 &&
-      props.ownerOfDiceField === 1
-    ) {
-      setMarkedCells(diceColor, 2, cells);
-    } else if (
-      //Run
-      props.playerIDForGame === 2 &&
-      props.playerToMarkCells === 1 &&
-      props.ownerOfDiceField === 1
-    ) {
-      setMarkedCells(diceColor, 1, cells);
-    } else if (
-      //other
-      props.playerIDForGame === 2 &&
-      props.playerToMarkCells === 2 &&
-      props.ownerOfDiceField === 1
-    ) {
-      console.log("ughh");
-      setMarkedCells(diceColor, 2, cells);
-    } else if (
-      //other
-      props.playerIDForGame === 2 &&
-      props.playerToMarkCells === 2 &&
-      props.ownerOfDiceField === 2
-    ) {
-      console.log("ughh");
-      setMarkedCells(diceColor, 2, cells);
-    } else if (
-      //other
-      props.playerIDForGame === 1 &&
-      props.playerToMarkCells === 2 &&
-      props.ownerOfDiceField === 2 &&
-      props.startingPlayer === 1
-    ) {
-      console.log("ughh");
-      setMarkedCells(diceColor, 1, cells);
-    } else if (
-      //other
-      props.playerIDForGame === 1 &&
-      props.playerToMarkCells === 2 &&
-      props.ownerOfDiceField === 2 &&
-      props.startingPlayer === 2
-    ) {
-      console.log("ughh");
-      setMarkedCells(diceColor, 2, cells);
-    } else if (
-      //other
-      props.playerIDForGame === 1 &&
-      props.playerToMarkCells === 1 &&
-      props.ownerOfDiceField === 2 &&
-      props.startingPlayer === 2
-    ) {
-      console.log("ughh");
-      setMarkedCells(diceColor, 1, cells);
-    } else if (
-      //other
-      props.playerIDForGame === 2 &&
-      props.playerToMarkCells === 1 &&
-      props.ownerOfDiceField === 2 &&
-      props.startingPlayer === 2
-    ) {
-      console.log("ughh");
-      setMarkedCells(diceColor, 1, cells);
+    if (ownerOfDiceField === 1 && diceColor === 1) {
+      props.setPlayerOnePurpleCells(cells);
+    } else if (ownerOfDiceField === 1 && diceColor === 2) {
+      props.setPlayerOneBlackCells(cells);
+    } else if (ownerOfDiceField === 1 && diceColor === 3) {
+      props.setPlayerOneOrangeCells(cells);
+    } else if (ownerOfDiceField === 1 && diceColor === 6) {
+      props.setPlayerOneTurquoiseCells(cells);
+    } else if (ownerOfDiceField === 2 && diceColor === 1) {
+      props.setPlayerTwoPurpleCells(cells);
+    } else if (ownerOfDiceField === 2 && diceColor === 2) {
+      props.setPlayerTwoBlackCells(cells);
+    } else if (ownerOfDiceField === 2 && diceColor === 3) {
+      props.setPlayerTwoOrangeCells(cells);
+    } else if (ownerOfDiceField === 2 && diceColor === 6) {
+      props.setPlayerTwoTurquoiseCells(cells);
     }
   };
 
@@ -629,42 +569,13 @@ function DiceField(props) {
     }
   };
 
-  const setMarkedCells = (diceColor, player, cells) => {
-    if (player === 1 && diceColor === 1) {
-      props.setPlayerOnePurpleCells(cells);
-      console.log("heyy");
-    } else if (player === 1 && diceColor === 2) {
-      props.setPlayerOneBlackCells(cells);
-      console.log("heyy");
-    } else if (player === 1 && diceColor === 3) {
-      props.setPlayerOneOrangeCells(cells);
-      console.log("heyy");
-    } else if (player === 1 && diceColor === 6) {
-      props.setPlayerOneTurquoiseCells(cells);
-      console.log("heyy");
-    } else if (player === 2 && diceColor === 1) {
-      props.setPlayerTwoPurpleCells(cells);
-      console.log("heyy");
-    } else if (player === 2 && diceColor === 2) {
-      console.log(cells);
-      props.setPlayerTwoBlackCells(cells);
-      console.log("heyy");
-    } else if (player === 2 && diceColor === 3) {
-      props.setPlayerTwoOrangeCells(cells);
-      console.log("heyy");
-    } else if (player === 2 && diceColor === 6) {
-      props.setPlayerTwoTurquoiseCells(cells);
-      console.log("heyy");
-    }
-  };
-
-  const selectDiceColorToMarkCells = (selectedDiceColor) => {
+  const selectDiceColorToMarkCells = (selectedDiceColor, ownerOfDiceField) => {
     console.log(props.dicesGroupedByColor);
     let numberOfCellsToMark =
       deleteDiceGroupByColorAndGetNumberOfCellsToMark(selectedDiceColor);
     props.setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
     console.log(numberOfCellsToMark);
-    markCells(numberOfCellsToMark, selectedDiceColor);
+    markCells(numberOfCellsToMark, selectedDiceColor, ownerOfDiceField);
     if (!selectedDiceColorToMarkCellIsSent) {
       let markedCells = {
         numberOfDice: numberOfCellsToMark,
