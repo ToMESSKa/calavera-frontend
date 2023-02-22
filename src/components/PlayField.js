@@ -91,12 +91,17 @@ function PlayField(props) {
   const [rollButtonPlayerTwoVisible, setRollButtonPlayerTwoVisible] =
     useState("visible");
 
-  // const [diceRollResultsPlayOne, setDiceRollResultsPlayerOne] = useState({
-  //   diceRolls: [],
-  // });
-  // const [diceRollResultsPlayerTwo, setDiceRollResultsPlayerTwo] = useState({
-  //   diceRolls: [],
-  // });
+    const [markedBlackCellsCounterPlayerOne, setMarkedBlackCellsCounterPlayerOne] = useState(0);
+    const [markedOrangeCellsCounterPlayerOne, setMarkedOrangeCellsCounterPlayerOne] = useState(0);
+    const [markedPurpleCellsCounterPlayerOne, setMarkedPurpleCellsCounterPlayerOne] = useState(0);
+    const [markedTurquoiseCellsCounterPlayerOne, setMarkedTurquoiseCellsCounterPlayerOne] =
+      useState(0);
+
+    const [markedBlackCellsCounterPlayerTwo, setMarkedBlackCellsCounterPlayerTwo] = useState(0);
+    const [markedOrangeCellsCounterPlayerTwo, setMarkedOrangeCellsCounterPlayerTwo] = useState(0);
+    const [markedPurpleCellsCounterPlayerTwo, setMarkedPurpleCellsCounterPlayerTwo] = useState(0);
+    const [markedTurquoiseCellsCounterPlayerTwo, setMarkedTurquoiseCellsCounterPlayerTwo] =
+      useState(0);
 
   const [dicesGroupedByColorPlayerOne, setDicesGroupedByColorPlayerOne] =
     useState({
@@ -157,6 +162,27 @@ function PlayField(props) {
               setPlayerTwoBlackCells={setPlayerTwoBlackCells}
               setPlayerTwoPurpleCells={setPlayerTwoPurpleCells}
               setPlayerTwoTurquoiseCells={setPlayerTwoTurquoiseCells}
+
+              markedOrangeCellsCounterPlayerOne ={markedOrangeCellsCounterPlayerOne}
+              setMarkedOrangeCellsCounterPlayerOne={setMarkedOrangeCellsCounterPlayerOne}
+              markedOrangeCellsCounterPlayerTwo ={markedOrangeCellsCounterPlayerTwo}
+              setMarkedOrangeCellsCounterPlayerTwo={setMarkedOrangeCellsCounterPlayerTwo}
+
+              markedPurpleCellsCounterPlayerOne={markedPurpleCellsCounterPlayerOne}
+              setMarkedPurpleCellsCounterPlayerOne={setMarkedPurpleCellsCounterPlayerOne}
+              markedPurpleCellsCounterPlayerTwo={markedPurpleCellsCounterPlayerTwo}
+              setMarkedPurpleCellsCounterPlayerTwo={setMarkedPurpleCellsCounterPlayerTwo}
+
+              markedTurquoiseCellsCounterPlayerOne={markedTurquoiseCellsCounterPlayerOne}
+              setMarkedTurquoiseCellsCounterPlayerOne={setMarkedTurquoiseCellsCounterPlayerOne}
+              markedTurquoiseCellsCounterPlayerTwo={markedTurquoiseCellsCounterPlayerTwo}
+              setMarkedTurquoiseCellsCounterPlayerTwo={setMarkedTurquoiseCellsCounterPlayerTwo}
+
+
+              markedBlackCellsCounterPlayerOne={markedBlackCellsCounterPlayerOne}
+              setMarkedBlackCellsCounterOne={setMarkedBlackCellsCounterPlayerOne}
+              markedBlackCellsCounterPlayerTwo={markedBlackCellsCounterPlayerTwo}
+              setMarkedBlackCellsCounterPlayerTwo={setMarkedBlackCellsCounterPlayerTwo}
             ></DiceField>
           </Col>
           <Col className="rightBoard">
@@ -201,6 +227,31 @@ function PlayField(props) {
               setPlayerTwoBlackCells={setPlayerTwoBlackCells}
               setPlayerTwoPurpleCells={setPlayerTwoPurpleCells}
               setPlayerTwoTurquoiseCells={setPlayerTwoTurquoiseCells}
+              markedOrangeCellsCounterPlayerOne ={markedOrangeCellsCounterPlayerOne}
+              setMarkedOrangeCellsCounterPlayerOne={setMarkedOrangeCellsCounterPlayerOne}
+              markedOrangeCellsCounterPlayerTwo ={markedOrangeCellsCounterPlayerTwo}
+              setMarkedOrangeCellsCounterPlayerTwo={setMarkedOrangeCellsCounterPlayerTwo}
+              markedPurpleCellsCounter={markedPurpleCellsCounterPlayerTwo}
+              setMarkedPurpleCellsCounter={setMarkedPurpleCellsCounterPlayerTwo}
+              markedTurquoiseCellsCounter={markedTurquoiseCellsCounterPlayerTwo}
+              setMarkedTurquoiseCellsCounter={setMarkedTurquoiseCellsCounterPlayerTwo}
+              markedBlackCellsCounter={markedBlackCellsCounterPlayerTwo}
+              setMarkedBlackCellsCounter={setMarkedBlackCellsCounterPlayerTwo}
+              markedPurpleCellsCounterPlayerOne={markedPurpleCellsCounterPlayerOne}
+              setMarkedPurpleCellsCounterPlayerOne={setMarkedPurpleCellsCounterPlayerOne}
+              markedPurpleCellsCounterPlayerTwo={markedPurpleCellsCounterPlayerTwo}
+              setMarkedPurpleCellsCounterPlayerTwo={setMarkedPurpleCellsCounterPlayerTwo}
+
+              markedTurquoiseCellsCounterPlayerOne={markedTurquoiseCellsCounterPlayerOne}
+              setMarkedTurquoiseCellsCounterPlayerOne={setMarkedTurquoiseCellsCounterPlayerOne}
+              markedTurquoiseCellsCounterPlayerTwo={markedTurquoiseCellsCounterPlayerTwo}
+              setMarkedTurquoiseCellsCounterPlayerTwo={setMarkedTurquoiseCellsCounterPlayerTwo}
+
+
+              markedBlackCellsCounterPlayerOne={markedBlackCellsCounterPlayerOne}
+              setMarkedBlackCellsCounterOne={setMarkedBlackCellsCounterPlayerOne}
+              markedBlackCellsCounterPlayerTwo={markedBlackCellsCounterPlayerTwo}
+              setMarkedBlackCellsCounterPlayerTwo={setMarkedBlackCellsCounterPlayerTwo}
             ></DiceField>
           </Col>
           <Col className="rightBoard">
