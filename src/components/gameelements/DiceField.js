@@ -106,9 +106,6 @@ function DiceField(props) {
       setPresetColorForRollResultForTheOtherPlayer(
         JSON.parse(message.body).diceRolls
       );
-      // setTimeout(function () {
-      //   groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
-      // }, 1500);
     }
     setTimeout(function () {
       groupForTheOtherPlayer(JSON.parse(message.body).diceRolls);
@@ -136,50 +133,36 @@ function DiceField(props) {
   useSubscription("/topic/getmarkedcells", (message) => {
     console.log("served answered");
     console.log("playerID for game: " + props.playerIDForGame);
-    console.log("player to mark cells: " + props.playerToMarkCells);
+    console.log(
+      "player to mark cells: " + JSON.parse(message.body).playerToMarkCells
+    );
     console.log("owner of dicefield: " + props.ownerOfDiceField);
     console.log("starting player: " + props.startingPlayer);
     console.log(props.dicesGroupedByColor);
-    if (checkIfCellsShouldBeMarked() === true) {
-      // console.log("sucess");
+    if (checkIfCellsShouldBeMarked(message) === true) {
+      console.log("sucess");
       selectedDiceColorToMarkCellIsSent = true;
       selectDiceColorToMarkCells(
         JSON.parse(message.body).value,
-        props.playerToMarkCells
+        JSON.parse(message.body).playerToMarkCells,
       );
       selectedDiceColorToMarkCellIsSent = false;
     } else {
-      // console.log("fail");
+      console.log("fail");
     }
     if (props.startingPlayer === JSON.parse(message.body).playerToMarkCells) {
-      if (props.startingPlayer === 1) {
+      if (JSON.parse(message.body).playerToMarkCells === 1) {
         props.setPlayerToMarkCells(2);
       } else {
         props.setPlayerToMarkCells(1);
       }
-      setRollingIsOver(true);
-    }
-  });
-
-  useSubscription("/topic/getwhichplayeristomarkcells", (message) => {
-    if (
-      JSON.parse(message.body).whoseTurnItIs === 1 &&
-      props.playerIDForGame === 1
-    ) {
-      props.setPlayerToMarkCells(2);
-    } else if (
-      JSON.parse(message.body).whoseTurnItIs === 1 &&
-      props.playerIDForGame === 2
-    ) {
-      props.setPlayerToMarkCells(2);
     }
     setRollingIsOver(true);
   });
 
   useSubscription("/topic/turnisover", (message) => {
     startNewTurn();
-    // console.log(props.startingPlayer);
-    props.setStartingPlayer(2);
+    props.setStartingPlayer(JSON.parse(message.body).startingPlayer);
   });
 
   const sendRollResultsAndGroupThem = () => {
@@ -244,29 +227,18 @@ function DiceField(props) {
     }
   };
 
-  const sendWhichPlayerIsToMarkCells = () => {
-    if (stompClient) {
-      stompClient.publish({
-        destination: "/app/whoseturnitis",
-        body: JSON.stringify({ whoseTurnItIs: props.playerToMarkCells }),
-      });
-    } else {
-      //Handle error
-    }
-  };
-
   const notifyServerAboutTheEndOfTurn = () => {
     if (stompClient) {
       stompClient.publish({
         destination: "/app/turnisover",
-        body: JSON.stringify({ turnIsOver: true }),
+        body: JSON.stringify({ turnIsOver: true, startingPlayer: props.startingPlayer}),
       });
     } else {
       //Handle error
     }
   };
 
-  const checkIfCellsShouldBeMarked = () => {
+  const checkIfCellsShouldBeMarked = (message) => {
     // console.log("playerID for game: " + props.playerIDForGame);
     // console.log("player to mark cells: " + props.playerToMarkCells);
     // console.log("owner of dicefield: " + props.ownerOfDiceField);
@@ -274,24 +246,23 @@ function DiceField(props) {
     // console.log(props.dicesGroupedByColor);
     if (
       (props.playerIDForGame === 2 && // when player one is starting player and chooses
-        props.playerToMarkCells === 1 &&
+        JSON.parse(message.body).playerToMarkCells === 1 &&
         props.ownerOfDiceField === 1 &&
         props.startingPlayer === 1) ||
       (props.playerIDForGame === 1 && // when player one is starting player and player two chooses
-        props.playerToMarkCells === 2 &&
+        JSON.parse(message.body).playerToMarkCells === 2 &&
         props.ownerOfDiceField === 1 &&
         props.startingPlayer === 1) ||
       (props.playerIDForGame === 1 && // when player two is starting player and chooses
-        props.playerToMarkCells === 2 &&
+        JSON.parse(message.body).playerToMarkCells === 2 &&
         props.ownerOfDiceField === 2 &&
         props.startingPlayer === 2) ||
       (props.playerIDForGame === 2 && // when player two is starting player and player one chooses
-        props.playerToMarkCells === 1 &&
+        JSON.parse(message.body).playerToMarkCells === 1 &&
         props.ownerOfDiceField === 2 &&
         props.startingPlayer === 2)
     ) {
-      // console.log("true");
-      return true;
+      if (message) return true;
     }
   };
 
@@ -502,7 +473,8 @@ function DiceField(props) {
   };
 
   const endRollingPhase = (value) => {
-    props.setPlayerToMarkCells(props.playerIDForGame); //handle the case when inactive player presses STOP
+    ///props.setPlayerToMarkCells(props.playerIDForGame); //handle the case when inactive player presses STOP
+
     setRollingIsOver(true);
   };
 
@@ -512,7 +484,7 @@ function DiceField(props) {
     // console.log("purple: " + props.markedPurpleCellsCounter);
     // console.log("turquiuse: " + props.markedTurquoiseCellsCounter);
     let cells = [];
-    let numberOfMarkedCells = getNumberOfMarkedCells(diceColor);
+    let numberOfMarkedCells = getNumberOfMarkedCells(diceColor, ownerOfDiceField);
     console.log("number of marked cells: " + numberOfMarkedCells);
     for (let i = 0; i < 13; i++) {
       if (i < numberOfMarkedCells + numberOfDices) {
@@ -564,22 +536,22 @@ function DiceField(props) {
     }
   };
 
-  const getNumberOfMarkedCells = (diceColor) => {
-    if (diceColor === 1 && props.ownerOfDiceField === 2) {
+  const getNumberOfMarkedCells = (diceColor, ownerOfDiceField) => {
+    if (diceColor === 1 && ownerOfDiceField === 1) {
       return props.markedPurpleCellsCounterPlayerOne;
-    } else if (diceColor === 1 && props.ownerOfDiceField === 1) {
+    } else if (diceColor === 1 && ownerOfDiceField === 2) {
       return props.markedPurpleCellsCounterPlayerTwo;
-    } else if (diceColor === 2 && props.ownerOfDiceField === 2) {
+    } else if (diceColor === 2 && ownerOfDiceField === 1) {
       return props.markedBlackCellsCounterPlayerOne;
-    } else if (diceColor === 2 && props.ownerOfDiceField === 1) {
+    } else if (diceColor === 2 && ownerOfDiceField === 2) {
       return props.markedBlackCellsCounterPlayerTwo;
-    } else if (diceColor === 3 && props.ownerOfDiceField === 2) {
+    } else if (diceColor === 3 && ownerOfDiceField === 1) {
       return props.markedOrangeCellsCounterPlayerOne;
-    } else if (diceColor === 3 && props.ownerOfDiceField === 1) {
+    } else if (diceColor === 3 && ownerOfDiceField === 2) {
       return props.markedOrangeCellsCounterPlayerTwo;
-    } else if (diceColor === 6 && props.ownerOfDiceField === 2) {
+    } else if (diceColor === 6 && ownerOfDiceField === 1) {
       return props.markedTurquoiseCellsCounterPlayerTwo;
-    } else if (diceColor === 6 && props.ownerOfDiceField === 1) {
+    } else if (diceColor === 6 && ownerOfDiceField === 2) {
       return props.markedTurquoiseCellsCounterPlayerOne;
     }
   };
@@ -588,14 +560,13 @@ function DiceField(props) {
     // console.log(props.dicesGroupedByColor);
     let numberOfCellsToMark =
       deleteDiceGroupByColorAndGetNumberOfCellsToMark(selectedDiceColor);
-    props.setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
-    // console.log(numberOfCellsToMark);
+    // props.setDicesGroupedByColor((diceGroup) => ({ ...diceGroup }));
     markCells(numberOfCellsToMark, selectedDiceColor, ownerOfDiceField);
     if (!selectedDiceColorToMarkCellIsSent) {
       let markedCells = {
         numberOfDice: numberOfCellsToMark,
         value: selectedDiceColor,
-        playerToMarkCells: props.playerToMarkCells,
+        playerToMarkCells: ownerOfDiceField,
       };
       sendMarkedCells(markedCells);
       // console.log("send again");
@@ -605,6 +576,8 @@ function DiceField(props) {
   };
 
   const checkIfTurnIsOver = () => {
+    console.log("starting: " + props.startingPlayer)
+    console.log("mariking: " + props.playerToMarkCells)
     if (props.startingPlayer !== props.playerToMarkCells) {
       notifyServerAboutTheEndOfTurn();
     }

@@ -180,7 +180,7 @@ function PlayField(props) {
 
 
               markedBlackCellsCounterPlayerOne={markedBlackCellsCounterPlayerOne}
-              setMarkedBlackCellsCounterOne={setMarkedBlackCellsCounterPlayerOne}
+              setMarkedBlackCellsCounterPlayerOne={setMarkedBlackCellsCounterPlayerOne}
               markedBlackCellsCounterPlayerTwo={markedBlackCellsCounterPlayerTwo}
               setMarkedBlackCellsCounterPlayerTwo={setMarkedBlackCellsCounterPlayerTwo}
             ></DiceField>
@@ -249,7 +249,7 @@ function PlayField(props) {
 
 
               markedBlackCellsCounterPlayerOne={markedBlackCellsCounterPlayerOne}
-              setMarkedBlackCellsCounterOne={setMarkedBlackCellsCounterPlayerOne}
+              setMarkedBlackCellsCounterPlayerOne={setMarkedBlackCellsCounterPlayerOne}
               markedBlackCellsCounterPlayerTwo={markedBlackCellsCounterPlayerTwo}
               setMarkedBlackCellsCounterPlayerTwo={setMarkedBlackCellsCounterPlayerTwo}
             ></DiceField>
