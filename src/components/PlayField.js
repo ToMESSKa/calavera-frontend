@@ -105,7 +105,7 @@ function PlayField(props) {
 
   const [dicesGroupedByColorPlayerOne, setDicesGroupedByColorPlayerOne] =
     useState({
-      purple: [],
+      purple: [{ diceNumber: "hell", diceColor: 1}],
       black: [],
       orange: [],
       rose: [],
@@ -116,7 +116,7 @@ function PlayField(props) {
   const [dicesGroupedByColorPlayerTwo, setDicesGroupedByColorPlayerTwo] =
     useState({
       purple: [],
-      black: [],
+      black: [{ diceNumber: "hell2", diceColor: 2}],
       orange: [],
       rose: [],
       skull: [],
@@ -125,6 +125,27 @@ function PlayField(props) {
 
   const playerOne = 1;
   const playerTwo = 2;
+
+  let defaultDicesGroupedByColorPlayerOne = {
+    purple: [],
+    black: [],
+    orange: [],
+    rose: [],
+    skull: [],
+    turquoise: [],
+  };
+
+  let defaultDicesGroupedByColorPlayerTwo = {
+    purple: [],
+    black: [],
+    orange: [],
+    rose: [],
+    skull: [],
+    turquoise: [],
+  };
+
+  const [diceRollResultsPlayerOne, setDiceRollResultsPlayerOne] = useState({ diceRolls: [] });
+  const [diceRollResultsPlayerTwo, setDiceRollResultsPlayerTwo] = useState({ diceRolls: [] });
 
   return (
     <div className="play-field">
@@ -183,6 +204,11 @@ function PlayField(props) {
               setMarkedBlackCellsCounterPlayerOne={setMarkedBlackCellsCounterPlayerOne}
               markedBlackCellsCounterPlayerTwo={markedBlackCellsCounterPlayerTwo}
               setMarkedBlackCellsCounterPlayerTwo={setMarkedBlackCellsCounterPlayerTwo}
+
+              defaultDicesGroupedByColor={defaultDicesGroupedByColorPlayerOne}
+
+              diceRollResults={diceRollResultsPlayerOne}
+              setDiceRollResults={setDiceRollResultsPlayerOne}
             ></DiceField>
           </Col>
           <Col className="rightBoard">
@@ -252,6 +278,10 @@ function PlayField(props) {
               setMarkedBlackCellsCounterPlayerOne={setMarkedBlackCellsCounterPlayerOne}
               markedBlackCellsCounterPlayerTwo={markedBlackCellsCounterPlayerTwo}
               setMarkedBlackCellsCounterPlayerTwo={setMarkedBlackCellsCounterPlayerTwo}
+              defaultDicesGroupedByColor={defaultDicesGroupedByColorPlayerTwo}
+
+              diceRollResults={diceRollResultsPlayerTwo}
+              setDiceRollResults={setDiceRollResultsPlayerTwo}
             ></DiceField>
           </Col>
           <Col className="rightBoard">
