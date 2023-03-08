@@ -148,14 +148,6 @@ function DiceField(props) {
   });
 
   useSubscription("/topic/getmarkedcells", (message) => {
-    // console.log("served answered");
-    // console.log("playerID for game: " + props.playerIDForGame);
-    // console.log(
-    //   "player to mark cells: " + JSON.parse(message.body).playerToMarkCells
-    // );
-    // console.log("owner of dicefield: " + props.ownerOfDiceField);
-    // console.log("starting player: " + props.startingPlayer);
-    // console.log(props.dicesGroupedByColor);
     if (checkIfCellsShouldBeMarked(message) === true) {
       console.log("sucess");
       selectedDiceColorToMarkCellIsSent = true;
@@ -164,9 +156,7 @@ function DiceField(props) {
         JSON.parse(message.body).playerToMarkCells
       );
       selectedDiceColorToMarkCellIsSent = false;
-    } else {
-      console.log("fail");
-    }
+    } 
     if (props.startingPlayer === JSON.parse(message.body).playerToMarkCells) {
       if (JSON.parse(message.body).playerToMarkCells === 1) {
         props.setPlayerToMarkCells(2);
@@ -175,14 +165,21 @@ function DiceField(props) {
       }
     }
     setRollingIsOver(true);
+    if (
+      props.startingPlayer !== JSON.parse(message.body).playerToMarkCells &&
+      props.ownerOfDiceField === props.startingPlayer && props.playerIDForGame === props.startingPlayer 
+    ) {
+      console.log("notify");
+      notifyServerAboutTheEndOfTurn();
+    }
   });
 
   useSubscription("/topic/turnisover", (message) => {
-    startNewTurn();
     props.setStartingPlayer(JSON.parse(message.body).startingPlayer);
     props.setDicesGroupedByColor((diceGroup) => ({
       ...props.defaultDicesGroupedByColor,
     }));
+    startNewTurn();
   });
 
   const sendRollResultsAndGroupThem = () => {
@@ -604,19 +601,19 @@ function DiceField(props) {
         playerToMarkCells: ownerOfDiceField,
       };
       sendMarkedCells(markedCells);
-      // console.log("send again");
+      console.log("send again");
       selectedDiceColorToMarkCellIsSent = false;
     }
-    checkIfTurnIsOver();
+    // checkIfTurnIsOver();
   };
 
-  const checkIfTurnIsOver = () => {
-    console.log("starting: " + props.startingPlayer);
-    console.log("mariking: " + props.playerToMarkCells);
-    if (props.startingPlayer !== props.playerToMarkCells) {
-      notifyServerAboutTheEndOfTurn();
-    }
-  };
+  // const checkIfTurnIsOver = () => {
+  //   console.log("starting: " + props.startingPlayer);
+  //   console.log("mariking: " + props.playerToMarkCells);
+  //   if (props.startingPlayer !== props.playerToMarkCells) {
+  //     notifyServerAboutTheEndOfTurn();
+  //   }
+  // };
 
   const deleteDiceGroupByColorAndGetNumberOfCellsToMark = (diceColor) => {
     let numberOfCellsToMark = 0;
@@ -636,16 +633,23 @@ function DiceField(props) {
   };
 
   const startNewTurn = () => {
-    // console.log(props.playerToMarkCells);
-    if (props.ownerOfDiceField !== props.startingPlayer) {
-      props.setDicesVisible("visible");
-      props.setRerollCounterVisible("visible");
-      props.setRollButtonVisible("visible");
-      setRollingIsOver(false);
-    } else {
-      props.setRollButtonVisible("hidden");
-      setStopButtonVisible("hidden");
+    console.log("kurw")
+    if (
+      props.ownerOfDiceField === props.startingPlayer
+    ) {
+      console.log("hide")
+      props.setDicesVisible("hidden");
       props.setRerollCounterVisible("hidden");
+      props.setRollButtonVisible("hidden");
+      setRollingIsOver(false);
+    } else if (
+      props.ownerOfDiceField !== props.startingPlayer 
+    ) {
+      console.log("see")
+      props.setDicesVisible("visible");
+      props.setRollButtonVisible("visible");
+      setStopButtonVisible("visible");
+      props.setRerollCounterVisible("visible");
       setRollingIsOver(false);
     }
   };
