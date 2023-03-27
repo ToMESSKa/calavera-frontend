@@ -36,6 +36,12 @@ function PlayField(props) {
   const playerOneDice4 = useRef();
   const playerOneDice5 = useRef();
   const playerOneDice6 = useRef();
+  const defaultDiceReferencesPlayerOne = [playerOneDice1,
+    playerOneDice2,
+    playerOneDice3,
+    playerOneDice4,
+    playerOneDice5,
+    playerOneDice6]
 
   const [diceReferencesPlayerOne, setDiceReferencesPlayerOne] = useState([
     playerOneDice1,
@@ -43,7 +49,7 @@ function PlayField(props) {
     playerOneDice3,
     playerOneDice4,
     playerOneDice5,
-    playerOneDice6,
+    playerOneDice6
   ]);
 
   const playerTwoDice1 = useRef();
@@ -53,14 +59,23 @@ function PlayField(props) {
   const playerTwoDice5 = useRef();
   const playerTwoDice6 = useRef();
 
+  const defaultDiceReferencesPlayerTwo =[playerTwoDice1,
+    playerTwoDice2,
+    playerTwoDice3,
+    playerTwoDice4,
+    playerTwoDice5,
+    playerTwoDice6]
+  
   const [diceReferencesPlayerTwo, setDiceReferencesPlayerTwo] = useState([
     playerTwoDice1,
     playerTwoDice2,
     playerTwoDice3,
     playerTwoDice4,
     playerTwoDice5,
-    playerTwoDice6,
+    playerTwoDice6
   ]);
+
+  const [numberOfRolledDices, setNumberOfRolledDices] = useState(6);
 
   const [stomp, setStomp] = useState([]);
   const [rerollCounterPlayOne, setRerollCounterPlayerOne] = useState("first");
@@ -209,6 +224,10 @@ function PlayField(props) {
 
               diceRollResults={diceRollResultsPlayerOne}
               setDiceRollResults={setDiceRollResultsPlayerOne}
+              numberOfRolledDices={numberOfRolledDices}
+              setNumberOfRolledDices={setNumberOfRolledDices}
+
+              defaultDiceReferences={defaultDiceReferencesPlayerOne}
             ></DiceField>
           </Col>
           <Col className="rightBoard">
@@ -282,6 +301,11 @@ function PlayField(props) {
 
               diceRollResults={diceRollResultsPlayerTwo}
               setDiceRollResults={setDiceRollResultsPlayerTwo}
+
+              numberOfRolledDices={numberOfRolledDices}
+              setNumberOfRolledDices={setNumberOfRolledDices}
+
+              defaultDiceReferences={defaultDiceReferencesPlayerTwo}
             ></DiceField>
           </Col>
           <Col className="rightBoard">
