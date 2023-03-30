@@ -102,9 +102,9 @@ function PlayField(props) {
 
   const [startingPlayer, setStartingPlayer] = useState(1);
   const [rollButtonPlayerOneVisible, setRollButtonPlayerOneVisible] =
-    useState("visible");
+    useState("hidden");
   const [rollButtonPlayerTwoVisible, setRollButtonPlayerTwoVisible] =
-    useState("visible");
+    useState("hidden");
 
     const [markedBlackCellsCounterPlayerOne, setMarkedBlackCellsCounterPlayerOne] = useState(0);
     const [markedOrangeCellsCounterPlayerOne, setMarkedOrangeCellsCounterPlayerOne] = useState(0);

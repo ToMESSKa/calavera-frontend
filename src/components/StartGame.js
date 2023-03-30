@@ -20,12 +20,10 @@ function StartGame (props) {
     const startNewGame = () => {
         setNewGame(true)
         let firstPlayer = {playerName: "Player1"};
+        setPlayerID(1)
         axios.post("http://localhost:8080/startnewgame", firstPlayer)
         .then((response) => {
-            console.log(response.data.gameId);
             setGameID(response.data.gameId);
-            let id = 1;
-            setPlayerID(id)
         })      
     }
 
@@ -34,6 +32,7 @@ function StartGame (props) {
         setGameID(gameID)
         let secondPlayer = {playerName: "Dávid"}
         let game = {player: secondPlayer, gameId: gameID}
+        setPlayerID(2)
         axios.post("http://localhost:8080/joinnewgame", game)
         .then((response) => {
             if (response.data.gameStatus === "NOT_FOUND"){
@@ -43,7 +42,6 @@ function StartGame (props) {
             setNewGame(true)
             setGameNotFound(false)
             setGameID(response.data.gameId)
-            setPlayerID(2)
             }
         }
         )      

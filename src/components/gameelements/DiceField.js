@@ -67,6 +67,7 @@ function DiceField(props) {
   const [mainPlayerTurnIsOver, setMainPlayerTurnIsOver] = useState(false);
   const [isTurnOver, setTurnOver] = useState(false);
   const [stopButtonDisabled, setstopButtonDisabled] = useState(false);
+  const [rollButtonDisabled, setrollButtonDisabled] = useState(true);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
   let selectedDiceColorToMarkCellIsSent = false;
@@ -87,13 +88,18 @@ function DiceField(props) {
   //   }
   // }, []);
 
-  // useEffect(() => {
-  //   if (props.playerToMarkCells !== props.ownerOfDiceField) {
-  //     props.setDicesVisible("hidden");
-  //     props.setRollButtonVisible("hidden");
+  useEffect(() => {
+      console.log("PLAYER ID: " + props.playerIDForGame)
+  if (props.ownerOfDiceField === 1){
+    props.setRollButtonVisible("visible");
+  }
+  if (props.playerIDForGame === 1){
+    setrollButtonDisabled(false)
+  }
+     
   //     props.setRerollCounterVisible("hidden");
   //   }
-  // }, []);
+  }, []);
 
   const stompClient = useStompClient();
 
@@ -179,6 +185,7 @@ function DiceField(props) {
 
   useSubscription("/topic/turnisover", (message) => {
     props.setStartingPlayer(JSON.parse(message.body).startingPlayer);
+    console.log("STARTING:" + props.startingPlayer)
     props.setDicesGroupedByColor((diceGroup) => ({
       ...props.defaultDicesGroupedByColor,
     }));
@@ -192,11 +199,9 @@ function DiceField(props) {
         { diceNumber: "dice6", diceColor: 6 },
       ],
     };
-    // console.log("NUMBER: " + props.numberOfRolledDices);
     setDicesToBeRolled(hell);
     props.setDiceReferences(props.defaultDiceReferences);
     props.setNumberOfRolledDices((prev) => 6);
-    // console.log("NUMBER: " + props.numberOfRolledDices);
     startNewTurn();
   });
 
@@ -207,8 +212,8 @@ function DiceField(props) {
     } else {
       props.setPlayerToMarkCells(1);
     }
-    setRollingIsOver(true)
-    setThirdSkull(false)
+    setRollingIsOver(true);
+    setThirdSkull(false);
   });
 
   const sendRollResultsAndGroupThem = () => {
@@ -335,9 +340,7 @@ function DiceField(props) {
   };
 
   const rollAllDicesForTheOtherPlayer = (e) => {
-    if (props.ownerOfDiceField === 1) {
-      rollAllDices();
-    }
+    rollAllDices();
   };
 
   const getRolledDicesColorAndSendThemToServer = (diceColor, number) => {
@@ -374,14 +377,15 @@ function DiceField(props) {
   };
 
   const handleClickOnDice = (diceColor) => {
-    console.log(rollingIsOver);
-    console.log(props.playerToMarkCells);
-    console.log(props.playerIDForGame);
+    // console.log(rollingIsOver);
+    // console.log(props.playerToMarkCells);
+    // console.log(props.playerIDForGame);
     if (rollingIsOver && props.playerToMarkCells === props.playerIDForGame) {
       selectDiceColorToMarkCells(diceColor, props.playerToMarkCells);
     } else if (
       props.startingPlayer === props.playerIDForGame &&
-      props.playerIDForGame === props.ownerOfDiceField
+      props.playerIDForGame === props.ownerOfDiceField &&
+      props.playerToMarkCells === props.playerIDForGame
     ) {
       selectDiceForReroll(diceColor);
     }
@@ -455,6 +459,15 @@ function DiceField(props) {
       groupDicesByColor(dicesGroupedByColor, [dice]);
     } else {
       dicesGroupedByColor[selectedDicesKey].push(dice);
+    }
+  };
+
+  const cancelDiceForRerollForStartingPlayer = (diceColor) => {
+    if (
+      props.startingPlayer === props.playerIDForGame &&
+      props.ownerOfDiceField === props.playerIDForGame
+    ) {
+      cancelDiceForReroll(diceColor);
     }
   };
 
@@ -691,20 +704,24 @@ function DiceField(props) {
   };
 
   const startNewTurn = () => {
+    console.log("STARTING:" + props.startingPlayer)
     if (props.ownerOfDiceField === props.startingPlayer) {
-      // console.log("hide");
       props.setDicesVisible("hidden");
       props.setRerollCounterVisible("hidden");
       props.setRollButtonVisible("hidden");
       setRollingIsOver(false);
     } else if (props.ownerOfDiceField !== props.startingPlayer) {
-      // console.log("see");
       props.setDicesVisible("visible");
       props.setRollButtonVisible("visible");
-      setStopButtonVisible("visible");
       props.setRerollCounterVisible("visible");
       setRollingIsOver(false);
     }
+    if (props.playerIDForGame === props.startingPlayer && props.ownerOfDiceField !== props.playerIDForGame){
+      setrollButtonDisabled(true)
+    }else{
+      setrollButtonDisabled(false)
+    }
+    setStopButtonVisible("hidden");
   };
 
   return (
@@ -723,7 +740,9 @@ function DiceField(props) {
           <RerollSelectionField
             prepareForReRoll={prepareForReRoll}
             selectedDicesForReroll={selectedDicesForReroll}
-            cancelDiceForReroll={cancelDiceForReroll}
+            cancelDiceForRerollForStartingPlayer={
+              cancelDiceForRerollForStartingPlayer
+            }
             rerollButtonVisible={rerollButtonVisible}
             faces={faces}
           ></RerollSelectionField>
@@ -756,6 +775,7 @@ function DiceField(props) {
             style={{ visibility: props.rollButtonVisible }}
             ref={myButton}
             onClick={rollAllDices}
+            disabled={rollButtonDisabled}
           >
             Roll
           </button>
