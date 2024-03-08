@@ -49,6 +49,7 @@ function DiceField(props) {
   // const [rollButtonVisible, setrollButtonVisible] = useState("visible");
   const [rollingIsOver, setRollingIsOver] = useState(false);
   const [stopButtonVisible, setStopButtonVisible] = useState("hidden");
+  const [closeButtonVisible, setCloseButtonVisible] = useState("hidden");
   const [selectedDicesForReroll, setSelectedDicesForReroll] = useState({
     purple: [],
     black: [],
@@ -68,6 +69,7 @@ function DiceField(props) {
   const [isTurnOver, setTurnOver] = useState(false);
   const [stopButtonDisabled, setstopButtonDisabled] = useState(false);
   const [rollButtonDisabled, setrollButtonDisabled] = useState(true);
+  const [closeButtonDisabled, setCloseButtonDisabled] = useState(false);
   const faces = [purple, black, orange, rose, skull, turquoise];
   let counter = 0;
   let selectedDiceColorToMarkCellIsSent = false;
@@ -498,6 +500,7 @@ function DiceField(props) {
         group.orange.push(dice);
       } else if (dice.diceColor === 4) {
         group.rose.push(dice);
+        checkIfColorCanBeClosed()
       } else if (dice.diceColor === 5) {
         group.skull.push(dice);
         checkForThreeSkulls(group.skull);
@@ -724,6 +727,12 @@ function DiceField(props) {
     setStopButtonVisible("hidden");
   };
 
+  const checkIfColorCanBeClosed = (dices) =>{
+    if (dices.length === 2 && props.playerIDForGame === 1){
+      setCloseButtonVisible("visible")
+    }
+  }
+
   return (
     <div className="dice-field">
       <Row>
@@ -754,6 +763,13 @@ function DiceField(props) {
             onClick={endRollingPhase}
           >
             STOP
+          </button>
+          <button
+            style={{ visibility: closeButtonVisible }}
+            disabled={closeButtonDisabled}
+            // onClick={}
+          >
+            CLOSE
           </button>
         </Col>
       </Row>

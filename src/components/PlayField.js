@@ -162,6 +162,8 @@ function PlayField(props) {
   const [diceRollResultsPlayerOne, setDiceRollResultsPlayerOne] = useState({ diceRolls: [] });
   const [diceRollResultsPlayerTwo, setDiceRollResultsPlayerTwo] = useState({ diceRolls: [] });
 
+  // const [colorsThatCanBeClosedPlayerOne, setColorsThatCanBeClosedPlayerOne] = useState([]);
+  // const [colorsThatCanBeClosedPlayerTwo, setColorsThatCanBeClosedPlayerTwo] = useState([]);
   return (
     <div className="play-field">
       <div>Game ID: {props.gameID}</div>
